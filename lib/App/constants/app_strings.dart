@@ -33,11 +33,14 @@ class AppStrings {
 
   // CTA Screen Strings
   static const String welcomeJetOrderer = 'Welcome JetOrderer';
+  static const String welcomeJetPicker = 'Welcome JetPicker';
   static const String orderAnythingGlobally = 'Order anything globally';
+  static const String makeMoneyWhileTravelling = 'Make money while travelling - Connect with jetorderers';
 
   // signup screen strings
   static const String signUpTitle = 'Sign Up';
-  static const String signUpSubtitle = 'Create your jetpicker account';
+  static const String signUpSubtitle1 = 'Create your jetpicker account';
+  static const String signUpSubtitle2 = 'Create your jetorderer account';
   static const String userName = 'User Name';
   static const String userNameHint = 'Esther Howard';
   static const String phoneNumber = 'Phone Number';
@@ -69,6 +72,7 @@ class AppStrings {
 
   // home screen strings
   static const String searchaTravelerOrRoute = 'Search a traveler or route';
+  static const String browseJetOrders = 'Browse jet Orders';
   static const String availableJetPickersNearYou =
       'Available jet pickers near you';
   static const String methewM = 'Methew M.';
@@ -95,6 +99,17 @@ class AppStrings {
   static const String useMyLocation = 'Use my location';
   static const String specialNotes = 'Special notes (optional)';
   static const String writeHere = 'Write here';
+
+  // Travel details setup screen strings
+  static const String travelAvailabilitySetup = 'Travel Availability Setup';
+  static const String shareYourTravelDetail = 'Share your travel details to get relevant Jetorders';
+  static const String departureCountryandCity = 'Departure country and city';
+  static const String arrivalCountryandCity = 'Arrival country and city';
+  static const String arrivalDate = 'Arrival Date';
+  static const String selectDate = 'Select date';
+  static const String luggage = 'Luggage';
+  static const String selectWeight = 'Select weight';
+  
 
   // Order Information Screen Strings
   static const String orderInformation = 'Order Information';
@@ -123,6 +138,8 @@ class AppStrings {
   static const String price = 'Price';
   static const String reward = 'Reward';
   static const String iAgreetoCustomLaws = 'I agree to the custom laws';
+    static const String estimatedDeliveryDate = 'Estimated Delivery Date';
+    static const String basedonArrivialDate = 'Based on arrival date';
 
   // successful Dialog Screen Strings
   static const String orderSuccessfulPosted = 'Order successfully posted';
@@ -145,6 +162,7 @@ class AppStrings {
 
   // JetOrderer History Screen Strings
   static const String jetOrdererHistory = 'JetOrderer History';
+  static const String acceptedOrders = 'Accepted Orders';
   static const String all = 'All';
   static const String pending = 'Pending';
   static const String delivered = 'Delivered';
@@ -165,10 +183,13 @@ class AppStrings {
   static const String writeYourComment = 'Write your comment';
   static const String tipOption = 'Tip Option';
   static const String customAmount = 'Custom Amount';
+  static const String markAsDelivered = 'Mark as delivered';
+  static const String uploadProofOfDelivery = 'Upload proof of delivery/ Receipt';
 
   // Profile Screen Strings
   static const String profiletext = 'Profile';
   static const String personalInformation = 'Personal Information';
+  static const String travelDetails = 'Travel Details';
   static const String paymentMethods = 'Payment Methods';
   static const String settings = 'Settings';
   static const String helpAndSupport = 'Help and support';
@@ -196,13 +217,32 @@ class AppStrings {
       'Show original + translated text';
   static const String privacyPolicy = 'Privacy Policy';
   static const String other = 'Other';
+  static const String travelHistory = 'Travel History';
+  static const String formLondonMadrid = 'From London -Madrid ';
+  static const String updateWeightCapacity = 'Update weight  capacity';
 
+// payement method screen strings
+    static const String selectPayoutMethod = 'Select Payout Method';
+    static const String bankAccount = 'Bank Account';
+    static const String enterPaypalEmail = 'Enter PayPal Email';
+    static const String paypalPaymentInfo = 'Payments will be deposited to your PayPal account after order completion.';
+    static const String mobileWallet = 'Mobile Wallet';
+    static const String walletType = 'Wallet Type';
+    static const String registeredMobileNumber = 'Registered Mobile Number';
+    static const String registeredMobileNumberHint = 'Enter Mobile Number';
+    static const String bankName = 'Bank Name';
+    static const String accountHolderName = 'Account Holder Name';
+    static const String accountNumber = 'Account Number/IBAN';
+    static const String branchCode = 'Branch Code';
+
+    
   // btns Strings
   static const String continueText = 'Continue';
   static const String continueAsJetPicker = 'Continue as JetPicker';
   static const String continueAsJetOrderer = 'Continue as JetOrderer';
   static const String createAccount = 'Create Account';
   static const String switchToJetPicker = 'Switch to JetPicker';
+  static const String switchToJetOrderer = 'Switch to JetOrderer';
   static const String signUp = 'Sign Up';
   static const String logIn = 'Log In';
   static const String seeAll = 'See all';
@@ -219,4 +259,10 @@ class AppStrings {
   static const String submit = 'Submit';
   static const String save = 'Save';
   static const String saveCard = 'Save Card';
+  static const String saveAndContinue = 'Save & Continue';
+  static const String skipForNow = 'Skip for Now';
+  static const String acceptDelivery = 'Accept Delivery';
+  static const String sendCounterOffer = 'Send Counter Offer';
+  static const String upload = 'Upload';
+  static const String createNewJourney = 'Create New Journey';
 }
