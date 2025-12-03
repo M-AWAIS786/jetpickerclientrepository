@@ -10,9 +10,20 @@ class CustomTextField extends StatelessWidget {
   final String label;
   final String hintText;
   final bool isPassword;
+  final String? prefixIcon;
+  final Color? prefixColor;
+  final String? sufixIcon;
+  final Color? sufixColor;
+  final Color? fillColor;
+  final Color? borderColor;
+  final Color? labelColor;
+  final Color? cursorColor;
+  final Color? hintColor;
+  final Color? textColor;
   final TextEditingController? controller;
   final VoidCallback? onTogglePassword;
   final bool obscureText;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
@@ -22,6 +33,17 @@ class CustomTextField extends StatelessWidget {
     this.controller,
     this.onTogglePassword,
     this.obscureText = false,
+    this.validator,
+    this.prefixIcon,
+    this.prefixColor,
+    this.sufixIcon,
+    this.sufixColor,
+    this.fillColor,
+    this.borderColor,
+    this.labelColor,
+    this.cursorColor,
+    this.hintColor,
+    this.textColor,
   });
 
   @override
@@ -29,26 +51,37 @@ class CustomTextField extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
       decoration: BoxDecoration(
-        color: AppColors.redLight,
-        border: Border(bottom: BorderSide(color: AppColors.redLight, width: 1)),
+        color: fillColor ?? AppColors.redLight,
+        border: Border(
+          bottom: BorderSide(
+            color: borderColor ?? AppColors.redLight,
+            width: 1,
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              SharePictures(
-                imagePath: AppImages.profileIcon,
-                width: 20.w,
-                height: 20.h,
-                fit: BoxFit.cover,
-              ),
+              prefixIcon == null
+                  ? SizedBox(width: 20.w, height: 20.h)
+                  : SharePictures(
+                      imagePath: prefixIcon!,
+                      width: 20.w,
+                      height: 20.h,
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        prefixColor ?? AppColors.red3,
+                        BlendMode.srcIn,
+                      ),
+                    ),
               14.w.pw,
               Text(
                 label,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppColors.labelGray),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: labelColor ?? AppColors.labelGray,
+                ),
               ),
             ],
           ),
@@ -60,31 +93,52 @@ class CustomTextField extends StatelessWidget {
                 child: TextFormField(
                   controller: controller,
                   obscureText: obscureText,
+                  validator: validator,
+                  cursorColor: cursorColor ?? AppColors.red3,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: hintText,
                     isDense: true,
                     hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.red3,
+                      color: hintColor ?? AppColors.red3,
                       fontWeight: TextWeight.semiBold,
                     ),
                   ),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium?.copyWith(color: AppColors.red3),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: textColor ?? AppColors.red3,
+                  ),
                 ),
               ),
 
               if (isPassword)
                 GestureDetector(
                   onTap: onTogglePassword,
-                  child: SharePictures(
-                    imagePath: obscureText
-                        ? AppImages.eyeClosedIcon
-                        : AppImages.eyeOpenedIcon,
-                    width: 24.w,
-                    height: 24.h,
-                    fit: BoxFit.cover,
+                  child: Transform.scale(
+                    scale: 0.7,
+                    child: SharePictures(
+                      imagePath: obscureText
+                          ? AppImages.eyeClosedIcon
+                          : AppImages.eyeOpenedIcon,
+                      width: obscureText ? 24.w : 35.w,
+                      height: obscureText ? 24.w : 35.w,
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        sufixColor ?? AppColors.red3,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                ),
+
+              if (sufixIcon != null)
+                SharePictures(
+                  imagePath: sufixIcon!,
+                  width: 24.w,
+                  height: 24.h,
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    sufixColor ?? AppColors.red3,
+                    BlendMode.srcIn,
                   ),
                 ),
             ],
