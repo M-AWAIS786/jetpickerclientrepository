@@ -11,7 +11,7 @@ class AppImages {
   static const String jetPicker = '$_assets/jetPicker.png';
 
   //Assets SVGs
-  static const String splashBackground = '$_svgs/splash_background.svg';
+  static const String jetPickerImage = '$_svgs/jetPickerImage.svg';
 
   // Assets Icons
   static const String orderboxIcon = '$_icons/orderboxIcon.svg';
@@ -49,4 +49,5 @@ class AppImages {
   static const String emailIcon = '$_icons/emailIcon.svg';
   static const String phoneIcon = '$_icons/phoneIcon.svg';
   static const String profileIcon = '$_icons/profileIcon.svg';
+  static const String agreeIcon = '$_icons/agreeIcon.svg';
 }
