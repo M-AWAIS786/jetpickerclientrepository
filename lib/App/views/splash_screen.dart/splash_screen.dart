@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+
 import 'package:jet_picks_app/App/constants/app_images.dart';
 import 'package:jet_picks_app/App/constants/validation.dart';
+import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/share_pictures.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
+import 'package:jet_picks_app/App/widgets/accepted_order_card.dart';
+import 'package:jet_picks_app/App/widgets/chatlist_card.dart';
 import 'package:jet_picks_app/App/widgets/custom_divider.dart';
 import 'package:jet_picks_app/App/widgets/custom_dropdown.dart';
+import 'package:jet_picks_app/App/widgets/listtile_switch.dart';
 import 'package:jet_picks_app/App/widgets/radio_text.dart';
+import 'package:jet_picks_app/App/widgets/text_title.dart';
 
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_ordercard.dart';
 import '../../widgets/custom_searchbar.dart';
 import '../../widgets/custom_textfield.dart';
 import '../../widgets/icon_text.dart';
+import '../../widgets/listtile_arrow.dart';
+import '../../widgets/order_detail_card.dart';
 import '../../widgets/rememberme_row.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -34,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Splash Screen')),
+      appBar: ProfileAppBar(title: 'Profile'),
       body: SingleChildScrollView(
         child: Form(
           key: _form,
@@ -108,9 +116,33 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               SharePictures(imagePath: AppImages.jetPickerImage),
               20.h.ph,
-              OrderSummaryCard(),
+              CustomOrderCard(),
               20.h.ph,
-              CustomSearchBar(hint: 'Browse jet Orders'),
+              CustomSearchBar(),
+              20.h.ph,
+              OrderDetailCard(
+                imagePath: AppImages.calendarIcon,
+                titleText: 'Apple Mouse',
+                trailingText: '\$20',
+              ),
+              20.h.ph,
+              TextTile(titleText: 'titleText', trailingText: '\$360'),
+              20.h.ph,
+              ChatListCard(
+                name: 'Geopart Etdsien',
+                lastMessage: 'Your Order Just Arrived!',
+                time: '13.47',
+              ),
+              20.h.ph,
+              AcceptedOrderCard(),
+              20.h.ph,
+              ListTileArrow(
+                text: 'Personal Information',
+                prefixIcon: AppImages.profileIcon,
+                sufixIcon: AppImages.rightArrowIcon,
+              ),
+              20.h.ph,
+              ListTileSwitch(text: 'Push Notification', isSwitch: true),
               20.h.ph,
               CustomButton(
                 text: 'Continue',

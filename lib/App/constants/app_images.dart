@@ -40,6 +40,7 @@ class AppImages {
   static const String searchIcon = '$_icons/searchIcon.svg';
   static const String bellIcon = '$_icons/bellIcon.svg';
   static const String dropDownIcon = '$_icons/dropDownIcon.svg';
+  static const String rightArrowIcon = '$_icons/rightArrow.svg';
   static const String languageIcon = '$_icons/languageIcon.svg';
   static const String flagIcon = '$_icons/flagIcon.svg';
   static const String cameraIcon = '$_icons/cameraIcon.svg';

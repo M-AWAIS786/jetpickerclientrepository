@@ -7,22 +7,34 @@ import 'package:jet_picks_app/App/utils/share_pictures.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 
-class CustomOrderCard extends StatelessWidget {
-  const CustomOrderCard({super.key});
+class AcceptedOrderCard extends StatelessWidget {
+  const AcceptedOrderCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.redLight,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(8.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .05),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
 
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 20.w, top: 16.h, bottom: 20.h),
+            padding: EdgeInsets.only(
+              left: 20.w,
+              top: 16.h,
+              bottom: 20.h,
+              right: 10.w,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -60,6 +72,21 @@ class CustomOrderCard extends StatelessWidget {
                             ],
                           ),
                         ],
+                      ),
+                      Spacer(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10.w,
+                            vertical: 2.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.green1C,
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Center(child: Text('Delivered')),
+                        ),
                       ),
                     ],
                   ),
