@@ -1,6 +1,4 @@
 class Validation {
-
-  
   static String? valueExists(String? value) {
     if (value == null || value.trim().isEmpty) {
       return '* Please fill this field';
@@ -16,7 +14,7 @@ class Validation {
       var pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!~@$%^&*-]).{8,}$';
       var regExp = RegExp(pattern);
       if (!regExp.hasMatch(value!)) {
-        return 'Your password must be at least 8 symbols with number, big and small letter and special character (!@#\$%^&*).';
+        return 'Must be like this (Aa123@34)';
       } else {
         return null;
       }

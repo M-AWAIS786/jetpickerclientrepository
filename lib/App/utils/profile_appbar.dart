@@ -22,6 +22,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? bellColor;
   final double? fontSize;
   final FontWeight? fontWeight;
+  final Alignment? alignment;
 
   const ProfileAppBar({
     super.key,
@@ -39,6 +40,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.phoneIcon = false,
     this.fontSize,
     this.fontWeight,
+    this.alignment,
   });
 
   @override
@@ -77,7 +79,6 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
 
-
               if (imagePath != null)
                 CircleAvatar(
                   radius: 22.r,
@@ -85,18 +86,20 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
                   child: SharePictures(imagePath: imagePath!),
                 ),
 
-
               if (leadingIcon) Spacer(),
               if (imagePath != null) 10.w.pw,
 
-
               if (title != null)
-                Text(
-                  title!,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: titleColor ?? AppColors.red3,
-                    fontSize: fontSize ?? 28.sp,
-                    fontWeight: fontWeight ?? TextWeight.bold,
+                Align(
+                  alignment: alignment ?? Alignment.center,
+                  child: Text(
+                    title!,
+
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: titleColor ?? AppColors.red3,
+                      fontSize: fontSize ?? 28.sp,
+                      fontWeight: fontWeight ?? TextWeight.bold,
+                    ),
                   ),
                 ),
 
@@ -116,7 +119,6 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   ),
                 ),
-
 
               if (leadingIcon && phoneIcon)
                 InkWell(

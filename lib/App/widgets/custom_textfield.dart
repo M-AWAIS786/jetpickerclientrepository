@@ -24,6 +24,7 @@ class CustomTextField extends StatelessWidget {
   final VoidCallback? onTogglePassword;
   final bool obscureText;
   final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
 
   const CustomTextField({
     super.key,
@@ -44,6 +45,7 @@ class CustomTextField extends StatelessWidget {
     this.cursorColor,
     this.hintColor,
     this.textColor,
+    this.keyboardType,
   });
 
   @override
@@ -94,6 +96,7 @@ class CustomTextField extends StatelessWidget {
                   controller: controller,
                   obscureText: obscureText,
                   validator: validator,
+                  keyboardType: keyboardType,
                   cursorColor: cursorColor ?? AppColors.red3,
                   decoration: InputDecoration(
                     border: InputBorder.none,
@@ -119,8 +122,8 @@ class CustomTextField extends StatelessWidget {
                       imagePath: obscureText
                           ? AppImages.eyeClosedIcon
                           : AppImages.eyeOpenedIcon,
-                      width: obscureText ? 24.w : 35.w,
-                      height: obscureText ? 24.w : 35.w,
+                      width: obscureText ? 35.w : 35.w,
+                      height: obscureText ? 35.w : 35.w,
                       fit: BoxFit.cover,
                       colorFilter: ColorFilter.mode(
                         sufixColor ?? AppColors.red3,

@@ -26,16 +26,17 @@ class AppStrings {
       'Exchange the item, complete the delivery, and rate your experience to help the community.';
 
   // Role Selection Screen Strings
-  static const String roleTitle1 = 'Become a JetPicker';
-  static const String roleTitle2 = 'Become a JetOrderer';
-  static const String roleSubtitle1 = 'Make money while travelling';
-  static const String roleSubtitle2 = 'Order anything globally';
+  static const String roleTitle1 = 'Become a\nJetPicker';
+  static const String roleTitle2 = 'Become a\nJetOrderer';
+  static const String roleSubtitle1 = 'Make money while\n travelling';
+  static const String roleSubtitle2 = 'Order anything\n globally';
 
   // CTA Screen Strings
   static const String welcomeJetOrderer = 'Welcome JetOrderer';
   static const String welcomeJetPicker = 'Welcome JetPicker';
   static const String orderAnythingGlobally = 'Order anything globally';
-  static const String makeMoneyWhileTravelling = 'Make money while travelling - Connect with jetorderers';
+  static const String makeMoneyWhileTravelling =
+      'Make money while travelling - Connect with jetorderers';
 
   // signup screen strings
   static const String signUpTitle = 'Sign Up';
@@ -57,7 +58,7 @@ class AppStrings {
   static const String welcomeBack = 'Welcome Back';
   static const String logInSubtitle = 'Pick the parcel and start earning';
   static const String accountConfirm =
-      'By connecting your account confirm that you agree with our';
+      'By connecting your account confirm that you agree with our ';
   static const String termandCondition = 'Term and Condition';
 
   // profile screen strings
@@ -102,14 +103,14 @@ class AppStrings {
 
   // Travel details setup screen strings
   static const String travelAvailabilitySetup = 'Travel Availability Setup';
-  static const String shareYourTravelDetail = 'Share your travel details to get relevant Jetorders';
+  static const String shareYourTravelDetail =
+      'Share your travel details to get relevant Jetorders';
   static const String departureCountryandCity = 'Departure country and city';
   static const String arrivalCountryandCity = 'Arrival country and city';
   static const String arrivalDate = 'Arrival Date';
   static const String selectDate = 'Select date';
   static const String luggage = 'Luggage';
   static const String selectWeight = 'Select weight';
-  
 
   // Order Information Screen Strings
   static const String orderInformation = 'Order Information';
@@ -138,8 +139,8 @@ class AppStrings {
   static const String price = 'Price';
   static const String reward = 'Reward';
   static const String iAgreetoCustomLaws = 'I agree to the custom laws';
-    static const String estimatedDeliveryDate = 'Estimated Delivery Date';
-    static const String basedonArrivialDate = 'Based on arrival date';
+  static const String estimatedDeliveryDate = 'Estimated Delivery Date';
+  static const String basedonArrivialDate = 'Based on arrival date';
 
   // successful Dialog Screen Strings
   static const String orderSuccessfulPosted = 'Order successfully posted';
@@ -184,7 +185,8 @@ class AppStrings {
   static const String tipOption = 'Tip Option';
   static const String customAmount = 'Custom Amount';
   static const String markAsDelivered = 'Mark as delivered';
-  static const String uploadProofOfDelivery = 'Upload proof of delivery/ Receipt';
+  static const String uploadProofOfDelivery =
+      'Upload proof of delivery/ Receipt';
 
   // Profile Screen Strings
   static const String profiletext = 'Profile';
@@ -221,21 +223,21 @@ class AppStrings {
   static const String formLondonMadrid = 'From London -Madrid ';
   static const String updateWeightCapacity = 'Update weight  capacity';
 
-// payement method screen strings
-    static const String selectPayoutMethod = 'Select Payout Method';
-    static const String bankAccount = 'Bank Account';
-    static const String enterPaypalEmail = 'Enter PayPal Email';
-    static const String paypalPaymentInfo = 'Payments will be deposited to your PayPal account after order completion.';
-    static const String mobileWallet = 'Mobile Wallet';
-    static const String walletType = 'Wallet Type';
-    static const String registeredMobileNumber = 'Registered Mobile Number';
-    static const String registeredMobileNumberHint = 'Enter Mobile Number';
-    static const String bankName = 'Bank Name';
-    static const String accountHolderName = 'Account Holder Name';
-    static const String accountNumber = 'Account Number/IBAN';
-    static const String branchCode = 'Branch Code';
+  // payement method screen strings
+  static const String selectPayoutMethod = 'Select Payout Method';
+  static const String bankAccount = 'Bank Account';
+  static const String enterPaypalEmail = 'Enter PayPal Email';
+  static const String paypalPaymentInfo =
+      'Payments will be deposited to your PayPal account after order completion.';
+  static const String mobileWallet = 'Mobile Wallet';
+  static const String walletType = 'Wallet Type';
+  static const String registeredMobileNumber = 'Registered Mobile Number';
+  static const String registeredMobileNumberHint = 'Enter Mobile Number';
+  static const String bankName = 'Bank Name';
+  static const String accountHolderName = 'Account Holder Name';
+  static const String accountNumber = 'Account Number/IBAN';
+  static const String branchCode = 'Branch Code';
 
-    
   // btns Strings
   static const String continueText = 'Continue';
   static const String continueAsJetPicker = 'Continue as JetPicker';
