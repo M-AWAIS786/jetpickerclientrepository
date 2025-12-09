@@ -21,8 +21,10 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? backIconColor;
   final Color? bellColor;
   final double? fontSize;
+  final double? height;
   final FontWeight? fontWeight;
   final Alignment? alignment;
+  final double? bottomHeight;
 
   const ProfileAppBar({
     super.key,
@@ -41,6 +43,8 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.fontSize,
     this.fontWeight,
     this.alignment,
+    this.height,
+    this.bottomHeight,
   });
 
   @override
@@ -54,12 +58,17 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
     return Container(
-      padding: EdgeInsets.only(top: 20.h, left: 16.w, right: 16.w),
+      padding: EdgeInsets.only(
+        top: 20.h,
+        left: 16.w,
+        right: 16.w,
+        bottom: bottomHeight ?? 0.h,
+      ),
       decoration: BoxDecoration(color: appBarColor ?? AppColors.red3),
       child: SafeArea(
         bottom: false,
         child: SizedBox(
-          height: 60.h,
+          height: height ?? 60.h,
           child: Row(
             children: [
               if (leadingIcon)

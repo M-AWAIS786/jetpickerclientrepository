@@ -102,7 +102,7 @@ class AppStrings {
   static const String writeHere = 'Write here';
 
   // Travel details setup screen strings
-  static const String travelAvailabilitySetup = 'Travel Availability Setup';
+  static const String travelAvailabilitySetup = 'Travel Setup';
   static const String shareYourTravelDetail =
       'Share your travel details to get relevant Jetorders';
   static const String departureCountryandCity = 'Departure country and city';
@@ -114,6 +114,7 @@ class AppStrings {
 
   // Order Information Screen Strings
   static const String orderInformation = 'Order Information';
+  static const String orderDetails = 'Order Details';
   static const String uploadProductImages = 'Upload product images';
   static const String addMorePhotos = 'Add more Photos';
   static const String itemName = 'Item Name';
@@ -139,6 +140,7 @@ class AppStrings {
   static const String price = 'Price';
   static const String reward = 'Reward';
   static const String iAgreetoCustomLaws = 'I agree to the custom laws';
+  static const String iAgreetoTermConditions = 'I agree to term and conditions';
   static const String estimatedDeliveryDate = 'Estimated Delivery Date';
   static const String basedonArrivialDate = 'Based on arrival date';
 
@@ -155,7 +157,9 @@ class AppStrings {
 
   // counter offer recieved screen strings
   static const String counterOfferReceived = 'Counter Offer Received';
+  static const String counterOffertitle = 'Jetorderer is offering \$20 as reward set your own counter offer';
   static const String counterOffer = 'Counter offer:';
+  static const String myCounterOffer = 'My counter offer';
   static const String deliveryFee = 'Delivery Fee';
   static const String typeSometing = 'Type something...';
   static const String chatList = 'Chat List';
@@ -260,6 +264,7 @@ class AppStrings {
   static const String viewOrderDetails = 'View Order Details';
   static const String submit = 'Submit';
   static const String save = 'Save';
+  static const String send = 'Send';
   static const String saveCard = 'Save Card';
   static const String saveAndContinue = 'Save & Continue';
   static const String skipForNow = 'Skip for Now';

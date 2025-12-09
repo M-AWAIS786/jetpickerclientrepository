@@ -65,7 +65,7 @@ class CustomDropDown extends StatelessWidget {
           ),
 
         Padding(
-          padding: EdgeInsets.only(left: prefixIcon != null ? 30.w : 0.w),
+          padding: EdgeInsets.only(left: prefixIcon != null ? 30.w : 30.w),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               dropdownColor: AppColors.white,

@@ -23,22 +23,28 @@ class TextTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(
-        titleText,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: titleTextColor ?? AppColors.black,
-          fontSize: fontSize ?? 14.sp,
-          fontWeight: fontWeight ?? TextWeight.regular,
-        ),
-      ),
-      trailing: Text(
-        trailingText,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: trailingTextColor ?? AppColors.black,
-          fontSize: fontSize ?? 14.sp,
-          fontWeight: fontWeight ?? TextWeight.regular,
-        ),
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            titleText,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: titleTextColor ?? AppColors.black,
+              fontSize: fontSize ?? 14.sp,
+              fontWeight: fontWeight ?? TextWeight.regular,
+            ),
+          ),
+          Text(
+            trailingText,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: trailingTextColor ?? AppColors.black,
+              fontSize: fontSize ?? 14.sp,
+              fontWeight: fontWeight ?? TextWeight.regular,
+            ),
+          ),
+        ],
       ),
     );
   }

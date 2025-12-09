@@ -7,6 +7,7 @@ import '../../../constants/app_images.dart';
 import '../../../constants/app_strings.dart';
 import '../../../constants/validation.dart';
 
+import '../../../routes/app_routes.dart';
 import '../../../utils/profile_appbar.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_textfield.dart';
@@ -114,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
         radius: 0.r,
         onPressed: () {
           // if (!_formKey.currentState!.validate()) return;
-          // Navigator.pushNamed(context, AppRoutes.loginScreen);
+          Navigator.pushNamed(context, AppRoutes.profileSetupScreen);
         },
       ),
     );

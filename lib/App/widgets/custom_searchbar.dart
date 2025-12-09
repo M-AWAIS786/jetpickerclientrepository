@@ -14,6 +14,7 @@ class CustomSearchBar extends StatelessWidget {
   final Color? searchBarColor;
   final Color? prefixColor;
   final Color? sufixColor;
+  final Color? borderColor;
   final String? hintText;
 
   const CustomSearchBar({
@@ -26,6 +27,7 @@ class CustomSearchBar extends StatelessWidget {
     this.prefixColor,
     this.sufixColor,
     this.hintText,
+    this.borderColor
   });
 
   @override
@@ -35,12 +37,13 @@ class CustomSearchBar extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
         color: searchBarColor ?? AppColors.white,
+        border: Border.all(width: 1.w, color:borderColor?? AppColors.redLight),
         borderRadius: BorderRadius.circular(8.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .05),
-            blurRadius: 4,
-            offset: Offset(0, 2),
+            color: Colors.black.withValues(alpha: .08),
+            blurRadius: 60,
+            offset: Offset(6, 6),
           ),
         ],
       ),

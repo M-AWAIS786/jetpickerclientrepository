@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/constants/app_fontweight.dart';
 import 'package:jet_picks_app/App/constants/app_images.dart';
+import 'package:jet_picks_app/App/constants/app_strings.dart';
+import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/share_pictures.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
@@ -22,7 +24,7 @@ class CustomOrderCard extends StatelessWidget {
 
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 20.w, top: 16.h, bottom: 20.h),
+            padding: EdgeInsets.only(left: 20.w, top: 10.h, bottom: 16.h),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -103,7 +105,12 @@ class CustomOrderCard extends StatelessWidget {
             ),
           ),
           20.h.ph,
-          CustomButton(text: 'View Order Details', onPressed: () {}),
+          CustomButton(
+            text: AppStrings.viewOrderDetails,
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.orderDetailScreen);
+            },
+          ),
         ],
       ),
     );
@@ -115,7 +122,7 @@ class CustomOrderCard extends StatelessWidget {
         color: AppColors.lightGray,
         borderRadius: BorderRadius.circular(10.r),
       ),
-      padding: EdgeInsets.all(5.0.w),
+      padding: EdgeInsets.all(5.w),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -131,8 +138,8 @@ class CustomOrderCard extends StatelessWidget {
 
   Widget _buildPlusItemsBadge(int count, BuildContext context) {
     return Container(
-      width: 50.w,
-      height: 50.h,
+      width: 40.w,
+      height: 40.h,
       margin: EdgeInsets.symmetric(horizontal: 3.w),
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -159,8 +166,8 @@ class _ProductImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 50.w,
-      height: 50.h,
+      width: 40.w,
+      height: 40.h,
       margin: EdgeInsets.symmetric(horizontal: 3.w),
       decoration: BoxDecoration(
         color: Colors.white,

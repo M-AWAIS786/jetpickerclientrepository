@@ -19,11 +19,11 @@ class CustomDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Divider(
-      color: dividerColor ?? AppColors.red1,
+      color: dividerColor ?? AppColors.labelGray,
       height: height ?? 0,
       thickness: dividerThickness ?? 0.5,
-      indent: indent ?? 20,
-      endIndent: endIndent ?? 20,
+      indent: indent ?? 0,
+      endIndent: endIndent ?? 0,
     );
   }
 }

@@ -108,7 +108,6 @@ class ChatSearchBar extends StatelessWidget {
           ),
           child: SharePictures(
             imagePath: AppImages.sendIcon,
-
             fit: BoxFit.contain,
             colorFilter: ColorFilter.mode(
               sendIconColor ?? AppColors.white,

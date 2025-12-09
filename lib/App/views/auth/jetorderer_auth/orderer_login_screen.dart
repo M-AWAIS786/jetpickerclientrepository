@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
-
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../constants/app_strings.dart';
 import '../../../constants/validation.dart';
-
+import '../../../routes/app_routes.dart';
 import '../../../utils/profile_appbar.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_textfield.dart';
@@ -128,7 +127,7 @@ class _OrdererLoginScreenState extends State<OrdererLoginScreen> {
         color: AppColors.yellow3,
         onPressed: () {
           // if (!_formKey.currentState!.validate()) return;
-          // Navigator.pushNamed(context, AppRoutes.loginScreen);
+          Navigator.pushNamed(context, AppRoutes.ordererProfileSetupScreen);
         },
       ),
     );
