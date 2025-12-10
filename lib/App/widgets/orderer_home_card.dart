@@ -16,7 +16,7 @@ class OrdererHomeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .05),
+            color: Colors.black.withValues(alpha: .3),
             blurRadius: 4,
             offset: Offset(0, 2),
           ),
@@ -28,12 +28,7 @@ class OrdererHomeCard extends StatelessWidget {
 
         children: [
           Padding(
-            padding: EdgeInsets.only(
-              left: 20.w,
-              top: 16.h,
-              // bottom: 20.h,
-              right: 10.w,
-            ),
+            padding: EdgeInsets.only(left: 20.w, right: 10.w, top: 10.h),
             child: Row(
               children: [
                 CircleAvatar(

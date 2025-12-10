@@ -157,7 +157,8 @@ class AppStrings {
 
   // counter offer recieved screen strings
   static const String counterOfferReceived = 'Counter Offer Received';
-  static const String counterOffertitle = 'Jetorderer is offering \$20 as reward set your own counter offer';
+  static const String counterOffertitle =
+      'Jetorderer is offering \$20 as reward set your own counter offer';
   static const String counterOffer = 'Counter offer:';
   static const String myCounterOffer = 'My counter offer';
   static const String deliveryFee = 'Delivery Fee';
@@ -195,8 +196,10 @@ class AppStrings {
   // Profile Screen Strings
   static const String profiletext = 'Profile';
   static const String personalInformation = 'Personal Information';
+  static const String personalDetail = 'Personal Detail';
   static const String travelDetails = 'Travel Details';
   static const String paymentMethods = 'Payment Methods';
+  static const String payoutMethods = 'Payout Methods';
   static const String settings = 'Settings';
   static const String helpAndSupport = 'Help and support';
   static const String logout = 'Logout';
@@ -237,6 +240,7 @@ class AppStrings {
   static const String walletType = 'Wallet Type';
   static const String registeredMobileNumber = 'Registered Mobile Number';
   static const String registeredMobileNumberHint = 'Enter Mobile Number';
+  static const String bankDetails = 'Bank Details';
   static const String bankName = 'Bank Name';
   static const String accountHolderName = 'Account Holder Name';
   static const String accountNumber = 'Account Number/IBAN';

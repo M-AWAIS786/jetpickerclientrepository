@@ -25,10 +25,12 @@ class ListTileSwitch extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          text,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: textColor ?? AppColors.labelGray,
+        Expanded(
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: textColor ?? AppColors.labelGray,
+            ),
           ),
         ),
         Transform.scale(

@@ -134,14 +134,14 @@ class CustomTextField extends StatelessWidget {
                 ),
 
               if (sufixIcon != null)
-                SharePictures(
-                  imagePath: sufixIcon!,
-                  width: 24.w,
-                  height: 24.h,
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    sufixColor ?? AppColors.red3,
-                    BlendMode.srcIn,
+                Transform.scale(
+                  scale: 1.3,
+                  child: SharePictures(
+                    imagePath: sufixIcon!,
+                    colorFilter: ColorFilter.mode(
+                      sufixColor ?? AppColors.red3,
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
             ],

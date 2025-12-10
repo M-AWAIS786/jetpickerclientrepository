@@ -12,6 +12,7 @@ class CustomTextFormfeild extends StatelessWidget {
   final Color? textColor;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
+  final double? dividerWidth;
 
   const CustomTextFormfeild({
     super.key,
@@ -24,6 +25,7 @@ class CustomTextFormfeild extends StatelessWidget {
     this.textColor,
     this.controller,
     this.validator,
+    this.dividerWidth,
   });
 
   @override
@@ -37,10 +39,12 @@ class CustomTextFormfeild extends StatelessWidget {
         isDense: true,
         hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: hintColor ?? AppColors.labelGray,
-          fontWeight: TextWeight.semiBold,
         ),
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.labelGray),
+          borderSide: BorderSide(
+            color: AppColors.labelGray,
+            width: dividerWidth ?? 0.5,
+          ),
         ),
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: AppColors.labelGray),

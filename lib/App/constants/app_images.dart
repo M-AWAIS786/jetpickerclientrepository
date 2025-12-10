@@ -9,9 +9,11 @@ class AppImages {
   static const String playButton = '$_assets/PlayButton.png';
   static const String jetOrderer = '$_assets/jetOrderer.png';
   static const String jetPicker = '$_assets/jetPicker.png';
+  static const String massagerImage = '$_assets/massager.png';
 
   //Assets SVGs
   static const String jetPickerImage = '$_svgs/jetPickerImage.svg';
+  static const String jetOrdererHomeImage = '$_svgs/jetOrdererhomeImage.svg';
 
   // Assets Icons
   static const String orderboxIcon = '$_icons/orderboxIcon.svg';

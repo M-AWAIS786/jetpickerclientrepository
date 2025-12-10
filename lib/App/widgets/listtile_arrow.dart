@@ -13,6 +13,7 @@ class ListTileArrow extends StatelessWidget {
   final Color? prefixIconColor;
   final Color? sufixIconColor;
   final Color? containerColor;
+  final VoidCallback? onTap;
 
   const ListTileArrow({
     super.key,
@@ -23,49 +24,53 @@ class ListTileArrow extends StatelessWidget {
     this.prefixIconColor,
     this.sufixIconColor,
     this.containerColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 48.h,
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      decoration: BoxDecoration(
-        color: containerColor ?? AppColors.redLight,
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Row(
-        children: [
-          SharePictures(
-            imagePath: prefixIcon,
-            width: 20.w,
-            height: 20.h,
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              prefixIconColor ?? AppColors.red3,
-              BlendMode.srcIn,
-            ),
-          ),
-          8.w.pw,
-          Text(
-            text,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: textColor ?? AppColors.red3,
-            ),
-          ),
-          Spacer(),
-          if (sufixIcon != null)
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        height: 48.h,
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        decoration: BoxDecoration(
+          color: containerColor ?? AppColors.redLight,
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Row(
+          children: [
             SharePictures(
-              imagePath: sufixIcon!,
-              width: 12.w,
-              height: 12.h,
+              imagePath: prefixIcon,
+              width: 20.w,
+              height: 20.h,
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
-                sufixIconColor ?? AppColors.red3,
+                prefixIconColor ?? AppColors.red3,
                 BlendMode.srcIn,
               ),
             ),
-        ],
+            8.w.pw,
+            Text(
+              text,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: textColor ?? AppColors.red3,
+              ),
+            ),
+            Spacer(),
+            if (sufixIcon != null)
+              SharePictures(
+                imagePath: sufixIcon!,
+                width: 12.w,
+                height: 12.h,
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  sufixIconColor ?? AppColors.red3,
+                  BlendMode.srcIn,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

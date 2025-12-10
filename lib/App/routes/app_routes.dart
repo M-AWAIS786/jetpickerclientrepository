@@ -6,8 +6,17 @@ import 'package:jet_picks_app/App/views/auth/jetpicker_auth/signup_screen.dart';
 import 'package:jet_picks_app/App/views/bottom_bar/picker_bottom_bar_screen.dart';
 import 'package:jet_picks_app/App/views/chat_screen/conversation_screen.dart';
 import 'package:jet_picks_app/App/views/order_detail/counter_offer_screen.dart';
+import 'package:jet_picks_app/App/views/order_screen/accept_orderdetail_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/bottom_bar/orderer_bottom_bar_screen.dart';
+import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/opayment_method_screen.dart';
+import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/opersonal_detail_screen.dart';
+import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/osetting_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/profile_setup/orderer_profilesetup_screen.dart';
+import 'package:jet_picks_app/App/views/profile_screen/bank_detail_screen.dart';
+import 'package:jet_picks_app/App/views/profile_screen/payment_method_screen.dart';
+import 'package:jet_picks_app/App/views/profile_screen/personal_detail_screen.dart';
+import 'package:jet_picks_app/App/views/profile_screen/setting_screen.dart';
+import 'package:jet_picks_app/App/views/profile_screen/travel_detail_screen.dart';
 import 'package:jet_picks_app/App/views/profile_setup/travel_detail_setup_screen.dart';
 import 'package:jet_picks_app/App/views/role_selection/role_selection_screen.dart';
 import 'package:jet_picks_app/App/views/role_selection/welcome_jetorderer_screen.dart';
@@ -37,6 +46,15 @@ class AppRoutes {
   static const String orderDetailScreen = "/order_detail_screen";
   static const String counterOfferScreen = "/counter_offer_screen";
   static const String conversationScreen = "/conversation_screen";
+  static const String acceptOrderDetailScreen = "/accept_orderdetail_screen";
+  static const String personalDetailScreen = "/personal_detail_screen";
+  static const String travelDetailScreen = "/travel_detail_screen";
+  static const String settingScreen = "/setting_screen";
+  static const String paymentMethodScreen = "/payment_method_screen";
+  static const String bankDetailScreen = "/bank_detail_screen";
+  static const String oPersonalDetailScreen = "/opersonal_detail_screen";
+  static const String oPaymentMethodScreen = "/opayment_method_screen";
+  static const String oSettingScreen = "/osetting_screen";
 }
 
 class RouteGenerator {
@@ -92,6 +110,33 @@ class RouteGenerator {
 
       case AppRoutes.conversationScreen:
         return MaterialPageRoute(builder: (_) => ConversationScreen());
+
+      case AppRoutes.acceptOrderDetailScreen:
+        return MaterialPageRoute(builder: (_) => AcceptOrderdetailScreen());
+
+      case AppRoutes.personalDetailScreen:
+        return MaterialPageRoute(builder: (_) => PersonalDetailScreen());
+
+      case AppRoutes.travelDetailScreen:
+        return MaterialPageRoute(builder: (_) => TravelDetailScreen());
+
+      case AppRoutes.settingScreen:
+        return MaterialPageRoute(builder: (_) => SettingScreen());
+
+      case AppRoutes.paymentMethodScreen:
+        return MaterialPageRoute(builder: (_) => PaymentMethodScreen());
+
+      case AppRoutes.bankDetailScreen:
+        return MaterialPageRoute(builder: (_) => BankDetailScreen());
+
+        case AppRoutes.oPersonalDetailScreen:
+        return MaterialPageRoute(builder: (_) => OpersonalDetailScreen());
+
+        case AppRoutes.oPaymentMethodScreen:
+        return MaterialPageRoute(builder: (_) => OpaymentMethodScreen());
+
+        case AppRoutes.oSettingScreen:
+        return MaterialPageRoute(builder: (_) => OsettingScreen());
 
       default:
         return MaterialPageRoute(
