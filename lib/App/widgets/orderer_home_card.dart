@@ -5,6 +5,8 @@ import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 
+import '../routes/app_routes.dart';
+
 class OrdererHomeCard extends StatelessWidget {
   const OrdererHomeCard({super.key});
 
@@ -96,7 +98,9 @@ class OrdererHomeCard extends StatelessWidget {
             text: 'View Details',
             color: AppColors.yellow3,
             textColor: AppColors.black,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.deliveryFlowScreen);
+            },
           ),
         ],
       ),

@@ -8,6 +8,10 @@ import 'package:jet_picks_app/App/views/chat_screen/conversation_screen.dart';
 import 'package:jet_picks_app/App/views/order_detail/counter_offer_screen.dart';
 import 'package:jet_picks_app/App/views/order_screen/accept_orderdetail_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/bottom_bar/orderer_bottom_bar_screen.dart';
+import 'package:jet_picks_app/App/views/orderer_side/order_accepted/offer_received_screen.dart';
+import 'package:jet_picks_app/App/views/orderer_side/order_accepted/order_accepted_screen.dart';
+import 'package:jet_picks_app/App/views/orderer_side/orderer_chat/orderer_conversation_screen.dart';
+import 'package:jet_picks_app/App/views/orderer_side/orderer_order/order_history_detail_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/opayment_method_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/opersonal_detail_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/osetting_screen.dart';
@@ -24,6 +28,8 @@ import 'package:jet_picks_app/App/views/role_selection/welcome_jetpicker_screen.
 import 'package:jet_picks_app/App/views/splash_screen.dart/howitwork_screen.dart';
 
 import '../views/order_detail/order_detail_screen.dart';
+import '../views/orderer_side/delivery_route/delivery_flow_screen.dart';
+import '../views/orderer_side/orderer_profile/extra_card_screen.dart';
 import '../views/profile_setup/profile_setup_screen.dart';
 import '../views/splash_screen.dart/splash_screen.dart';
 
@@ -55,6 +61,13 @@ class AppRoutes {
   static const String oPersonalDetailScreen = "/opersonal_detail_screen";
   static const String oPaymentMethodScreen = "/opayment_method_screen";
   static const String oSettingScreen = "/osetting_screen";
+  static const String extraCardScreen = "/extra_card_screen";
+  static const String ordererConversationScreen =
+      "/orderer_conversation_screen";
+  static const String orderHistoryDetailScreen = "/order_history_detail_screen";
+  static const String deliveryFlowScreen = "/delivery_flow_screen";
+  static const String orderAcceptedScreen = "/order_accepted_screen";
+  static const String offerReceivedScreen = "/offer_received_screen";
 }
 
 class RouteGenerator {
@@ -129,14 +142,32 @@ class RouteGenerator {
       case AppRoutes.bankDetailScreen:
         return MaterialPageRoute(builder: (_) => BankDetailScreen());
 
-        case AppRoutes.oPersonalDetailScreen:
+      case AppRoutes.oPersonalDetailScreen:
         return MaterialPageRoute(builder: (_) => OpersonalDetailScreen());
 
-        case AppRoutes.oPaymentMethodScreen:
+      case AppRoutes.oPaymentMethodScreen:
         return MaterialPageRoute(builder: (_) => OpaymentMethodScreen());
 
-        case AppRoutes.oSettingScreen:
+      case AppRoutes.oSettingScreen:
         return MaterialPageRoute(builder: (_) => OsettingScreen());
+
+      case AppRoutes.extraCardScreen:
+        return MaterialPageRoute(builder: (_) => ExtraCardScreen());
+
+      case AppRoutes.ordererConversationScreen:
+        return MaterialPageRoute(builder: (_) => OrdererConversationScreen());
+
+      case AppRoutes.orderHistoryDetailScreen:
+        return MaterialPageRoute(builder: (_) => OrderHistorydetailScreen());
+
+      case AppRoutes.deliveryFlowScreen:
+        return MaterialPageRoute(builder: (_) => DeliveryFlowScreen());
+
+      case AppRoutes.orderAcceptedScreen:
+        return MaterialPageRoute(builder: (_) => OrderAcceptedScreen());
+
+      case AppRoutes.offerReceivedScreen:
+        return MaterialPageRoute(builder: (_) => OfferReceivedScreen());
 
       default:
         return MaterialPageRoute(

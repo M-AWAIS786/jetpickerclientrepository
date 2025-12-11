@@ -104,7 +104,7 @@ class _AcceptOrderdetailScreenState extends State<AcceptOrderdetailScreen> {
                   ],
                 ),
                 child: Center(
-                  child: SharePictures(imagePath: AppImages.cameraIcon),
+                  child: SharePictures(imagePath: AppImages.watchImage),
                 ),
               ),
               20.h.ph,

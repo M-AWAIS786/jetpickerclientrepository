@@ -52,7 +52,9 @@ class RadioText extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(
                   width: 1,
-                  color: isSelected ? AppColors.white : AppColors.white,
+                  color: isSelected
+                      ? checkContainerColor ?? AppColors.white
+                      : AppColors.labelGray,
                 ),
               ),
               child: Center(

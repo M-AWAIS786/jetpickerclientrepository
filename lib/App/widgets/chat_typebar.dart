@@ -17,6 +17,7 @@ class ChatSearchBar extends StatelessWidget {
   final Color? sufixColor;
   final Color? sendContainerColor;
   final Color? sendIconColor;
+  final Color? borderColor;
   final String? hintText;
 
   const ChatSearchBar({
@@ -31,6 +32,7 @@ class ChatSearchBar extends StatelessWidget {
     this.hintText,
     this.sendContainerColor,
     this.sendIconColor,
+    this.borderColor
   });
 
   @override
@@ -44,7 +46,7 @@ class ChatSearchBar extends StatelessWidget {
             decoration: BoxDecoration(
               color: searchBarColor ?? AppColors.white,
               borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: AppColors.redLight, width: 0.5),
+              border: Border.all(color:borderColor?? AppColors.redLight, width: 0.5),
             ),
 
             child: Row(

@@ -66,7 +66,7 @@ class ChatListCard extends StatelessWidget {
                       color: nameColor ?? AppColors.red3,
                     ),
                   ),
-      
+
                   4.h.ph,
                   Text(
                     lastMessage,
