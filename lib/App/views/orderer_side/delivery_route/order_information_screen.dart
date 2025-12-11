@@ -56,7 +56,7 @@ class _OrderInformationScreenState extends State<OrderInformationScreen> {
                       ],
                     ),
                     child: Center(
-                      child: SharePictures(imagePath: AppImages.watchImage),
+                      child: SharePictures(imagePath: AppImages.cameraIcon),
                     ),
                   ),
                   Container(

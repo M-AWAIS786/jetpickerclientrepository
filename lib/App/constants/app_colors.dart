@@ -21,4 +21,5 @@ class AppColors {
   static const Color lightPink = Color(0xFFFFA58A);
   static const Color shadowColor = Color(0xFF101828);
   static const Color starColor = Color(0xFFFF9D68);
+  static const Color starsColor = Color(0xFFFF9604);
 }

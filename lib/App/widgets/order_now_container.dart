@@ -4,9 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 
 import '../constants/app_colors.dart';
-import '../constants/app_images.dart';
+
 import '../constants/app_strings.dart';
-import '../utils/share_pictures.dart';
+
 
 class OrderNowContainer extends StatelessWidget {
   const OrderNowContainer({super.key});
@@ -31,10 +31,18 @@ class OrderNowContainer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SharePictures(
-            imagePath: AppImages.massagerImage,
+          Container(
             width: 153.w,
             height: 148.h,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(8.r)),
+            ),
+            child: Icon(
+              Icons.image_not_supported,
+              size: 40.sp,
+              color: Colors.grey.shade600,
+            ),
           ),
           Padding(
             padding: EdgeInsets.only(left: 7.w),
@@ -58,9 +66,7 @@ class OrderNowContainer extends StatelessWidget {
                     color: AppColors.yellow3,
                     radius: 20.r,
                     fontSize: 14.sp,
-                    onPressed: () {
-                     
-                    },
+                    onPressed: () {},
                   ),
                 ),
               ],

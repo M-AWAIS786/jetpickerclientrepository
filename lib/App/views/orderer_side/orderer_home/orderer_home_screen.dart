@@ -52,9 +52,7 @@ class OrdererHomeScreen extends StatelessWidget {
                   children: [
                     Transform.scale(
                       scale: 1.1,
-                      child: SharePictures(
-                        imagePath: AppImages.jetOrdererHomeImage,
-                      ),
+                      child: SharePictures(imagePath: AppImages.jetPickerImage),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,17 +78,15 @@ class OrdererHomeScreen extends StatelessWidget {
 
                     SizedBox(
                       height: 450.h,
-                      child: Expanded(
-                        child: ListView.builder(
-                          physics: BouncingScrollPhysics(),
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: 25.h),
-                              child: OrdererHomeCard(),
-                            );
-                          },
-                        ),
+                      child: ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 25.h),
+                            child: OrdererHomeCard(),
+                          );
+                        },
                       ),
                     ),
                     Row(
@@ -117,15 +113,13 @@ class OrdererHomeScreen extends StatelessWidget {
                     8.h.ph,
                     SizedBox(
                       height: 250.h,
-                      child: Expanded(
-                        child: ListView.builder(
-                          physics: BouncingScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: 3,
-                          itemBuilder: (context, index) {
-                            return OrderNowContainer();
-                          },
-                        ),
+                      child: ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 3,
+                        itemBuilder: (context, index) {
+                          return OrderNowContainer();
+                        },
                       ),
                     ),
                     30.h.ph,

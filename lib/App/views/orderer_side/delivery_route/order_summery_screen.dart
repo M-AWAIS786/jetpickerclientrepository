@@ -88,7 +88,7 @@ class _OrderSummeryScreenState extends State<OrderSummeryScreen> {
                 ],
               ),
               child: Center(
-                child: SharePictures(imagePath: AppImages.watchImage),
+                child: SharePictures(imagePath: AppImages.cameraIcon),
               ),
             ),
             71.h.ph,

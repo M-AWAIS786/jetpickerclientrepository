@@ -110,7 +110,7 @@ class _OrderHistorydetailScreenState extends State<OrderHistorydetailScreen> {
                   ],
                 ),
                 child: Center(
-                  child: SharePictures(imagePath: AppImages.watchImage),
+                  child: SharePictures(imagePath: AppImages.cameraIcon),
                 ),
               ),
               20.h.ph,
@@ -215,7 +215,21 @@ class _OrderHistorydetailScreenState extends State<OrderHistorydetailScreen> {
                       ),
                     ),
                     20.h.ph,
-                    SharePictures(imagePath: AppImages.starsImage),
+                    // SharePictures(
+                    //   imagePath: AppImages.starsImage,
+                    //   width: 500,
+                    //   height: 50,
+                    // ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.star, size: 32, color: AppColors.starsColor),
+                        Icon(Icons.star, size: 32, color: AppColors.starsColor),
+                        Icon(Icons.star, size: 32, color: AppColors.starsColor),
+                        Icon(Icons.star, size: 32, color: AppColors.starsColor),
+                        Icon(Icons.star, size: 32, color: AppColors.starsColor),
+                      ],
+                    ),
                     20.h.ph,
                     Container(
                       width: double.infinity,
