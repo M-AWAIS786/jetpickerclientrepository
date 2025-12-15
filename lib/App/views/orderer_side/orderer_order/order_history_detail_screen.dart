@@ -301,6 +301,7 @@ class _OrderHistorydetailScreenState extends State<OrderHistorydetailScreen> {
               ),
 
               30.h.ph,
+              
             ],
           ),
         ),
