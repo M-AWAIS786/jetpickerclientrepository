@@ -13,6 +13,7 @@ class CustomButton extends StatelessWidget {
   final Color? shadowColor;
   final double? radius;
   final double? btnHeight;
+  final bool isLoading;
   const CustomButton({
     super.key,
     required this.text,
@@ -25,6 +26,7 @@ class CustomButton extends StatelessWidget {
     this.shadowColor,
     this.radius,
     this.btnHeight,
+    this.isLoading = false,
   });
 
   @override
@@ -40,7 +42,7 @@ class CustomButton extends StatelessWidget {
           border: Border.all(color: borderColor ?? Colors.transparent),
           boxShadow: [
             BoxShadow(
-              color: shadowColor ?? Colors.black.withValues(alpha: 0.1),
+              color: shadowColor ?? Colors.black.withOpacity(0.1),
               offset: Offset(0, 1),
               blurRadius: 1,
               spreadRadius: 0,
@@ -48,7 +50,16 @@ class CustomButton extends StatelessWidget {
           ],
         ),
         child: Center(
-          child: Text(
+          child: isLoading
+                ? SizedBox(
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: textColor ?? Colors.white,
+                    ),
+                  )
+                : Text(
             text,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
