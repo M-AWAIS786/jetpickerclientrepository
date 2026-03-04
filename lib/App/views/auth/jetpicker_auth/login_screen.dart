@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
@@ -8,15 +10,17 @@ import '../../../constants/validation.dart';
 import '../../../utils/profile_appbar.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_textfield.dart';
+import '../../../view_model/auth/login_view_model.dart';
+import '../../..//routes/app_routes.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -29,8 +33,41 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void _onLoginPressed() {
+    if (!_formKey.currentState!.validate()) return;
+
+    ref.read(loginViewModelProvider.notifier).login(
+          username: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final loginState = ref.watch(loginViewModelProvider);
+
+    // Listen for success or error
+    ref.listen<LoginState>(loginViewModelProvider, (previous, next) {
+      if (next.response != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.response!.message),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Navigate to main screen (picker bottom bar used as example)
+        context.go(AppRoutes.pickerBottomBarScreen);
+        ref.read(loginViewModelProvider.notifier).resetState();
+      } else if (next.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: AppColors.red1,
+          ),
+        );
+      }
+    });
+
     return Scaffold(
       appBar: ProfileAppBar(
         leadingIcon: true,
@@ -73,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   isPassword: true,
                   obscureText: isPasswordHidden,
                   keyboardType: TextInputType.visiblePassword,
-                  validator: (value) => Validation.passwordCorrect(value),
+                  // validator: (value) => Validation.passwordCorrect(value),
                   onTogglePassword: () {
                     setState(() {
                       isPasswordHidden = !isPasswordHidden;
@@ -90,9 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextSpan(
                           text: AppStrings.accountConfirm,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.red1,
-                            height: 1.h,
-                          ),
+                                color: AppColors.red1,
+                                height: 1.h,
+                              ),
                         ),
                         TextSpan(
                           text: AppStrings.termandCondition,
@@ -105,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                   Padding(
+                Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
                     vertical: 16.0,
@@ -114,8 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     text: AppStrings.logIn,
                     btnHeight: 60,
                     radius: 12.r,
-                    onPressed:(){},
-                    isLoading: false,
+                    onPressed: loginState.isLoading ? null : _onLoginPressed,
+                    isLoading: loginState.isLoading,
                   ),
                 ),
               ],
@@ -123,7 +160,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-  
     );
   }
 }

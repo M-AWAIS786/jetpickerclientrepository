@@ -1,6 +1,7 @@
 import 'package:jet_picks_app/App/constants/app_urls.dart';
 import 'package:jet_picks_app/App/data/network_api_services.dart';
 import 'package:jet_picks_app/App/models/auth/signup_model.dart';
+import 'package:jet_picks_app/App/models/auth/login_model.dart';
 
 class AuthRepository {
   final NetworkApiServices _apiServices = NetworkApiServices();
@@ -12,5 +13,14 @@ class AuthRepository {
       null,
     );
     return SignupResponseModel.fromJson(response);
+  }
+
+  Future<LoginResponseModel> login(LoginRequestModel request) async {
+    final response = await _apiServices.postApi(
+      request.toJson(),
+      AppUrls.loginUrl,
+      null,
+    );
+    return LoginResponseModel.fromJson(response);
   }
 }
