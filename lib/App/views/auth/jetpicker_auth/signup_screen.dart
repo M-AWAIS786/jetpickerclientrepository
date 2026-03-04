@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/constants/app_strings.dart';
-import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
@@ -51,97 +50,115 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              10.h.ph,
-              Text(
-                AppStrings.signUpSubtitle2,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: AppColors.red1),
-              ),
-              70.h.ph,
-              CustomTextField(
-                controller: _nameController,
-                label: AppStrings.userName,
-                hintText: AppStrings.userNameHint,
-                prefixIcon: AppImages.profileIcon,
-                keyboardType: TextInputType.name,
-                validator: Validation.valueExists,
-              ),
-              9.h.ph,
-              CustomTextField(
-                controller: _phoneNumberController,
-                label: AppStrings.phoneNumber,
-                hintText: AppStrings.phoneNumberHint,
-                prefixIcon: AppImages.phoneIcon,
-                keyboardType: TextInputType.phone,
-                validator: Validation.valueExists,
-              ),
-              9.h.ph,
-              CustomTextField(
-                controller: _emailController,
-                label: AppStrings.emailAddress,
-                hintText: AppStrings.emailAddressHint,
-                prefixIcon: AppImages.emailIcon,
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) => Validation.validateEmail(value),
-              ),
-              9.h.ph,
-              CustomTextField(
-                controller: _passwordController,
-                label: AppStrings.password,
-                hintText: AppStrings.passwordHint,
-                prefixIcon: AppImages.passwordIcon,
-                isPassword: true,
-                obscureText: isPasswordHidden,
-                keyboardType: TextInputType.visiblePassword,
-                validator: (value) => Validation.passwordCorrect(value),
-                onTogglePassword: () {
-                  setState(() {
-                    isPasswordHidden = !isPasswordHidden;
-                  });
-                },
-              ),
-              9.h.ph,
-              CustomTextField(
-                controller: _confirmPassController,
-                label: AppStrings.confirmPassword,
-                hintText: AppStrings.passwordHint,
-                prefixIcon: AppImages.passwordIcon,
-                isPassword: true,
-                obscureText: isConfirmPasswordHidden,
-                keyboardType: TextInputType.visiblePassword,
-                validator: (value) => Validation.passwordConfirmed(
-                  value,
-                  _passwordController.text,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal:16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                5.h.ph,
+                Text(
+                  AppStrings.signUpSubtitle2,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(color: AppColors.red1),
                 ),
-                onTogglePassword: () {
-                  setState(() {
-                    isConfirmPasswordHidden = !isConfirmPasswordHidden;
-                  });
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.all(16.w),
-                child: RememberTermsWidget(rememberMe: true, iAgree: true),
-              ),
-            ],
+                40.h.ph,
+                CustomTextField(
+                  controller: _nameController,
+                  label: AppStrings.userName,
+                  hintText: AppStrings.userNameHint,
+                  prefixIcon: AppImages.profileIcon,
+                  keyboardType: TextInputType.name,
+                  hintColor: AppColors.labelGray,
+                  labelColor: AppColors.red3,
+
+                  validator: Validation.valueExists,
+                ),
+                9.h.ph,
+                CustomTextField(
+                  controller: _phoneNumberController,
+                  label: AppStrings.phoneNumber,
+                  hintText: AppStrings.phoneNumberHint,
+                  prefixIcon: AppImages.phoneIcon,
+                  keyboardType: TextInputType.phone,
+                  validator: Validation.valueExists,
+                      hintColor: AppColors.labelGray,
+                  labelColor: AppColors.red3,
+                ),
+                9.h.ph,
+                CustomTextField(
+                  controller: _emailController,
+                  label: AppStrings.emailAddress,
+                  hintText: AppStrings.emailAddressHint,
+                  prefixIcon: AppImages.emailIcon,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) => Validation.validateEmail(value),
+                      hintColor: AppColors.labelGray,
+                  labelColor: AppColors.red3,
+                ),
+                9.h.ph,
+                CustomTextField(
+                  controller: _passwordController,
+                  label: AppStrings.password,
+                  hintText: AppStrings.passwordHint,
+                  prefixIcon: AppImages.passwordIcon,
+                  isPassword: true,
+                  obscureText: isPasswordHidden,
+                  keyboardType: TextInputType.visiblePassword,
+                  validator: (value) => Validation.passwordCorrect(value),
+                  onTogglePassword: () {
+                    setState(() {
+                      isPasswordHidden = !isPasswordHidden;
+                    });
+                  },
+                      hintColor: AppColors.labelGray,
+                  labelColor: AppColors.red3,
+                ),
+                9.h.ph,
+                CustomTextField(
+                  controller: _confirmPassController,
+                  label: AppStrings.confirmPassword,
+                  hintText: AppStrings.passwordHint,
+                  prefixIcon: AppImages.passwordIcon,
+                  isPassword: true,
+                  obscureText: isConfirmPasswordHidden,
+                  keyboardType: TextInputType.visiblePassword,
+                  validator: (value) => Validation.passwordConfirmed(
+                    value,
+                    _passwordController.text,
+                  ),
+                  onTogglePassword: () {
+                    setState(() {
+                      isConfirmPasswordHidden = !isConfirmPasswordHidden;
+                    });
+                  },
+                      hintColor: AppColors.labelGray,
+                  labelColor: AppColors.red3,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal:16.w),
+                  child: RememberTermsWidget(rememberMe: true, iAgree: true),
+                ),
+              ],
+            ),
           ),
         ),
       ),
       bottomNavigationBar: SafeArea(
-        child: CustomButton(
-          text: AppStrings.signUp,
-          btnHeight: 60,
-          radius: 0.r,
-          onPressed: () {
-            // if (!_formKey.currentState!.validate()) return;
-            Navigator.pushNamed(context, AppRoutes.loginScreen);
-          },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal:16.0 ,vertical: 16.0),
+          child: CustomButton(
+            text: AppStrings.signUp,
+
+            btnHeight: 60,
+            radius: 12.r,
+            onPressed: () {
+              // if (!_formKey.currentState!.validate()) return;
+              // Navigator.pushNamed(context, AppRoutes.loginScreen);
+            },
+          ),
         ),
       ),
     );

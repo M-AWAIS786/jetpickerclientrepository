@@ -54,6 +54,7 @@ class CustomTextField extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
       decoration: BoxDecoration(
         color: fillColor ?? AppColors.redLight,
+        borderRadius: BorderRadius.circular(8.r),
         border: Border(
           bottom: BorderSide(
             color: borderColor ?? AppColors.redLight,
@@ -74,7 +75,7 @@ class CustomTextField extends StatelessWidget {
                       height: 20.h,
                       fit: BoxFit.cover,
                       colorFilter: ColorFilter.mode(
-                        prefixColor ?? AppColors.red3,
+                        prefixColor ?? AppColors.red3.withValues(alpha:0.50 ),
                         BlendMode.srcIn,
                       ),
                     ),
@@ -83,6 +84,7 @@ class CustomTextField extends StatelessWidget {
                 label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: labelColor ?? AppColors.labelGray,
+                  fontWeight: TextWeight.bold
                 ),
               ),
             ],
@@ -104,7 +106,7 @@ class CustomTextField extends StatelessWidget {
                     isDense: true,
                     hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: hintColor ?? AppColors.red3,
-                      fontWeight: TextWeight.semiBold,
+                      fontWeight: TextWeight.regular,
                     ),
                   ),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(

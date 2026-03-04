@@ -62,7 +62,7 @@ class RememberTermsWidget extends StatelessWidget {
           ],
         ),
 
-        20.h.ph,
+        8.h.ph,
 
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
