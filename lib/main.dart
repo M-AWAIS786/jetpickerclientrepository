@@ -11,26 +11,23 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
       builder: (context, child) {
-        return MaterialApp(
+        return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'Jet Picks',
           theme: ThemeData(
             useMaterial3: true,
-            // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             textTheme: GoogleFonts.interTextTheme(
               AppResponsiveTypography.textTheme,
             ),
             scaffoldBackgroundColor: Colors.white,
           ),
-          onGenerateRoute: RouteGenerator.getRoute,
-          initialRoute: AppRoutes.splashScreen,
+          routerConfig: goRouter,
         );
       },
     );

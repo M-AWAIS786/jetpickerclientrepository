@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jet_picks_app/App/views/auth/jetorderer_auth/orderer_login_screen.dart';
 import 'package:jet_picks_app/App/views/auth/jetorderer_auth/orderer_signup_screen.dart';
 import 'package:jet_picks_app/App/views/auth/jetpicker_auth/login_screen.dart';
@@ -26,7 +27,6 @@ import 'package:jet_picks_app/App/views/role_selection/role_selection_screen.dar
 import 'package:jet_picks_app/App/views/role_selection/welcome_jetorderer_screen.dart';
 import 'package:jet_picks_app/App/views/role_selection/welcome_jetpicker_screen.dart';
 import 'package:jet_picks_app/App/views/splash_screen.dart/howitwork_screen.dart';
-
 import '../views/order_detail/order_detail_screen.dart';
 import '../views/orderer_side/delivery_route/delivery_flow_screen.dart';
 import '../views/orderer_side/orderer_profile/extra_card_screen.dart';
@@ -44,8 +44,7 @@ class AppRoutes {
   static const String loginScreen = "/login_screen";
   static const String ordererLoginScreen = "/orderer_login_screen";
   static const String profileSetupScreen = "/profile_setup_screen";
-  static const String ordererProfileSetupScreen =
-      "/orderer_profilesetup_screen";
+  static const String ordererProfileSetupScreen = "/orderer_profilesetup_screen";
   static const String travelDetailSetupScreen = "/travel_detail_setup_screen";
   static const String pickerBottomBarScreen = "/picker_bottom_bar_screen";
   static const String ordererBottomBarScreen = "/orderer_bottom_bar_screen";
@@ -62,118 +61,149 @@ class AppRoutes {
   static const String oPaymentMethodScreen = "/opayment_method_screen";
   static const String oSettingScreen = "/osetting_screen";
   static const String extraCardScreen = "/extra_card_screen";
-  static const String ordererConversationScreen =
-      "/orderer_conversation_screen";
+  static const String ordererConversationScreen = "/orderer_conversation_screen";
   static const String orderHistoryDetailScreen = "/order_history_detail_screen";
   static const String deliveryFlowScreen = "/delivery_flow_screen";
   static const String orderAcceptedScreen = "/order_accepted_screen";
   static const String offerReceivedScreen = "/offer_received_screen";
 }
 
-class RouteGenerator {
-  static Route<dynamic> getRoute(RouteSettings routeSetting) {
-    switch (routeSetting.name) {
-      case AppRoutes.splashScreen:
-        return MaterialPageRoute(builder: (_) => SplashScreen());
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
-      case AppRoutes.howItWorkScreen:
-        return MaterialPageRoute(builder: (_) => HowitworkScreen());
-
-      case AppRoutes.roleSelectionScreen:
-        return MaterialPageRoute(builder: (_) => RoleSelectionScreen());
-
-      case AppRoutes.welcomeJetpickerScreen:
-        return MaterialPageRoute(builder: (_) => WelcomeJetpickerScreen());
-
-      case AppRoutes.welcomeJetordererScreen:
-        return MaterialPageRoute(builder: (_) => WelcomeJetordererScreen());
-
-      case AppRoutes.signUpScreen:
-        return MaterialPageRoute(builder: (_) => SignupScreen());
-
-      case AppRoutes.ordererSignupScreen:
-        return MaterialPageRoute(builder: (_) => OrdererSignupScreen());
-
-      case AppRoutes.loginScreen:
-        return MaterialPageRoute(builder: (_) => LoginScreen());
-
-      case AppRoutes.ordererLoginScreen:
-        return MaterialPageRoute(builder: (_) => OrdererLoginScreen());
-
-      case AppRoutes.profileSetupScreen:
-        return MaterialPageRoute(builder: (_) => ProfileSetupScreen());
-
-      case AppRoutes.travelDetailSetupScreen:
-        return MaterialPageRoute(builder: (_) => TravelDetailSetupScreen());
-
-      case AppRoutes.ordererProfileSetupScreen:
-        return MaterialPageRoute(builder: (_) => OrdererProfileSetupScreen());
-
-      case AppRoutes.pickerBottomBarScreen:
-        return MaterialPageRoute(builder: (_) => PickerBottomBarScreen());
-
-      case AppRoutes.ordererBottomBarScreen:
-        return MaterialPageRoute(builder: (_) => OrdererBottomBarScreen());
-
-      case AppRoutes.orderDetailScreen:
-        return MaterialPageRoute(builder: (_) => OrderDetailScreen());
-
-      case AppRoutes.counterOfferScreen:
-        return MaterialPageRoute(builder: (_) => CounterOfferScreen());
-
-      case AppRoutes.conversationScreen:
-        return MaterialPageRoute(builder: (_) => ConversationScreen());
-
-      case AppRoutes.acceptOrderDetailScreen:
-        return MaterialPageRoute(builder: (_) => AcceptOrderdetailScreen());
-
-      case AppRoutes.personalDetailScreen:
-        return MaterialPageRoute(builder: (_) => PersonalDetailScreen());
-
-      case AppRoutes.travelDetailScreen:
-        return MaterialPageRoute(builder: (_) => TravelDetailScreen());
-
-      case AppRoutes.settingScreen:
-        return MaterialPageRoute(builder: (_) => SettingScreen());
-
-      case AppRoutes.paymentMethodScreen:
-        return MaterialPageRoute(builder: (_) => PaymentMethodScreen());
-
-      case AppRoutes.bankDetailScreen:
-        return MaterialPageRoute(builder: (_) => BankDetailScreen());
-
-      case AppRoutes.oPersonalDetailScreen:
-        return MaterialPageRoute(builder: (_) => OpersonalDetailScreen());
-
-      case AppRoutes.oPaymentMethodScreen:
-        return MaterialPageRoute(builder: (_) => OpaymentMethodScreen());
-
-      case AppRoutes.oSettingScreen:
-        return MaterialPageRoute(builder: (_) => OsettingScreen());
-
-      case AppRoutes.extraCardScreen:
-        return MaterialPageRoute(builder: (_) => ExtraCardScreen());
-
-      case AppRoutes.ordererConversationScreen:
-        return MaterialPageRoute(builder: (_) => OrdererConversationScreen());
-
-      case AppRoutes.orderHistoryDetailScreen:
-        return MaterialPageRoute(builder: (_) => OrderHistorydetailScreen());
-
-      case AppRoutes.deliveryFlowScreen:
-        return MaterialPageRoute(builder: (_) => DeliveryFlowScreen());
-
-      case AppRoutes.orderAcceptedScreen:
-        return MaterialPageRoute(builder: (_) => OrderAcceptedScreen());
-
-      case AppRoutes.offerReceivedScreen:
-        return MaterialPageRoute(builder: (_) => OfferReceivedScreen());
-
-      default:
-        return MaterialPageRoute(
-          builder: (_) =>
-              Scaffold(body: Center(child: Text("No route defined"))),
-        );
-    }
-  }
-}
+final GoRouter goRouter = GoRouter(
+  navigatorKey: rootNavigatorKey,
+  initialLocation: AppRoutes.signUpScreen,
+  errorBuilder: (context, state) => Scaffold(
+    body: Center(child: Text('No route defined for ${state.uri}')),
+  ),
+  routes: [
+    GoRoute(
+      path: AppRoutes.splashScreen,
+      builder: (context, state) => SplashScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.howItWorkScreen,
+      builder: (context, state) => HowitworkScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.roleSelectionScreen,
+      builder: (context, state) => RoleSelectionScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.welcomeJetpickerScreen,
+      builder: (context, state) => WelcomeJetpickerScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.welcomeJetordererScreen,
+      builder: (context, state) => WelcomeJetordererScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.signUpScreen,
+      builder: (context, state) => SignupScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.ordererSignupScreen,
+      builder: (context, state) => OrdererSignupScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.loginScreen,
+      builder: (context, state) => LoginScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.ordererLoginScreen,
+      builder: (context, state) => OrdererLoginScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.profileSetupScreen,
+      builder: (context, state) => ProfileSetupScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.travelDetailSetupScreen,
+      builder: (context, state) => TravelDetailSetupScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.ordererProfileSetupScreen,
+      builder: (context, state) => OrdererProfileSetupScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.pickerBottomBarScreen,
+      builder: (context, state) => PickerBottomBarScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.ordererBottomBarScreen,
+      builder: (context, state) => OrdererBottomBarScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.orderDetailScreen,
+      builder: (context, state) => OrderDetailScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.counterOfferScreen,
+      builder: (context, state) => CounterOfferScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.conversationScreen,
+      builder: (context, state) => ConversationScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.acceptOrderDetailScreen,
+      builder: (context, state) => AcceptOrderdetailScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.personalDetailScreen,
+      builder: (context, state) => PersonalDetailScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.travelDetailScreen,
+      builder: (context, state) => TravelDetailScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.settingScreen,
+      builder: (context, state) => SettingScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.paymentMethodScreen,
+      builder: (context, state) => PaymentMethodScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.bankDetailScreen,
+      builder: (context, state) => BankDetailScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.oPersonalDetailScreen,
+      builder: (context, state) => OpersonalDetailScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.oPaymentMethodScreen,
+      builder: (context, state) => OpaymentMethodScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.oSettingScreen,
+      builder: (context, state) => OsettingScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.extraCardScreen,
+      builder: (context, state) => ExtraCardScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.ordererConversationScreen,
+      builder: (context, state) => OrdererConversationScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.orderHistoryDetailScreen,
+      builder: (context, state) => OrderHistorydetailScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.deliveryFlowScreen,
+      builder: (context, state) => DeliveryFlowScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.orderAcceptedScreen,
+      builder: (context, state) => OrderAcceptedScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.offerReceivedScreen,
+      builder: (context, state) => OfferReceivedScreen(),
+    ),
+  ],
+);
