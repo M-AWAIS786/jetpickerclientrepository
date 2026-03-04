@@ -15,11 +15,13 @@ class _OrdererBottomBarScreenState extends State<OrdererBottomBarScreen> {
   Widget build(BuildContext context) {
     return  Scaffold(
       body: ordererscreens[currentIndex],
-      bottomNavigationBar: OrdererBottomBar(
-        currentIndex: currentIndex,
-        onTabSelected: (index) {
-          setState(() => currentIndex = index);
-        },
+      bottomNavigationBar: SafeArea(
+        child: OrdererBottomBar(
+          currentIndex: currentIndex,
+          onTabSelected: (index) {
+            setState(() => currentIndex = index);
+          },
+        ),
       ),
     );
   }

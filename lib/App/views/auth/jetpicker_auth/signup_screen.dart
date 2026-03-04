@@ -133,14 +133,16 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomButton(
-        text: AppStrings.signUp,
-        btnHeight: 60,
-        radius: 0.r,
-        onPressed: () {
-          // if (!_formKey.currentState!.validate()) return;
-          Navigator.pushNamed(context, AppRoutes.loginScreen);
-        },
+      bottomNavigationBar: SafeArea(
+        child: CustomButton(
+          text: AppStrings.signUp,
+          btnHeight: 60,
+          radius: 0.r,
+          onPressed: () {
+            // if (!_formKey.currentState!.validate()) return;
+            Navigator.pushNamed(context, AppRoutes.loginScreen);
+          },
+        ),
       ),
     );
   }

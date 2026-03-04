@@ -167,16 +167,18 @@ class _OrdererSignupScreenState extends State<OrdererSignupScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomButton(
-        text: AppStrings.signUp,
-        btnHeight: 60,
-        radius: 0.r,
-        textColor: AppColors.black,
-        color: AppColors.yellow3,
-        onPressed: () {
-          // if (!_formKey.currentState!.validate()) return;
-          Navigator.pushNamed(context, AppRoutes.ordererLoginScreen);
-        },
+      bottomNavigationBar: SafeArea(
+        child: CustomButton(
+          text: AppStrings.signUp,
+          btnHeight: 60,
+          radius: 0.r,
+          textColor: AppColors.black,
+          color: AppColors.yellow3,
+          onPressed: () {
+            // if (!_formKey.currentState!.validate()) return;
+            Navigator.pushNamed(context, AppRoutes.ordererLoginScreen);
+          },
+        ),
       ),
     );
   }
