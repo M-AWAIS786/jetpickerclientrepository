@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jet_picks_app/App/data/user_preferences.dart';
 import 'package:jet_picks_app/App/models/auth/login_model.dart';
 import 'package:jet_picks_app/App/repo/auth_repository.dart';
 
@@ -42,6 +43,18 @@ class LoginViewModel extends Notifier<LoginState> {
     try {
       final request = LoginRequestModel(username: username, password: password);
       final response = await _authRepository.login(request);
+
+      // Persist token & user data
+      await UserPreferences.saveToken(response.token);
+      await UserPreferences.saveUser(
+        id: response.user.id,
+        fullName: response.user.fullName,
+        email: response.user.email,
+        phoneNumber: response.user.phoneNumber,
+        avatarUrl: response.user.avatarUrl,
+        country: response.user.country,
+      );
+
       state = state.copyWith(isLoading: false, response: response);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());

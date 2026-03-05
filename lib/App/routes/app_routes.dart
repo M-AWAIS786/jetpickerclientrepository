@@ -74,7 +74,7 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter goRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: AppRoutes.profileScreen,
+  initialLocation: AppRoutes.loginScreen,
   errorBuilder: (context, state) => Scaffold(
     body: Center(child: Text('No route defined for ${state.uri}')),
   ),

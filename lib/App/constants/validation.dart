@@ -9,18 +9,11 @@ class Validation {
 
   static String? passwordCorrect(String? value) {
     var emptyResult = valueExists(value);
-    if (emptyResult == null || emptyResult.isEmpty) {
-      // var pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!@$%^&*-]).{8,}$';
-      var pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#?!~@$%^&*-]).{8,}$';
-      var regExp = RegExp(pattern);
-      if (!regExp.hasMatch(value!)) {
-        return 'Must be like this (Aa123@34)';
-      } else {
-        return null;
-      }
-    } else {
-      return emptyResult;
+    if (emptyResult != null) return emptyResult;
+    if (value!.length < 8) {
+      return 'Password must be at least 8 characters';
     }
+    return null;
   }
 
   static String? validateEmail(String? value) {

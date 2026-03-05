@@ -4,4 +4,8 @@ class AppUrls {
   static const String signupUrl = '$baseUrl/auth/register';
   static const String countriesUrl = '$baseUrl/locations/countries';
   static const String citiesUrl = '$baseUrl/locations/cities';
+
+  // User Profile
+  static const String userProfileUrl = '$baseUrl/user/profile';
+  static const String userAvatarUrl = '$baseUrl/user/avatar';
 }

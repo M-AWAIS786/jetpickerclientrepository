@@ -11,7 +11,7 @@ import '../../../utils/profile_appbar.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_textfield.dart';
 import '../../../view_model/auth/login_view_model.dart';
-import '../../..//routes/app_routes.dart';
+import '../../../routes/app_routes.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -53,19 +53,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final loginState = ref.watch(loginViewModelProvider);
 
-    // Listen for success or error
     ref.listen<LoginState>(loginViewModelProvider, (previous, next) {
-      if (next.response != null) {
+      // Only act when we go from loading → response received
+      if (previous?.response == null && next.response != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.response!.message),
             backgroundColor: Colors.green,
           ),
         );
-        // Navigate to main screen
-        goRouter.go(AppRoutes.pickerBottomBarScreen);
-        ref.read(loginViewModelProvider.notifier).resetState();
-      } else if (next.errorMessage != null) {
+        // Navigate first, then reset state after the frame
+        context.go(AppRoutes.pickerBottomBarScreen);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(loginViewModelProvider.notifier).resetState();
+        });
+      } else if (previous?.errorMessage == null && next.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
