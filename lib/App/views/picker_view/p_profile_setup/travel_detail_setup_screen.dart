@@ -7,7 +7,6 @@ import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/constants/app_images.dart';
 import 'package:jet_picks_app/App/constants/app_strings.dart';
 import 'package:jet_picks_app/App/models/travel/travel_journey_model.dart';
-import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/share_pictures.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/location/location_view_model.dart';
@@ -149,7 +148,7 @@ class _TravelDetailSetupScreenState
     if (!mounted) return;
 
     if (success) {
-      context.go(AppRoutes.pickerBottomBarScreen);
+      if (context.mounted) context.pop();  // ✅ pop back to TravelDetailScreen
     } else {
       final error = ref.read(travelJourneyViewModelProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
