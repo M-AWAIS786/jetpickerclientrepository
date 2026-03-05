@@ -5,11 +5,11 @@ import 'package:jet_picks_app/App/constants/app_strings.dart';
 import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 
-import '../../data/profile_setup_data.dart';
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_divider.dart';
-import '../../widgets/custom_dropdown.dart';
-import '../../widgets/custom_text_formfeild.dart';
+import '../../../data/profile_setup_data.dart';
+import '../../../widgets/custom_button.dart';
+import '../../../widgets/custom_divider.dart';
+import '../../../widgets/custom_dropdown.dart';
+import '../../../widgets/custom_text_formfeild.dart';
 
 class BankDetailScreen extends StatefulWidget {
   const BankDetailScreen({super.key});

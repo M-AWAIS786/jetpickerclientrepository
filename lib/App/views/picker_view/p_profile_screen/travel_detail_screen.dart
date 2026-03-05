@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_profile_screen/widget/c_text_row.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 
-import '../../constants/app_colors.dart';
-import '../../constants/app_strings.dart';
-import '../../utils/profile_appbar.dart';
-import '../../widgets/custom_text_formfeild.dart';
+import '../../../constants/app_colors.dart';
+import '../../../constants/app_strings.dart';
+import '../../../utils/profile_appbar.dart';
+import '../../../widgets/custom_text_formfeild.dart';
 
 class TravelDetailScreen extends StatelessWidget {
   const TravelDetailScreen({super.key});
@@ -35,7 +37,9 @@ class TravelDetailScreen extends StatelessWidget {
             12.h.ph,
             textRow(context, AppStrings.fromLondonToMadrid, '12 Dec'),
             63.h.ph,
-            CustomButton(text: AppStrings.createNewJourney, onPressed: () {}),
+            CustomButton(text: AppStrings.createNewJourney, onPressed: () {
+              goRouter.push(AppRoutes.travelDetailSetupScreen);
+            }),
             58.h.ph,
             Text(
               AppStrings.updateWeightCapacity,
@@ -46,30 +50,12 @@ class TravelDetailScreen extends StatelessWidget {
             CustomTextFormfeild(hintText: '10kg'),
             200.h.ph,
 
-            CustomButton(text: AppStrings.save, onPressed: () {}),
+            CustomButton(text: AppStrings.save, onPressed: () {
+
+            }),
           ],
         ),
       ),
-    );
-  }
-
-  Widget textRow(BuildContext context, String title, String trailing) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.labelLarge?.copyWith(color: AppColors.red1),
-        ),
-        Text(
-          trailing,
-          style: Theme.of(
-            context,
-          ).textTheme.labelLarge?.copyWith(color: AppColors.red1),
-        ),
-      ],
     );
   }
 }

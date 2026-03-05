@@ -27,6 +27,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool isPasswordHidden = true;
 
   @override
+  void initState(){
+    super.initState();
+      _emailController.text = "asim@gmail.com";
+      _passwordController.text = "12345678";
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -55,8 +62,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        // Navigate to main screen (picker bottom bar used as example)
-        context.go(AppRoutes.pickerBottomBarScreen);
+        // Navigate to main screen
+        goRouter.go(AppRoutes.pickerBottomBarScreen);
         ref.read(loginViewModelProvider.notifier).resetState();
       } else if (next.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(

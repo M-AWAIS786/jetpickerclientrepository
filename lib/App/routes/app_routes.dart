@@ -17,12 +17,13 @@ import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/opayment_me
 import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/opersonal_detail_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/osetting_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/profile_setup/orderer_profilesetup_screen.dart';
-import 'package:jet_picks_app/App/views/profile_screen/bank_detail_screen.dart';
-import 'package:jet_picks_app/App/views/profile_screen/payment_method_screen.dart';
-import 'package:jet_picks_app/App/views/profile_screen/personal_detail_screen.dart';
-import 'package:jet_picks_app/App/views/profile_screen/setting_screen.dart';
-import 'package:jet_picks_app/App/views/profile_screen/travel_detail_screen.dart';
-import 'package:jet_picks_app/App/views/profile_setup/travel_detail_setup_screen.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_profile_screen/bank_detail_screen.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_profile_screen/payment_method_screen.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_profile_screen/personal_detail_screen.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_profile_screen/profile_screen.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_profile_screen/setting_screen.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_profile_screen/travel_detail_screen.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_profile_setup/travel_detail_setup_screen.dart';
 import 'package:jet_picks_app/App/views/role_selection/role_selection_screen.dart';
 import 'package:jet_picks_app/App/views/role_selection/welcome_jetorderer_screen.dart';
 import 'package:jet_picks_app/App/views/role_selection/welcome_jetpicker_screen.dart';
@@ -30,7 +31,7 @@ import 'package:jet_picks_app/App/views/splash_screen.dart/howitwork_screen.dart
 import '../views/order_detail/order_detail_screen.dart';
 import '../views/orderer_side/delivery_route/delivery_flow_screen.dart';
 import '../views/orderer_side/orderer_profile/extra_card_screen.dart';
-import '../views/profile_setup/profile_setup_screen.dart';
+import '../views/picker_view/p_profile_setup/profile_setup_screen.dart';
 import '../views/splash_screen.dart/splash_screen.dart';
 
 class AppRoutes {
@@ -66,13 +67,14 @@ class AppRoutes {
   static const String deliveryFlowScreen = "/delivery_flow_screen";
   static const String orderAcceptedScreen = "/order_accepted_screen";
   static const String offerReceivedScreen = "/offer_received_screen";
+  static const String profileScreen = "/profile_screen";
 }
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter goRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: AppRoutes.signUpScreen,
+  initialLocation: AppRoutes.profileScreen,
   errorBuilder: (context, state) => Scaffold(
     body: Center(child: Text('No route defined for ${state.uri}')),
   ),
@@ -204,6 +206,11 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: AppRoutes.offerReceivedScreen,
       builder: (context, state) => OfferReceivedScreen(),
+    ),
+
+    GoRoute(
+      path: AppRoutes.profileScreen,
+      builder: (context, state) => ProfileScreen(),
     ),
   ],
 );

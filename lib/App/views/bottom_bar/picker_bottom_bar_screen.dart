@@ -16,11 +16,13 @@ class _PickerBottomBarScreenState extends State<PickerBottomBarScreen> {
   Widget build(BuildContext context) {
     return  Scaffold(
       body: screens[currentIndex],
-      bottomNavigationBar: PickerBottomBar(
-        currentIndex: currentIndex,
-        onTabSelected: (index) {
-          setState(() => currentIndex = index);
-        },
+      bottomNavigationBar: SafeArea(
+        child: PickerBottomBar(
+          currentIndex: currentIndex,
+          onTabSelected: (index) {
+            setState(() => currentIndex = index);
+          },
+        ),
       ),
     );
   }

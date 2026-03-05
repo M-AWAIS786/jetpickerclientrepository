@@ -5,13 +5,13 @@ import 'package:jet_picks_app/App/widgets/custom_button.dart';
 import 'package:jet_picks_app/App/widgets/custom_divider.dart';
 import 'package:jet_picks_app/App/widgets/radio_text.dart';
 
-import '../../constants/app_colors.dart';
-import '../../constants/app_strings.dart';
-import '../../data/profile_setup_data.dart';
-import '../../routes/app_routes.dart';
-import '../../utils/profile_appbar.dart';
-import '../../widgets/custom_dropdown.dart';
-import '../../widgets/custom_text_formfeild.dart';
+import '../../../constants/app_colors.dart';
+import '../../../constants/app_strings.dart';
+import '../../../data/profile_setup_data.dart';
+import '../../../routes/app_routes.dart';
+import '../../../utils/profile_appbar.dart';
+import '../../../widgets/custom_dropdown.dart';
+import '../../../widgets/custom_text_formfeild.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({super.key});

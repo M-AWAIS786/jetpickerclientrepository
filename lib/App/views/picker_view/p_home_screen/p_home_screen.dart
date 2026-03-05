@@ -8,12 +8,11 @@ import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/share_pictures.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/custom_searchbar.dart';
-
-import '../../widgets/custom_ordercard.dart';
+import '../../../widgets/custom_ordercard.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
+                                         
   @override
   Widget build(BuildContext context) {
     return Scaffold(

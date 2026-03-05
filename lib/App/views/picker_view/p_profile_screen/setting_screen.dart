@@ -3,13 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jet_picks_app/App/constants/app_fontweight.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 
-import '../../constants/app_colors.dart';
-import '../../constants/app_strings.dart';
-import '../../data/profile_setup_data.dart';
-import '../../utils/profile_appbar.dart';
-import '../../widgets/custom_divider.dart';
-import '../../widgets/custom_dropdown.dart';
-import '../../widgets/listtile_switch.dart';
+import '../../../constants/app_colors.dart';
+import '../../../constants/app_strings.dart';
+import '../../../data/profile_setup_data.dart';
+import '../../../utils/profile_appbar.dart';
+import '../../../widgets/custom_divider.dart';
+import '../../../widgets/custom_dropdown.dart';
+import '../../../widgets/listtile_switch.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 
-import '../../constants/app_colors.dart';
-import '../../constants/app_images.dart';
-import '../../constants/app_strings.dart';
-import '../../constants/validation.dart';
+import '../../../constants/app_colors.dart';
+import '../../../constants/app_images.dart';
+import '../../../constants/app_strings.dart';
+import '../../../constants/validation.dart';
 
-import '../../utils/profile_appbar.dart';
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_textfield.dart';
+import '../../../utils/profile_appbar.dart';
+import '../../../widgets/custom_button.dart';
+import '../../../widgets/custom_textfield.dart';
 
 class PersonalDetailScreen extends StatefulWidget {
   const PersonalDetailScreen({super.key});

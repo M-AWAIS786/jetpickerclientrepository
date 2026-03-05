@@ -6,9 +6,9 @@ import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 
-import '../../constants/app_images.dart';
-import '../../utils/share_pictures.dart';
-import '../../widgets/listtile_arrow.dart';
+import '../../../constants/app_images.dart';
+import '../../../utils/share_pictures.dart';
+import '../../../widgets/listtile_arrow.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -45,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
             prefixIcon: AppImages.profileIcon,
             sufixIcon: AppImages.rightArrowIcon,
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.personalDetailScreen);
+              goRouter.push(AppRoutes.personalDetailScreen);
             },
           ),
           12.h.ph,
@@ -54,7 +54,7 @@ class ProfileScreen extends StatelessWidget {
             prefixIcon: AppImages.travelDetailIcon,
             sufixIcon: AppImages.rightArrowIcon,
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.travelDetailScreen);
+              goRouter.push(AppRoutes.travelDetailScreen);
             },
           ),
           12.h.ph,
@@ -63,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
             prefixIcon: AppImages.settingIcon,
             sufixIcon: AppImages.rightArrowIcon,
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.settingScreen);
+              goRouter.push( AppRoutes.settingScreen);
             },
           ),
           12.h.ph,
@@ -72,7 +72,7 @@ class ProfileScreen extends StatelessWidget {
             prefixIcon: AppImages.paymentcardsIcon,
             sufixIcon: AppImages.rightArrowIcon,
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.paymentMethodScreen);
+              goRouter.push( AppRoutes.paymentMethodScreen);
             },
           ),
           12.h.ph,
