@@ -11,6 +11,13 @@ class AppUrls {
   static const String userProfileUrl = '$baseUrl/user/profile';
   static const String userAvatarUrl = '$baseUrl/user/avatar';
 
+  // Picker Orders
+  static const String pickerOrdersUrl = '$baseUrl/orders/picker/history';
+  static String orderDetailUrl(String orderId) => '$baseUrl/orders/$orderId';
+  static String acceptOrderUrl(String orderId) => '$baseUrl/orders/$orderId/accept';
+  static String markDeliveredUrl(String orderId) => '$baseUrl/orders/$orderId/mark-delivered';
+  static String deliveryStatusUrl(String orderId) => '$baseUrl/orders/$orderId/delivery-status';
+
   /// Converts a relative path e.g. /storage/avatars/x.jpg → full URL
   static String resolveUrl(String? path) {
     if (path == null || path.isEmpty) return '';
