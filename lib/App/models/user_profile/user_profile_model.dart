@@ -1,3 +1,5 @@
+import 'package:jet_picks_app/App/constants/app_urls.dart';
+
 class UserProfileModel {
   final String id;
   final String fullName;
@@ -31,7 +33,7 @@ class UserProfileModel {
       phoneNumber: json['phone_number'] ?? '',
       country: json['country'],
       roles: List<String>.from(json['roles'] ?? []),
-      avatarUrl: json['avatar_url'],
+      avatarUrl: AppUrls.resolveUrl(json['avatar_url']),
       languages: (json['languages'] as List<dynamic>? ?? []).map((e) {
         // API returns either a plain string OR an object {id, language_name}
         if (e is String) return e;
@@ -116,7 +118,7 @@ class UpdateAvatarResponseModel {
   factory UpdateAvatarResponseModel.fromJson(Map<String, dynamic> json) {
     return UpdateAvatarResponseModel(
       message: json['message'] ?? '',
-      avatarUrl: json['data']?['avatar_url'],
+      avatarUrl: AppUrls.resolveUrl(json['data']?['avatar_url']),
     );
   }
 }

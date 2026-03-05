@@ -6,10 +6,12 @@ import 'package:intl/intl.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/constants/app_images.dart';
 import 'package:jet_picks_app/App/constants/app_strings.dart';
+import 'package:jet_picks_app/App/models/travel/travel_journey_model.dart';
 import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/share_pictures.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/location/location_view_model.dart';
+import 'package:jet_picks_app/App/view_model/travel/travel_journey_view_model.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 
 class TravelDetailSetupScreen extends ConsumerStatefulWidget {
@@ -30,6 +32,11 @@ class _TravelDetailSetupScreenState
   DateTime? _arrivalDate;
   String? _luggage;
 
+  // null  = haven't checked yet (reset on every open)
+  // false = checked, no journey found
+  // true  = pre-fill done
+  bool? _prefillStatus;
+
   static const List<String> _luggageOptions = [
     '5 kg',
     '10 kg',
@@ -40,6 +47,45 @@ class _TravelDetailSetupScreenState
     '40 kg',
     '50 kg',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Reset pre-fill flag and re-fetch every time the screen opens
+    _prefillStatus = null;
+    Future.microtask(() {
+      ref.read(travelJourneyViewModelProvider.notifier).fetchTravelJourneys();
+    });
+  }
+
+  /// Converts a raw kg string from the API (e.g. "20" or "20kg") to
+  /// the display format expected by [_luggageOptions] (e.g. "20 kg").
+  String? _normalizeLuggage(String raw) {
+    // Normalise "20kg" → "20 kg"
+    final cleaned = raw.trim().replaceAllMapped(
+      RegExp(r'^(\d+)\s*kg$', caseSensitive: false),
+      (m) => '${m[1]} kg',
+    );
+    return _luggageOptions.contains(cleaned) ? cleaned : null;
+  }
+
+  void _prefillFromJourney(TravelJourneyModel journey) {
+    setState(() {
+      _depCountry = journey.departureCountry;
+      _depCity = journey.departureCity;
+      _arrCountry = journey.arrivalCountry;
+      _arrCity = journey.arrivalCity;
+      _departureDate = journey.departureDate;
+      _arrivalDate = journey.arrivalDate;
+      _luggage = _normalizeLuggage(journey.luggageWeightCapacity);
+      _prefillStatus = true;
+    });
+
+    // Trigger city lists so the pre-filled city values are selectable
+    final locVM = ref.read(locationViewModelProvider.notifier);
+    locVM.fetchDepartureCities(journey.departureCountry);
+    locVM.fetchArrivalCities(journey.arrivalCountry);
+  }
 
   Future<void> _pickDate(BuildContext context,
       {required bool isDeparture}) async {
@@ -76,183 +122,241 @@ class _TravelDetailSetupScreenState
     }
   }
 
+  Future<void> _onSave() async {
+    // Validate all fields
+    if (_depCountry == null ||
+        _depCity == null ||
+        _arrCountry == null ||
+        _arrCity == null ||
+        _departureDate == null ||
+        _arrivalDate == null ||
+        _luggage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields.')),
+      );
+      return;
+    }
+
+    final vm = ref.read(travelJourneyViewModelProvider.notifier);
+    final success = await vm.saveJourney(
+      departureCountry: _depCountry!,
+      departureCity: _depCity!,
+      departureDate: DateFormat('yyyy-MM-dd').format(_departureDate!),
+      arrivalCountry: _arrCountry!,
+      arrivalCity: _arrCity!,
+      arrivalDate: DateFormat('yyyy-MM-dd').format(_arrivalDate!),
+      luggageDisplay: _luggage!,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      context.go(AppRoutes.pickerBottomBarScreen);
+    } else {
+      final error = ref.read(travelJourneyViewModelProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error ?? 'Failed to save journey.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final locState = ref.watch(locationViewModelProvider);
     final locVM = ref.read(locationViewModelProvider.notifier);
-    final countryNames =
-        locState.countries.map((c) => c.name).toList();
+    final countryNames = locState.countries.map((c) => c.name).toList();
+
+    // Watch journey state — pre-fill ONLY after loading completes
+    final journeyState = ref.watch(travelJourneyViewModelProvider);
+
+    // _prefillStatus == null means we haven't acted yet
+    if (_prefillStatus == null && !journeyState.isLoading) {
+      final existing = journeyState.activeJourney;
+      if (existing != null) {
+        // Schedule after current frame to avoid setState-during-build
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _prefillFromJourney(existing);
+        });
+      }
+      // Mark as checked regardless (null → false means "checked, nothing found")
+      _prefillStatus = false;
+    }
 
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Column(
         children: [
-          // ── Header ──────────────────────────────────────────────────────
           _buildHeader(context),
-
-          // ── Body ────────────────────────────────────────────────────────
           Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // subtitle
-                  Center(
-                    child: Text(
-                      AppStrings.shareYourTravelDetail,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.labelGray,
-                            height: 1.5,
+            child: journeyState.isLoading
+                ? Center(
+                    child: CircularProgressIndicator(color: AppColors.red3),
+                  )
+                : SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Text(
+                            AppStrings.shareYourTravelDetail,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                    color: AppColors.labelGray, height: 1.5),
                           ),
+                        ),
+                        28.h.ph,
+
+                        // ── Departure ────────────────────────────────────────
+                        _SectionLabel(
+                          icon: AppImages.locationLineIcon,
+                          label: AppStrings.departureCountryandCity,
+                        ),
+                        12.h.ph,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _ApiDropdown(
+                                hint: AppStrings.country,
+                                value: _depCountry,
+                                items: countryNames,
+                                isLoading: locState.loadingCountries,
+                                onChanged: (val) {
+                                  setState(() {
+                                    _depCountry = val;
+                                    _depCity = null;
+                                  });
+                                  if (val != null) {
+                                    locVM.fetchDepartureCities(val);
+                                  }
+                                },
+                              ),
+                            ),
+                            12.w.pw,
+                            Expanded(
+                              child: _ApiDropdown(
+                                hint: AppStrings.city,
+                                value: _depCity,
+                                items: locState.departureCities,
+                                isLoading: locState.loadingDepartureCities,
+                                enabled: _depCountry != null,
+                                onChanged: (val) =>
+                                    setState(() => _depCity = val),
+                              ),
+                            ),
+                          ],
+                        ),
+                        20.h.ph,
+
+                        // ── Arrival ──────────────────────────────────────────
+                        _SectionLabel(
+                          icon: AppImages.locationLineIcon,
+                          label: AppStrings.arrivalCountryandCity,
+                          iconColor: AppColors.red3,
+                        ),
+                        12.h.ph,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _ApiDropdown(
+                                hint: AppStrings.country,
+                                value: _arrCountry,
+                                items: countryNames,
+                                isLoading: locState.loadingCountries,
+                                onChanged: (val) {
+                                  setState(() {
+                                    _arrCountry = val;
+                                    _arrCity = null;
+                                  });
+                                  if (val != null) {
+                                    locVM.fetchArrivalCities(val);
+                                  }
+                                },
+                              ),
+                            ),
+                            12.w.pw,
+                            Expanded(
+                              child: _ApiDropdown(
+                                hint: AppStrings.city,
+                                value: _arrCity,
+                                items: locState.arrivalCities,
+                                isLoading: locState.loadingArrivalCities,
+                                enabled: _arrCountry != null,
+                                onChanged: (val) =>
+                                    setState(() => _arrCity = val),
+                              ),
+                            ),
+                          ],
+                        ),
+                        24.h.ph,
+
+                        // ── Dates ────────────────────────────────────────────
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _DateTile(
+                                icon: AppImages.calendarIcon,
+                                label: 'Departure Date',
+                                value: _departureDate != null
+                                    ? DateFormat('dd MMM yyyy')
+                                        .format(_departureDate!)
+                                    : AppStrings.selectDate,
+                                hasValue: _departureDate != null,
+                                onTap: () =>
+                                    _pickDate(context, isDeparture: true),
+                              ),
+                            ),
+                            12.w.pw,
+                            Expanded(
+                              child: _DateTile(
+                                icon: AppImages.calendarIcon,
+                                label: AppStrings.arrivalDate,
+                                value: _arrivalDate != null
+                                    ? DateFormat('dd MMM yyyy')
+                                        .format(_arrivalDate!)
+                                    : AppStrings.selectDate,
+                                hasValue: _arrivalDate != null,
+                                onTap: () =>
+                                    _pickDate(context, isDeparture: false),
+                              ),
+                            ),
+                          ],
+                        ),
+                        24.h.ph,
+
+                        // ── Luggage ──────────────────────────────────────────
+                        _SectionLabel(
+                          icon: AppImages.lagageIcon,
+                          label: AppStrings.luggage,
+                        ),
+                        12.h.ph,
+                        _ApiDropdown(
+                          hint: AppStrings.selectWeight,
+                          value: _luggage,
+                          items: _luggageOptions,
+                          onChanged: (val) => setState(() => _luggage = val),
+                        ),
+                        40.h.ph,
+
+                        // ── Save button ──────────────────────────────────────
+                        journeyState.isSaving
+                            ? Center(
+                                child: CircularProgressIndicator(
+                                    color: AppColors.red3),
+                              )
+                            : CustomButton(
+                                text: AppStrings.saveAndContinue,
+                                onPressed: _onSave,
+                              ),
+                        24.h.ph,
+                      ],
                     ),
                   ),
-                  28.h.ph,
-
-                  // ── Departure Section ─────────────────────────────────
-                  _SectionLabel(
-                    icon: AppImages.locationLineIcon,
-                    label: AppStrings.departureCountryandCity,
-                  ),
-                  12.h.ph,
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _ApiDropdown(
-                          hint: AppStrings.country,
-                          value: _depCountry,
-                          items: countryNames,
-                          isLoading: locState.loadingCountries,
-                          onChanged: (val) {
-                            setState(() {
-                              _depCountry = val;
-                              _depCity = null;
-                            });
-                            if (val != null) {
-                              locVM.fetchDepartureCities(val);
-                            }
-                          },
-                        ),
-                      ),
-                      12.w.pw,
-                      Expanded(
-                        child: _ApiDropdown(
-                          hint: AppStrings.city,
-                          value: _depCity,
-                          items: locState.departureCities,
-                          isLoading: locState.loadingDepartureCities,
-                          enabled: _depCountry != null,
-                          onChanged: (val) =>
-                              setState(() => _depCity = val),
-                        ),
-                      ),
-                    ],
-                  ),
-                  20.h.ph,
-
-                  // ── Arrival Section ───────────────────────────────────
-                  _SectionLabel(
-                    icon: AppImages.locationLineIcon,
-                    label: AppStrings.arrivalCountryandCity,
-                    iconColor: AppColors.red3,
-                  ),
-                  12.h.ph,
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _ApiDropdown(
-                          hint: AppStrings.country,
-                          value: _arrCountry,
-                          items: countryNames,
-                          isLoading: locState.loadingCountries,
-                          onChanged: (val) {
-                            setState(() {
-                              _arrCountry = val;
-                              _arrCity = null;
-                            });
-                            if (val != null) {
-                              locVM.fetchArrivalCities(val);
-                            }
-                          },
-                        ),
-                      ),
-                      12.w.pw,
-                      Expanded(
-                        child: _ApiDropdown(
-                          hint: AppStrings.city,
-                          value: _arrCity,
-                          items: locState.arrivalCities,
-                          isLoading: locState.loadingArrivalCities,
-                          enabled: _arrCountry != null,
-                          onChanged: (val) =>
-                              setState(() => _arrCity = val),
-                        ),
-                      ),
-                    ],
-                  ),
-                  24.h.ph,
-
-                  // ── Dates Row ─────────────────────────────────────────
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _DateTile(
-                          icon: AppImages.calendarIcon,
-                          label: 'Departure Date',
-                          value: _departureDate != null
-                              ? DateFormat('dd MMM yyyy')
-                                  .format(_departureDate!)
-                              : AppStrings.selectDate,
-                          hasValue: _departureDate != null,
-                          onTap: () =>
-                              _pickDate(context, isDeparture: true),
-                        ),
-                      ),
-                      12.w.pw,
-                      Expanded(
-                        child: _DateTile(
-                          icon: AppImages.calendarIcon,
-                          label: AppStrings.arrivalDate,
-                          value: _arrivalDate != null
-                              ? DateFormat('dd MMM yyyy')
-                                  .format(_arrivalDate!)
-                              : AppStrings.selectDate,
-                          hasValue: _arrivalDate != null,
-                          onTap: () =>
-                              _pickDate(context, isDeparture: false),
-                        ),
-                      ),
-                    ],
-                  ),
-                  24.h.ph,
-
-                  // ── Luggage ───────────────────────────────────────────
-                  _SectionLabel(
-                    icon: AppImages.lagageIcon,
-                    label: AppStrings.luggage,
-                  ),
-                  12.h.ph,
-                  _ApiDropdown(
-                    hint: AppStrings.selectWeight,
-                    value: _luggage,
-                    items: _luggageOptions,
-                    onChanged: (val) => setState(() => _luggage = val),
-                  ),
-                  40.h.ph,
-
-                  // ── Buttons ───────────────────────────────────────────
-                  CustomButton(
-                    text: AppStrings.saveAndContinue,
-                    onPressed: () =>
-                        context.go(AppRoutes.pickerBottomBarScreen),
-                  ),
-           
-                  24.h.ph,
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -272,8 +376,7 @@ class _TravelDetailSetupScreenState
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           child: Row(
             children: [
               GestureDetector(
