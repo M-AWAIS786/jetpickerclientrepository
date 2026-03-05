@@ -44,8 +44,6 @@ class _TravelDetailSetupScreenState
     '20 kg',
     '25 kg',
     '30 kg',
-    '40 kg',
-    '50 kg',
   ];
 
   @override

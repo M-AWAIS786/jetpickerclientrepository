@@ -130,6 +130,40 @@ class TravelJourneyViewModel extends Notifier<TravelJourneyState> {
       return false;
     }
   }
+
+  /// Updates ONLY the luggage weight of the active journey.
+  Future<bool> updateLuggage(String luggageDisplay) async {
+    final existing = state.activeJourney;
+    if (existing == null) return false;
+
+    state = state.copyWith(isSaving: true, clearError: true, clearSuccess: true);
+    try {
+      final token = await UserPreferences.getToken();
+      if (token == null) {
+        state = state.copyWith(isSaving: false, error: 'Not authenticated. Please log in.');
+        return false;
+      }
+
+      final luggage = luggageDisplay.replaceAll(' ', ''); // "20 kg" → "20kg"
+      final saved = await _repo.updateTravelJourney(
+        existing.id,
+        {'luggage_weight_capacity': luggage},
+        token,
+      );
+
+      final updatedList =
+          state.journeys.map((j) => j.id == saved.id ? saved : j).toList();
+      state = state.copyWith(
+        isSaving: false,
+        journeys: updatedList,
+        successMessage: 'Luggage capacity updated.',
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(isSaving: false, error: e.toString());
+      return false;
+    }
+  }
 }
 
 final travelJourneyViewModelProvider =
