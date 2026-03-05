@@ -1,17 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
+import 'package:jet_picks_app/App/constants/app_fontweight.dart';
 import 'package:jet_picks_app/App/constants/app_images.dart';
 import 'package:jet_picks_app/App/constants/app_strings.dart';
 import 'package:jet_picks_app/App/routes/app_routes.dart';
-import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/user_profile/user_profile_view_model.dart';
-import 'package:jet_picks_app/App/widgets/listtile_arrow.dart';
-import '../../../utils/share_pictures.dart';
+import 'package:jet_picks_app/App/utils/share_pictures.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -24,7 +24,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch profile when screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(userProfileViewModelProvider.notifier).getMyProfile();
     });
@@ -46,7 +45,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final profileState = ref.watch(userProfileViewModelProvider);
 
-    // Show snackbar on success / error from avatar upload
     ref.listen<UserProfileState>(userProfileViewModelProvider, (previous, next) {
       if (next.successMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,141 +67,393 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     final profile = profileState.profile;
 
-    return Scaffold(
-      appBar: ProfileAppBar(
-        title: AppStrings.profile,
-        titleColor: AppColors.white,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarIconBrightness: Brightness.light,
+        statusBarColor: Colors.transparent,
       ),
-      body: profileState.isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.red3))
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        body: profileState.isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.red3),
+              )
+            : Column(
+                children: [
+                  // ── Header ─────────────────────────────────
+                  Container(
+                    padding: EdgeInsets.only(bottom: 24.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.red3,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(28.r),
+                        bottomRight: Radius.circular(28.r),
+                      ),
+                    ),
+                    child: SafeArea(
+                      bottom: false,
+                      child: Column(
+                        children: [
+                          // Title row
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20.w,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  AppStrings.profiletext,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(
+                                        color: AppColors.white,
+                                        fontWeight: TextWeight.bold,
+                                      ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: SharePictures(
+                                    imagePath: AppImages.bellIcon,
+                                    width: 22.w,
+                                    height: 22.h,
+                                    colorFilter: const ColorFilter.mode(
+                                      AppColors.white,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          20.h.ph,
+
+                          // Avatar + info
+                          GestureDetector(
+                            onTap: profileState.isUploadingAvatar
+                                ? null
+                                : _pickAndUploadAvatar,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  width: 80.w,
+                                  height: 80.h,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppColors.lightGray,
+                                    border: Border.all(
+                                      width: 3.w,
+                                      color: AppColors.white.withValues(alpha: 0.3),
+                                    ),
+                                  ),
+                                  child: ClipOval(
+                                    child: profile?.avatarUrl != null &&
+                                            profile!.avatarUrl!.isNotEmpty
+                                        ? Image.network(
+                                            profile.avatarUrl!,
+                                            fit: BoxFit.cover,
+                                            width: 80.w,
+                                            height: 80.h,
+                                            errorBuilder: (_, __, ___) =>
+                                                Icon(
+                                              Icons.person_rounded,
+                                              color: AppColors.white,
+                                              size: 40.sp,
+                                            ),
+                                          )
+                                        : Icon(
+                                            Icons.person_rounded,
+                                            color: AppColors.white,
+                                            size: 40.sp,
+                                          ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 26.w,
+                                    height: 26.h,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.white,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        width: 2.w,
+                                        color: AppColors.red3,
+                                      ),
+                                    ),
+                                    child: profileState.isUploadingAvatar
+                                        ? Padding(
+                                            padding: EdgeInsets.all(4.r),
+                                            child:
+                                                const CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: AppColors.red3,
+                                            ),
+                                          )
+                                        : Icon(
+                                            Icons.camera_alt_rounded,
+                                            color: AppColors.red3,
+                                            size: 13.sp,
+                                          ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          12.h.ph,
+
+                          // Name
+                          Text(
+                            profile?.fullName ?? '—',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: TextWeight.bold,
+                                ),
+                          ),
+                          4.h.ph,
+                          // Email
+                          Text(
+                            profile?.email ?? '',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(
+                                  color: AppColors.white.withValues(alpha: 0.7),
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // ── Scrollable content ─────────────────────
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 24.h,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // ── Account section ──────────────────
+                          _SectionLabel(label: 'Account'),
+                          12.h.ph,
+                          _MenuCard(
+                            children: [
+                              _MenuTile(
+                                icon: AppImages.profileIcon,
+                                label: AppStrings.personalDetail,
+                                onTap: () => goRouter
+                                    .push(AppRoutes.personalDetailScreen),
+                              ),
+                              _MenuTile(
+                                icon: AppImages.travelDetailIcon,
+                                label: AppStrings.travelDetails,
+                                onTap: () => goRouter
+                                    .push(AppRoutes.travelDetailScreen),
+                              ),
+                              _MenuTile(
+                                icon: AppImages.paymentcardsIcon,
+                                label: AppStrings.paymentMethods,
+                                onTap: () => goRouter
+                                    .push(AppRoutes.paymentMethodScreen),
+                                showDivider: false,
+                              ),
+                            ],
+                          ),
+
+                          20.h.ph,
+
+                          // ── Preferences section ──────────────
+                          _SectionLabel(label: 'Preferences'),
+                          12.h.ph,
+                          _MenuCard(
+                            children: [
+                              _MenuTile(
+                                icon: AppImages.settingIcon,
+                                label: AppStrings.settings,
+                                onTap: () =>
+                                    goRouter.push(AppRoutes.settingScreen),
+                              ),
+                              _MenuTile(
+                                icon: AppImages.helpIcon,
+                                label: AppStrings.helpAndSupport,
+                                onTap: () {},
+                                showDivider: false,
+                              ),
+                            ],
+                          ),
+
+                          20.h.ph,
+
+                          // ── Logout ───────────────────────────
+                          _MenuCard(
+                            color: AppColors.red57.withValues(alpha: 0.08),
+                            borderColor: AppColors.red57.withValues(alpha: 0.15),
+                            children: [
+                              _MenuTile(
+                                icon: AppImages.logoutIcon,
+                                label: AppStrings.logout,
+                                iconColor: AppColors.red57,
+                                textColor: AppColors.red57,
+                                arrowColor: AppColors.red57,
+                                iconBgColor: AppColors.red57.withValues(alpha: 0.1),
+                                showDivider: false,
+                                onTap: () {},
+                              ),
+                            ],
+                          ),
+
+                          24.h.ph,
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+// ── Section label ─────────────────────────────────────────────────
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  const _SectionLabel({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 4.w),
+      child: Text(
+        label.toUpperCase(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AppColors.labelGray,
+              fontWeight: TextWeight.semiBold,
+              letterSpacing: 1.2,
+            ),
+      ),
+    );
+  }
+}
+
+// ── Card container that groups menu tiles ─────────────────────────
+class _MenuCard extends StatelessWidget {
+  final List<Widget> children;
+  final Color? color;
+  final Color? borderColor;
+
+  const _MenuCard({
+    required this.children,
+    this.color,
+    this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color ?? AppColors.redLight,
+        borderRadius: BorderRadius.circular(14.r),
+        border: borderColor != null
+            ? Border.all(color: borderColor!)
+            : null,
+      ),
+      child: Column(children: children),
+    );
+  }
+}
+
+// ── Single menu tile ──────────────────────────────────────────────
+class _MenuTile extends StatelessWidget {
+  final String icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool showDivider;
+  final Color? iconColor;
+  final Color? textColor;
+  final Color? arrowColor;
+  final Color? iconBgColor;
+
+  const _MenuTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.showDivider = true,
+    this.iconColor,
+    this.textColor,
+    this.arrowColor,
+    this.iconBgColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14.r),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            child: Row(
               children: [
-                20.h.ph,
-                _profileImage(
-                  avatarUrl: profile?.avatarUrl,
-                  isUploading: profileState.isUploadingAvatar,
+                // Icon container
+                Container(
+                  width: 34.w,
+                  height: 34.h,
+                  decoration: BoxDecoration(
+                    color: iconBgColor ?? AppColors.red3.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Center(
+                    child: SharePictures(
+                      imagePath: icon,
+                      width: 17.w,
+                      height: 17.h,
+                      colorFilter: ColorFilter.mode(
+                        iconColor ?? AppColors.red3,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
                 ),
-                12.h.ph,
-                Text(
-                  profile?.fullName ?? AppStrings.userNameHint,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: AppColors.red3),
+                14.w.pw,
+                // Label
+                Expanded(
+                  child: Text(
+                    label,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: textColor ?? AppColors.black,
+                          fontWeight: TextWeight.medium,
+                        ),
+                  ),
                 ),
-                3.h.ph,
-                Text(
-                  profile?.phoneNumber ?? AppStrings.phoneNumberHint,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: AppColors.labelGray),
-                ),
-                48.h.ph,
-                ListTileArrow(
-                  text: AppStrings.personalInformation,
-                  prefixIcon: AppImages.profileIcon,
-                  sufixIcon: AppImages.rightArrowIcon,
-                  onTap: () => goRouter.push(AppRoutes.personalDetailScreen),
-                ),
-                12.h.ph,
-                ListTileArrow(
-                  text: AppStrings.travelDetails,
-                  prefixIcon: AppImages.travelDetailIcon,
-                  sufixIcon: AppImages.rightArrowIcon,
-                  onTap: () => goRouter.push(AppRoutes.travelDetailScreen),
-                ),
-                12.h.ph,
-                ListTileArrow(
-                  text: AppStrings.settings,
-                  prefixIcon: AppImages.settingIcon,
-                  sufixIcon: AppImages.rightArrowIcon,
-                  onTap: () => goRouter.push(AppRoutes.settingScreen),
-                ),
-                12.h.ph,
-                ListTileArrow(
-                  text: AppStrings.paymentMethods,
-                  prefixIcon: AppImages.paymentcardsIcon,
-                  sufixIcon: AppImages.rightArrowIcon,
-                  onTap: () => goRouter.push(AppRoutes.paymentMethodScreen),
-                ),
-                12.h.ph,
-                ListTileArrow(
-                  containerColor: AppColors.white,
-                  text: AppStrings.helpAndSupport,
-                  prefixIcon: AppImages.helpIcon,
-                  onTap: () {},
-                ),
-                ListTileArrow(
-                  containerColor: AppColors.white,
-                  text: AppStrings.logout,
-                  prefixIcon: AppImages.logoutIcon,
-                  onTap: () {},
+                // Arrow
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: arrowColor ?? AppColors.labelGray,
+                  size: 14.sp,
                 ),
               ],
             ),
-    );
-  }
-
-  Widget _profileImage({String? avatarUrl, required bool isUploading}) {
-    return GestureDetector(
-      onTap: isUploading ? null : _pickAndUploadAvatar,
-      child: Stack(
-        children: [
-          Container(
-            width: 100.w,
-            height: 100.h,
-            decoration: BoxDecoration(
-              color: AppColors.lightGray,
-              shape: BoxShape.circle,
-              border: Border.all(width: 1.w, color: AppColors.red3),
-            ),
-            child: ClipOval(
-              child: avatarUrl != null && avatarUrl.isNotEmpty
-                  ? Image.network(
-                      avatarUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(
-                        Icons.person,
-                        color: AppColors.labelGray,
-                        size: 50,
-                      ),
-                    )
-                  : const Icon(
-                      Icons.person,
-                      color: AppColors.labelGray,
-                      size: 50,
-                    ),
+          ),
+        ),
+        if (showDivider)
+          Padding(
+            padding: EdgeInsets.only(left: 64.w, right: 16.w),
+            child: Divider(
+              height: 1,
+              color: AppColors.lightGray.withValues(alpha: 0.5),
             ),
           ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              width: 32.w,
-              height: 32.h,
-              decoration: BoxDecoration(
-                color: AppColors.redLight,
-                shape: BoxShape.circle,
-                border: Border.all(width: 1.w, color: AppColors.red3),
-              ),
-              child: isUploading
-                  ? Padding(
-                      padding: EdgeInsets.all(6.r),
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.red3,
-                      ),
-                    )
-                  : Transform.scale(
-                      scale: 0.6,
-                      child: SharePictures(imagePath: AppImages.cameraIcon),
-                    ),
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }
