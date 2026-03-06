@@ -8,7 +8,7 @@ import 'package:jet_picks_app/App/views/orderer_side/orderer_profile/orderer_pro
 
 import '../views/chat_screen/chat_screen.dart';
 import '../views/picker_view/p_home_screen/p_home_screen.dart';
-import '../views/order_screen/order_screen.dart';
+import '../views/picker_view/p_order_screen/order_screen.dart';
 import '../views/picker_view/p_profile_screen/profile_screen.dart';
 
 final List<String> icons = [

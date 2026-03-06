@@ -6,11 +6,9 @@ class AppUrls {
   static const String countriesUrl = '$baseUrl/locations/countries';
   static const String citiesUrl = '$baseUrl/locations/cities';
   static const String travelJourneysUrl = '$baseUrl/travel-journeys';
-
   // User Profile
   static const String userProfileUrl = '$baseUrl/user/profile';
   static const String userAvatarUrl = '$baseUrl/user/avatar';
-
   // Picker Orders
   static const String pickerOrdersUrl = '$baseUrl/orders/picker/history';
   static String orderDetailUrl(String orderId) => '$baseUrl/orders/$orderId';

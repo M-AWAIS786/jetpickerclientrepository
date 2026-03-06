@@ -7,7 +7,7 @@ import 'package:jet_picks_app/App/views/auth/jetpicker_auth/signup_screen.dart';
 import 'package:jet_picks_app/App/views/bottom_bar/picker_bottom_bar_screen.dart';
 import 'package:jet_picks_app/App/views/chat_screen/conversation_screen.dart';
 import 'package:jet_picks_app/App/views/order_detail/counter_offer_screen.dart';
-import 'package:jet_picks_app/App/views/order_screen/accept_orderdetail_screen.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_order_screen/accept_orderdetail_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/bottom_bar/orderer_bottom_bar_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/order_accepted/offer_received_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/order_accepted/order_accepted_screen.dart';
@@ -33,7 +33,7 @@ import '../views/orderer_side/delivery_route/delivery_flow_screen.dart';
 import '../views/orderer_side/orderer_profile/extra_card_screen.dart';
 import '../views/picker_view/p_profile_setup/profile_setup_screen.dart';
 import '../views/splash_screen.dart/splash_screen.dart';
-import 'package:jet_picks_app/App/views/order_screen/picker_order_detail_screen.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_order_screen/picker_order_detail_screen.dart';
 
 class AppRoutes {
   static const String splashScreen = "/";

@@ -8,7 +8,7 @@ import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 import 'package:jet_picks_app/App/widgets/radio_text.dart';
 
-import '../../utils/share_pictures.dart';
+import '../../../utils/share_pictures.dart';
 
 class AcceptOrderdetailScreen extends StatefulWidget {
   const AcceptOrderdetailScreen({super.key});
