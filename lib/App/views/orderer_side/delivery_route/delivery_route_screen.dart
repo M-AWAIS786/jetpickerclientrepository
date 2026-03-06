@@ -8,7 +8,6 @@ import '../../../constants/app_colors.dart';
 import '../../../constants/app_strings.dart';
 import '../../../data/profile_setup_data.dart';
 import '../../../widgets/custom_dropdown.dart';
-import '../../../widgets/radio_text.dart';
 
 class DeliveryRouteScreen extends StatefulWidget {
   const DeliveryRouteScreen({super.key});
@@ -101,19 +100,7 @@ class _DeliveryRouteScreenState extends State<DeliveryRouteScreen> {
                   });
                 },
               ),
-              40.h.ph,
-              Align(
-                alignment: Alignment.center,
-                child: RadioText(
-                  text: 'Use my location',
-                  isSelected: useMyLocation,
-                  onChanged: () {
-                    setState(() {
-                      useMyLocation = !useMyLocation;
-                    });
-                  },
-                ),
-              ),
+          
               51.h.ph,
               Text(
                 AppStrings.specialNotes,

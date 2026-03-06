@@ -2,17 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/models/orderer_discovery/orderer_discovery_model.dart';
-
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
-
 import '../routes/app_routes.dart';
-
 
 
 class OrdererHomeCard extends StatelessWidget {
   final OrderDiscovery order;
-
   const OrdererHomeCard({
     super.key,
     required this.order,
@@ -119,10 +115,8 @@ class OrdererHomeCard extends StatelessWidget {
             color: AppColors.yellow3,
             textColor: AppColors.black,
             onPressed: () {
-              Navigator.pushNamed(
-                context,
+              goRouter.push(
                 AppRoutes.deliveryFlowScreen,
-                arguments: order, // Pass order data to details screen
               );
             },
           ),
