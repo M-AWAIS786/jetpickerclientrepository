@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/constants/app_fontweight.dart';
 import 'package:jet_picks_app/App/constants/app_strings.dart';
@@ -31,6 +34,158 @@ class _PickerOrderDetailScreenState
     Future.microtask(() {
       ref.read(orderDetailProvider.notifier).fetchOrderDetail(widget.orderId);
     });
+  }
+
+  /// Allowed extensions for validation
+  static const _validExtensions = [
+    'jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif', 'pdf'
+  ];
+
+  /// Max file size: 100MB
+  static const _maxFileSizeBytes = 100 * 1024 * 1024;
+
+  Future<void> _pickProofFile(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: AppColors.lightGray,
+                  borderRadius: BorderRadius.circular(2.r),
+                ),
+              ),
+              16.h.ph,
+              Text(
+                AppStrings.uploadProofOfDelivery,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: AppColors.black,
+                      fontWeight: TextWeight.semiBold,
+                    ),
+              ),
+              16.h.ph,
+              ListTile(
+                leading: Icon(Icons.camera_alt_rounded,
+                    color: AppColors.red3, size: 24.sp),
+                title: Text('Take Photo',
+                    style: Theme.of(context).textTheme.bodyMedium),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickFromCamera();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library_rounded,
+                    color: AppColors.red3, size: 24.sp),
+                title: Text('Choose from Gallery',
+                    style: Theme.of(context).textTheme.bodyMedium),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickFromGallery();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.picture_as_pdf_rounded,
+                    color: AppColors.red3, size: 24.sp),
+                title: Text('Choose PDF File',
+                    style: Theme.of(context).textTheme.bodyMedium),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickPdfFile();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickFromCamera() async {
+    final picker = ImagePicker();
+    final xFile = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+    );
+    if (xFile != null) {
+      _processSelectedFile(File(xFile.path), xFile.name);
+    }
+  }
+
+  Future<void> _pickFromGallery() async {
+    final picker = ImagePicker();
+    final xFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+    if (xFile != null) {
+      _processSelectedFile(File(xFile.path), xFile.name);
+    }
+  }
+
+  Future<void> _pickPdfFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+      allowMultiple: false,
+    );
+    if (result != null && result.files.single.path != null) {
+      final file = File(result.files.single.path!);
+      final name = result.files.single.name;
+      _processSelectedFile(file, name);
+    }
+  }
+
+  Future<void> _processSelectedFile(File file, String fileName) async {
+    // Validate extension
+    final ext = fileName.split('.').last.toLowerCase();
+    if (!_validExtensions.contains(ext)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppStrings.invalidFileType),
+            backgroundColor: AppColors.red57,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r)),
+          ),
+        );
+      }
+      return;
+    }
+
+    // Validate file size
+    final fileSize = await file.length();
+    if (fileSize > _maxFileSizeBytes) {
+      if (mounted) {
+        final sizeMB = (fileSize / 1024 / 1024).toStringAsFixed(2);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                '${AppStrings.fileSizeExceeds} Your file is ${sizeMB}MB.'),
+            backgroundColor: AppColors.red57,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r)),
+          ),
+        );
+      }
+      return;
+    }
+
+    final fileSizeMB = fileSize / 1024 / 1024;
+    ref
+        .read(orderDetailProvider.notifier)
+        .setProofFile(file, fileName, fileSizeMB);
   }
 
   @override
@@ -158,9 +313,16 @@ class _PickerOrderDetailScreenState
           _ActionButtons(
             order: order,
             isLoading: state.isActionLoading,
+            showUploadSection: state.showUploadSection,
+            uploadedFileName: state.uploadedFileName,
+            uploadedFileSizeMB: state.uploadedFileSizeMB,
+            hasProofFile: state.uploadedProofFile != null,
             onAccept: () =>
                 ref.read(orderDetailProvider.notifier).acceptOrder(),
-            onMarkDelivered: () =>
+            onToggleUploadSection: () =>
+                ref.read(orderDetailProvider.notifier).toggleUploadSection(),
+            onPickFile: () => _pickProofFile(context),
+            onConfirmDelivery: () =>
                 ref.read(orderDetailProvider.notifier).markDelivered(),
           ),
           32.h.ph,
@@ -873,14 +1035,26 @@ class _OffersCard extends StatelessWidget {
 class _ActionButtons extends StatelessWidget {
   final OrderDetailModel order;
   final bool isLoading;
+  final bool showUploadSection;
+  final String? uploadedFileName;
+  final double? uploadedFileSizeMB;
+  final bool hasProofFile;
   final VoidCallback onAccept;
-  final VoidCallback onMarkDelivered;
+  final VoidCallback onToggleUploadSection;
+  final VoidCallback onPickFile;
+  final VoidCallback onConfirmDelivery;
 
   const _ActionButtons({
     required this.order,
     required this.isLoading,
+    required this.showUploadSection,
+    required this.uploadedFileName,
+    required this.uploadedFileSizeMB,
+    required this.hasProofFile,
     required this.onAccept,
-    required this.onMarkDelivered,
+    required this.onToggleUploadSection,
+    required this.onPickFile,
+    required this.onConfirmDelivery,
   });
 
   @override
@@ -898,13 +1072,170 @@ class _ActionButtons extends StatelessWidget {
               radius: 12.r,
             ),
           if (order.status.toUpperCase() == 'ACCEPTED') ...[
-            CustomButton(
-              text: AppStrings.markAsDelivered,
-              onPressed: isLoading ? null : onMarkDelivered,
-              isLoading: isLoading,
-              btnHeight: 50.h,
-              radius: 12.r,
+            // Mark as delivered toggle button
+            GestureDetector(
+              onTap: isLoading ? null : onToggleUploadSection,
+              child: Row(
+                children: [
+                  Container(
+                    width: 28.w,
+                    height: 28.h,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: showUploadSection
+                          ? AppColors.green1E
+                          : Colors.transparent,
+                      border: Border.all(
+                        color: showUploadSection
+                            ? AppColors.green1E
+                            : AppColors.labelGray,
+                        width: 2,
+                      ),
+                    ),
+                    child: showUploadSection
+                        ? Icon(Icons.check, size: 16.sp, color: Colors.white)
+                        : null,
+                  ),
+                  12.w.pw,
+                  Text(
+                    AppStrings.markAsDelivered,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: AppColors.black,
+                          fontWeight: TextWeight.semiBold,
+                        ),
+                  ),
+                ],
+              ),
             ),
+
+            // Upload Area - Shows when toggled
+            if (showUploadSection) ...[
+              20.h.ph,
+              // Dashed border upload area
+              GestureDetector(
+                onTap: isLoading ? null : onPickFile,
+                child: CustomPaint(
+                  painter: _DashedBorderPainter(
+                    color: AppColors.lightGray,
+                    strokeWidth: 1.5,
+                    dashWidth: 8,
+                    dashSpace: 5,
+                    radius: 12.r,
+                  ),
+                  child: Container(
+                    width: double.infinity,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 28.h, horizontal: 16.w),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.cloud_upload_outlined,
+                          size: 36.sp,
+                          color: AppColors.labelGray,
+                        ),
+                        10.h.ph,
+                        Text(
+                          AppStrings.uploadProofOfDelivery,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.labelGray,
+                                  ),
+                        ),
+                        8.h.ph,
+                        Text(
+                          isLoading
+                              ? AppStrings.uploading
+                              : AppStrings.clickToUpload,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: isLoading
+                                        ? AppColors.labelGray
+                                        : AppColors.red3,
+                                    fontWeight: TextWeight.semiBold,
+                                  ),
+                        ),
+                        8.h.ph,
+                        Text(
+                          AppStrings.maxFileSize,
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: AppColors.labelGray,
+                                  ),
+                        ),
+                        // Show selected file info
+                        if (uploadedFileName != null) ...[
+                          12.h.ph,
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12.w, vertical: 8.h),
+                            decoration: BoxDecoration(
+                              color: AppColors.green1E.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.check_circle_rounded,
+                                    size: 16.sp, color: AppColors.green1E),
+                                8.w.pw,
+                                Flexible(
+                                  child: Text(
+                                    '${uploadedFileName!} (${uploadedFileSizeMB?.toStringAsFixed(2)}MB)',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(color: AppColors.green1E),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        // Loading indicator
+                        if (isLoading) ...[
+                          12.h.ph,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 16.w,
+                                height: 16.h,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.red3,
+                                ),
+                              ),
+                              8.w.pw,
+                              Text(
+                                'Uploading file...',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(color: AppColors.labelGray),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              20.h.ph,
+              // Confirm Delivery Button
+              CustomButton(
+                text: isLoading
+                    ? AppStrings.uploading
+                    : AppStrings.confirmDelivery,
+                onPressed:
+                    hasProofFile && !isLoading ? onConfirmDelivery : null,
+                isLoading: isLoading,
+                btnHeight: 50.h,
+                radius: 12.r,
+              ),
+            ],
             12.h.ph,
             if (order.chatRoomId != null)
               CustomButton(
@@ -930,17 +1261,23 @@ class _ActionButtons extends StatelessWidget {
                 border: Border.all(
                     color: AppColors.green1E.withOpacity(0.3), width: 1),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
                 children: [
                   Icon(Icons.check_circle_rounded,
-                      color: AppColors.green1E, size: 22.sp),
-                  10.w.pw,
+                      color: AppColors.green1E, size: 48.sp),
+                  12.h.ph,
                   Text(
-                    AppStrings.deliveryCompleted,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    AppStrings.orderDeliveredSuccessfully,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: AppColors.green1E,
                           fontWeight: TextWeight.semiBold,
+                        ),
+                  ),
+                  6.h.ph,
+                  Text(
+                    AppStrings.thankYouForDelivery,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.green1E,
                         ),
                   ),
                 ],
@@ -949,6 +1286,62 @@ class _ActionButtons extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Dashed Border Painter (for upload area)
+// ─────────────────────────────────────────────────────────────
+class _DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double dashWidth;
+  final double dashSpace;
+  final double radius;
+
+  _DashedBorderPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.dashWidth,
+    required this.dashSpace,
+    required this.radius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final rrect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Radius.circular(radius),
+    );
+
+    final path = Path()..addRRect(rrect);
+    final metrics = path.computeMetrics();
+
+    for (final metric in metrics) {
+      double distance = 0;
+      while (distance < metric.length) {
+        final end = distance + dashWidth;
+        canvas.drawPath(
+          metric.extractPath(distance, end.clamp(0, metric.length)),
+          paint,
+        );
+        distance = end + dashSpace;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DashedBorderPainter oldDelegate) {
+    return oldDelegate.color != color ||
+        oldDelegate.strokeWidth != strokeWidth ||
+        oldDelegate.dashWidth != dashWidth ||
+        oldDelegate.dashSpace != dashSpace ||
+        oldDelegate.radius != radius;
   }
 }
 

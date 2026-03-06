@@ -192,6 +192,19 @@ class AppStrings {
   static const String markAsDelivered = 'Mark as delivered';
   static const String uploadProofOfDelivery =
       'Upload proof of delivery/ Receipt';
+  static const String clickToUpload = 'Click to upload';
+  static const String maxFileSize =
+      'Max 100MB • All image formats (JPEG, PNG, WebP, GIF, HEIC) or PDF';
+  static const String fileSizeExceeds =
+      'File size exceeds 100MB limit.';
+  static const String invalidFileType =
+      'Invalid file type. Allowed: JPEG, PNG, WebP, GIF, HEIC, PDF.';
+  static const String confirmDelivery = 'Confirm Delivery';
+  static const String uploading = 'Uploading...';
+  static const String orderDeliveredSuccessfully =
+      'Order Delivered Successfully';
+  static const String thankYouForDelivery =
+      'Thank you for completing this delivery';
 
   // Profile Screen Strings
   static const String profiletext = 'Profile';

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:jet_picks_app/App/constants/app_urls.dart';
 import 'package:jet_picks_app/App/data/network_api_services.dart';
 import 'package:jet_picks_app/App/models/order/picker_order_model.dart';
@@ -41,13 +42,21 @@ class OrderRepository {
     return response;
   }
 
-  /// PUT /api/orders/{orderId}/mark-delivered
+  /// PUT /api/orders/{orderId}/mark-delivered (multipart with proof file)
   Future<Map<String, dynamic>> markDelivered({
     required String token,
     required String orderId,
+    required File proofFile,
   }) async {
     final url = AppUrls.markDeliveredUrl(orderId);
-    final response = await _apiServices.putApi({}, url, token);
+    final response = await _apiServices.putApi(
+      {},
+      url,
+      token,
+      isJson: false,
+      files: [proofFile],
+      fileFields: ['proof_of_delivery'],
+    );
     return response;
   }
 }
