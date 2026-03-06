@@ -198,7 +198,10 @@ final GoRouter goRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.orderHistoryDetailScreen,
-      builder: (context, state) => OrderHistorydetailScreen(),
+      builder: (context, state) {
+        final orderId = state.uri.queryParameters['orderId'] ?? '';
+        return OrderHistorydetailScreen(orderId: orderId);
+      },
     ),
     GoRoute(
       path: AppRoutes.deliveryFlowScreen,

@@ -55,6 +55,15 @@ class LoginViewModel extends Notifier<LoginState> {
         country: response.user.country,
       );
 
+      // Persist user roles & set default active role
+      await UserPreferences.saveUserRoles(response.user.roles);
+      final currentRole = await UserPreferences.getActiveRole();
+      if (currentRole == null || !response.user.roles.contains(currentRole)) {
+        await UserPreferences.saveActiveRole(
+          response.user.roles.isNotEmpty ? response.user.roles.first : 'PICKER',
+        );
+      }
+
       state = state.copyWith(isLoading: false, response: response);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());

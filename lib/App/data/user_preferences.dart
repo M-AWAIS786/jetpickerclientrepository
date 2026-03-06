@@ -8,6 +8,8 @@ class UserPreferences {
   static const String _phoneKey = 'phone_number';
   static const String _avatarUrlKey = 'avatar_url';
   static const String _countryKey = 'country';
+  static const String _activeRoleKey = 'active_role';
+  static const String _userRolesKey = 'user_roles';
 
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -54,6 +56,31 @@ class UserPreferences {
   static Future<String?> getAvatarUrl() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_avatarUrlKey);
+  }
+
+  static Future<void> saveActiveRole(String role) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_activeRoleKey, role);
+  }
+
+  static Future<String?> getActiveRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_activeRoleKey);
+  }
+
+  static Future<void> saveUserRoles(List<String> roles) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_userRolesKey, roles);
+  }
+
+  static Future<List<String>> getUserRoles() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(_userRolesKey) ?? [];
+  }
+
+  static Future<bool> canSwitchRole() async {
+    final roles = await getUserRoles();
+    return roles.length > 1;
   }
 
   static Future<void> clearAll() async {

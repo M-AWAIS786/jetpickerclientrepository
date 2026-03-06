@@ -1,6 +1,6 @@
 class AppUrls {
   static const String baseUrl = 'https://api.jetpicks.com/api';
-  static const String storageUrl = 'https://api.jetpicks.com'; // for relative paths like /storage/...
+  static const String storageUrl = 'https://api.jetpicks.com'; 
   static const String loginUrl = '$baseUrl/auth/login';
   static const String signupUrl = '$baseUrl/auth/register';
   static const String countriesUrl = '$baseUrl/locations/countries';
@@ -13,6 +13,9 @@ class AppUrls {
   static const String pickerOrdersUrl = '$baseUrl/orders/picker/history';
   // Picker Dashboard
   static const String pickerDashboardUrl = '$baseUrl/dashboard/picker';
+  // Orderer Orders
+  static const String ordererOrdersUrl = '$baseUrl/orders';
+  static String cancelOrderUrl(String orderId) => '$baseUrl/orders/$orderId';
   static String orderDetailUrl(String orderId) => '$baseUrl/orders/$orderId';
   static String acceptOrderUrl(String orderId) => '$baseUrl/orders/$orderId/accept';
   static String markDeliveredUrl(String orderId) => '$baseUrl/orders/$orderId/mark-delivered';

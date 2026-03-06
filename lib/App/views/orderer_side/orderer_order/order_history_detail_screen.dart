@@ -13,7 +13,8 @@ import 'package:jet_picks_app/App/widgets/radio_text.dart';
 import '../../../utils/share_pictures.dart';
 
 class OrderHistorydetailScreen extends StatefulWidget {
-  const OrderHistorydetailScreen({super.key});
+  final String orderId;
+  const OrderHistorydetailScreen({super.key, required this.orderId});
 
   @override
   State<OrderHistorydetailScreen> createState() =>

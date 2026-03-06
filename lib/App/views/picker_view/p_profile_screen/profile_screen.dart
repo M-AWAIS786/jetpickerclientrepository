@@ -12,6 +12,7 @@ import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/user_profile/user_profile_view_model.dart';
 import 'package:jet_picks_app/App/utils/share_pictures.dart';
+import 'package:jet_picks_app/App/widgets/role_toggle.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -112,17 +113,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                         fontWeight: TextWeight.bold,
                                       ),
                                 ),
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: SharePictures(
-                                    imagePath: AppImages.bellIcon,
-                                    width: 22.w,
-                                    height: 22.h,
-                                    colorFilter: const ColorFilter.mode(
-                                      AppColors.white,
-                                      BlendMode.srcIn,
+                                Row(
+                                  children: [
+                                    const RoleToggle(currentRole: 'PICKER'),
+                                    12.w.pw,
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: SharePictures(
+                                        imagePath: AppImages.bellIcon,
+                                        width: 22.w,
+                                        height: 22.h,
+                                        colorFilter: const ColorFilter.mode(
+                                          AppColors.white,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -306,7 +313,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 arrowColor: AppColors.red57,
                                 iconBgColor: AppColors.red57.withValues(alpha: 0.1),
                                 showDivider: false,
-                                onTap: () {},
+                                onTap: () {
+                                  goRouter.go(AppRoutes.loginScreen);
+                                },
                               ),
                             ],
                           ),

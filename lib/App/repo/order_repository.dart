@@ -4,6 +4,7 @@ import 'package:jet_picks_app/App/data/network_api_services.dart';
 import 'package:jet_picks_app/App/models/order/picker_order_model.dart';
 import 'package:jet_picks_app/App/models/order/order_detail_model.dart';
 import 'package:jet_picks_app/App/models/order/picker_dashboard_model.dart';
+import 'package:jet_picks_app/App/models/order/orderer_order_model.dart';
 
 class OrderRepository {
   final NetworkApiServices _apiServices = NetworkApiServices();
@@ -103,6 +104,31 @@ class OrderRepository {
       AppUrls.createOfferUrl,
       token,
     );
+    return response;
+  }
+
+  /// GET /api/orders?status=&page=&limit= (Orderer side)
+  Future<OrdererOrdersResponse> getOrdererOrders({
+    required String token,
+    String? status,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    String url = '${AppUrls.ordererOrdersUrl}?page=$page&limit=$limit';
+    if (status != null && status.isNotEmpty) {
+      url += '&status=$status';
+    }
+    final response = await _apiServices.getApi(url, token);
+    return OrdererOrdersResponse.fromJson(response);
+  }
+
+  /// DELETE /api/orders/{orderId} (Cancel order - Orderer side)
+  Future<Map<String, dynamic>> cancelOrder({
+    required String token,
+    required String orderId,
+  }) async {
+    final url = AppUrls.cancelOrderUrl(orderId);
+    final response = await _apiServices.deleteApi(url, token, null);
     return response;
   }
 }

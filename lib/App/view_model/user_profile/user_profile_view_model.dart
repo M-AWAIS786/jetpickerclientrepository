@@ -72,6 +72,9 @@ class UserProfileViewModel extends Notifier<UserProfileState> {
         avatarUrl: response.user.avatarUrl,
         country: response.user.country,
       );
+      // Persist user roles for role switching
+      await UserPreferences.saveUserRoles(response.user.roles);
+
       state = state.copyWith(isLoading: false, profile: response.user);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());

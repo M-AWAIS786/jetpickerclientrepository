@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jet_picks_app/App/data/user_preferences.dart';
 import 'package:jet_picks_app/App/models/auth/signup_model.dart';
 import 'package:jet_picks_app/App/repo/auth_repository.dart';
 
@@ -60,6 +61,12 @@ class SignupViewModel extends Notifier<SignupState> {
       );
 
       final response = await _authRepository.signup(request);
+
+      // Persist user roles & set default active role
+      await UserPreferences.saveUserRoles(response.user.roles);
+      if (response.user.roles.isNotEmpty) {
+        await UserPreferences.saveActiveRole(response.user.roles.first);
+      }
 
       state = state.copyWith(isLoading: false, response: response);
     } catch (e) {
