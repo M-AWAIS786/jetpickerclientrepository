@@ -14,6 +14,9 @@ class OrderDetailState {
   final File? uploadedProofFile;
   final String? uploadedFileName;
   final double? uploadedFileSizeMB;
+  final bool agreedToTerms;
+  final bool agreedToCustomLaws;
+  final bool hasCounterOffer;
 
   const OrderDetailState({
     this.isLoading = false,
@@ -25,7 +28,12 @@ class OrderDetailState {
     this.uploadedProofFile,
     this.uploadedFileName,
     this.uploadedFileSizeMB,
+    this.agreedToTerms = false,
+    this.agreedToCustomLaws = false,
+    this.hasCounterOffer = false,
   });
+
+  bool get canProceed => agreedToTerms && agreedToCustomLaws;
 
   OrderDetailState copyWith({
     bool? isLoading,
@@ -40,6 +48,9 @@ class OrderDetailState {
     String? uploadedFileName,
     double? uploadedFileSizeMB,
     bool clearProofFile = false,
+    bool? agreedToTerms,
+    bool? agreedToCustomLaws,
+    bool? hasCounterOffer,
   }) {
     return OrderDetailState(
       isLoading: isLoading ?? this.isLoading,
@@ -51,6 +62,9 @@ class OrderDetailState {
       uploadedProofFile: clearProofFile ? null : uploadedProofFile ?? this.uploadedProofFile,
       uploadedFileName: clearProofFile ? null : uploadedFileName ?? this.uploadedFileName,
       uploadedFileSizeMB: clearProofFile ? null : uploadedFileSizeMB ?? this.uploadedFileSizeMB,
+      agreedToTerms: agreedToTerms ?? this.agreedToTerms,
+      agreedToCustomLaws: agreedToCustomLaws ?? this.agreedToCustomLaws,
+      hasCounterOffer: hasCounterOffer ?? this.hasCounterOffer,
     );
   }
 }
@@ -76,10 +90,39 @@ class OrderDetailViewModel extends Notifier<OrderDetailState> {
         orderId: orderId,
       );
 
-      state = state.copyWith(isLoading: false, order: order);
+      // Check if a counter offer already exists for this order
+      bool counterOfferExists = false;
+      try {
+        final offersRes = await _orderRepository.getOfferHistory(
+          token: token,
+          orderId: orderId,
+        );
+        final offersList = offersRes['data'] ?? offersRes;
+        if (offersList is List) {
+          counterOfferExists = offersList.any((offer) =>
+              offer['offer_type'] == 'COUNTER' &&
+              (offer['status'] == 'PENDING' || offer['status'] == 'ACCEPTED'));
+        }
+      } catch (_) {
+        // Silently fail – don't block the order detail from loading
+      }
+
+      state = state.copyWith(
+        isLoading: false,
+        order: order,
+        hasCounterOffer: counterOfferExists,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
+  }
+
+  void toggleAgreedToTerms(bool value) {
+    state = state.copyWith(agreedToTerms: value);
+  }
+
+  void toggleAgreedToCustomLaws(bool value) {
+    state = state.copyWith(agreedToCustomLaws: value);
   }
 
   Future<void> acceptOrder() async {

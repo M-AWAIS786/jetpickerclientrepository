@@ -143,7 +143,10 @@ final GoRouter goRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.counterOfferScreen,
-      builder: (context, state) => CounterOfferScreen(),
+      builder: (context, state) {
+        final orderId = state.uri.queryParameters['orderId'] ?? '';
+        return CounterOfferScreen(orderId: orderId);
+      },
     ),
     GoRoute(
       path: AppRoutes.conversationScreen,

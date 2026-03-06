@@ -3,9 +3,21 @@ import 'package:jet_picks_app/App/constants/app_urls.dart';
 import 'package:jet_picks_app/App/data/network_api_services.dart';
 import 'package:jet_picks_app/App/models/order/picker_order_model.dart';
 import 'package:jet_picks_app/App/models/order/order_detail_model.dart';
+import 'package:jet_picks_app/App/models/order/picker_dashboard_model.dart';
 
 class OrderRepository {
   final NetworkApiServices _apiServices = NetworkApiServices();
+
+  /// GET /api/dashboard/picker?page=&limit=
+  Future<PickerDashboardData> getPickerDashboard({
+    required String token,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final url = '${AppUrls.pickerDashboardUrl}?page=$page&limit=$limit';
+    final response = await _apiServices.getApi(url, token);
+    return PickerDashboardResponse.fromJson(response).data;
+  }
 
   /// GET /api/orders/picker/history?status=&page=&limit=
   Future<PickerOrdersResponse> getPickerOrders({
@@ -56,6 +68,40 @@ class OrderRepository {
       isJson: false,
       files: [proofFile],
       fileFields: ['proof_of_delivery'],
+    );
+    return response;
+  }
+
+  /// GET /api/orders/{orderId}/offers?page=&limit=
+  Future<Map<String, dynamic>> getOfferHistory({
+    required String token,
+    required String orderId,
+    int page = 1,
+    int limit = 100,
+  }) async {
+    final url = '${AppUrls.offerHistoryUrl(orderId)}?page=$page&limit=$limit';
+    final response = await _apiServices.getApi(url, token);
+    return response;
+  }
+
+  /// POST /api/offers  { order_id, offer_amount, parent_offer_id }
+  Future<Map<String, dynamic>> sendCounterOffer({
+    required String token,
+    required String orderId,
+    required double offerAmount,
+    String? parentOfferId,
+  }) async {
+    final data = <String, dynamic>{
+      'order_id': orderId,
+      'offer_amount': offerAmount,
+    };
+    if (parentOfferId != null) {
+      data['parent_offer_id'] = parentOfferId;
+    }
+    final response = await _apiServices.postApi(
+      data,
+      AppUrls.createOfferUrl,
+      token,
     );
     return response;
   }

@@ -11,10 +11,18 @@ class AppUrls {
   static const String userAvatarUrl = '$baseUrl/user/avatar';
   // Picker Orders
   static const String pickerOrdersUrl = '$baseUrl/orders/picker/history';
+  // Picker Dashboard
+  static const String pickerDashboardUrl = '$baseUrl/dashboard/picker';
   static String orderDetailUrl(String orderId) => '$baseUrl/orders/$orderId';
   static String acceptOrderUrl(String orderId) => '$baseUrl/orders/$orderId/accept';
   static String markDeliveredUrl(String orderId) => '$baseUrl/orders/$orderId/mark-delivered';
   static String deliveryStatusUrl(String orderId) => '$baseUrl/orders/$orderId/delivery-status';
+
+  // Offers
+  static String offerHistoryUrl(String orderId) => '$baseUrl/orders/$orderId/offers';
+  static const String createOfferUrl = '$baseUrl/offers';
+  static String acceptOfferUrl(String offerId) => '$baseUrl/offers/$offerId/accept';
+  static String rejectOfferUrl(String offerId) => '$baseUrl/offers/$offerId/reject';
 
   /// Converts a relative path e.g. /storage/avatars/x.jpg → full URL
   static String resolveUrl(String? path) {

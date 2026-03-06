@@ -317,8 +317,20 @@ class _PickerOrderDetailScreenState
             uploadedFileName: state.uploadedFileName,
             uploadedFileSizeMB: state.uploadedFileSizeMB,
             hasProofFile: state.uploadedProofFile != null,
+            agreedToTerms: state.agreedToTerms,
+            agreedToCustomLaws: state.agreedToCustomLaws,
+            hasCounterOffer: state.hasCounterOffer,
+            onToggleTerms: (val) =>
+                ref.read(orderDetailProvider.notifier).toggleAgreedToTerms(val),
+            onToggleCustomLaws: (val) =>
+                ref.read(orderDetailProvider.notifier).toggleAgreedToCustomLaws(val),
             onAccept: () =>
                 ref.read(orderDetailProvider.notifier).acceptOrder(),
+            onSendCounterOffer: () {
+              context.push(
+                '${AppRoutes.counterOfferScreen}?orderId=${order.id}',
+              );
+            },
             onToggleUploadSection: () =>
                 ref.read(orderDetailProvider.notifier).toggleUploadSection(),
             onPickFile: () => _pickProofFile(context),
@@ -1039,7 +1051,13 @@ class _ActionButtons extends StatelessWidget {
   final String? uploadedFileName;
   final double? uploadedFileSizeMB;
   final bool hasProofFile;
+  final bool agreedToTerms;
+  final bool agreedToCustomLaws;
+  final bool hasCounterOffer;
+  final ValueChanged<bool> onToggleTerms;
+  final ValueChanged<bool> onToggleCustomLaws;
   final VoidCallback onAccept;
+  final VoidCallback onSendCounterOffer;
   final VoidCallback onToggleUploadSection;
   final VoidCallback onPickFile;
   final VoidCallback onConfirmDelivery;
@@ -1051,7 +1069,13 @@ class _ActionButtons extends StatelessWidget {
     required this.uploadedFileName,
     required this.uploadedFileSizeMB,
     required this.hasProofFile,
+    required this.agreedToTerms,
+    required this.agreedToCustomLaws,
+    required this.hasCounterOffer,
+    required this.onToggleTerms,
+    required this.onToggleCustomLaws,
     required this.onAccept,
+    required this.onSendCounterOffer,
     required this.onToggleUploadSection,
     required this.onPickFile,
     required this.onConfirmDelivery,
@@ -1059,18 +1083,58 @@ class _ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool canProceed = agreedToTerms && agreedToCustomLaws;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         children: [
-          if (order.status.toUpperCase() == 'PENDING')
+          if (order.status.toUpperCase() == 'PENDING') ...[
+            // ── Agreements Section ──
+            _AgreementCheckbox(
+              value: agreedToTerms,
+              label: AppStrings.iAgreetoTermConditions,
+              onChanged: onToggleTerms,
+            ),
+            12.h.ph,
+            _AgreementCheckbox(
+              value: agreedToCustomLaws,
+              label: AppStrings.iAgreetoCustomLaws,
+              onChanged: onToggleCustomLaws,
+            ),
+            20.h.ph,
+
+            // ── Accept Delivery Button ──
             CustomButton(
               text: AppStrings.acceptDelivery,
-              onPressed: isLoading ? null : onAccept,
+              onPressed: canProceed && !isLoading ? onAccept : null,
               isLoading: isLoading,
+              color: canProceed ? AppColors.red3 : AppColors.lightGray,
+              textColor: canProceed ? Colors.white : AppColors.labelGray,
               btnHeight: 50.h,
               radius: 12.r,
             ),
+            12.h.ph,
+
+            // ── Send Counter Offer Button ──
+            CustomButton(
+              text: hasCounterOffer
+                  ? 'Counter Offer Sent'
+                  : AppStrings.sendCounterOffer,
+              onPressed: canProceed && !hasCounterOffer
+                  ? onSendCounterOffer
+                  : null,
+              color: AppColors.white,
+              textColor: canProceed && !hasCounterOffer
+                  ? AppColors.black
+                  : AppColors.labelGray,
+              borderColor: canProceed && !hasCounterOffer
+                  ? AppColors.greyDD
+                  : AppColors.lightGray,
+              btnHeight: 50.h,
+              radius: 12.r,
+            ),
+          ],
           if (order.status.toUpperCase() == 'ACCEPTED') ...[
             // Mark as delivered toggle button
             GestureDetector(
@@ -1369,6 +1433,54 @@ class _SectionCard extends StatelessWidget {
         ],
       ),
       child: child,
+    );
+  }
+}
+
+class _AgreementCheckbox extends StatelessWidget {
+  final bool value;
+  final String label;
+  final ValueChanged<bool> onChanged;
+
+  const _AgreementCheckbox({
+    required this.value,
+    required this.label,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: Row(
+        children: [
+          Container(
+            width: 28.w,
+            height: 28.h,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: value ? AppColors.green1E : Colors.transparent,
+              border: Border.all(
+                color: value ? AppColors.green1E : AppColors.labelGray,
+                width: 2,
+              ),
+            ),
+            child: value
+                ? Icon(Icons.check, size: 16.sp, color: Colors.white)
+                : null,
+          ),
+          12.w.pw,
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.black,
+                    fontWeight: TextWeight.semiBold,
+                  ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
