@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
+import 'package:jet_picks_app/App/models/orderer_discovery/orderer_discovery_model.dart';
 
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 
 import '../routes/app_routes.dart';
 
+
+
 class OrdererHomeCard extends StatelessWidget {
-  const OrdererHomeCard({super.key});
+  final OrderDiscovery order;
+
+  const OrdererHomeCard({
+    super.key,
+    required this.order,
+  });
+
+  String _getInitials(String fullName) {
+    if (fullName.isEmpty) return '?';
+    final names = fullName.split(' ');
+    if (names.length > 1) {
+      return '${names[0][0]}${names[1][0]}'.toUpperCase();
+    }
+    return fullName[0].toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +37,13 @@ class OrdererHomeCard extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withValues(alpha: .3),
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-
         children: [
           Padding(
             padding: EdgeInsets.only(left: 20.w, right: 10.w, top: 10.h),
@@ -36,27 +52,32 @@ class OrdererHomeCard extends StatelessWidget {
                 CircleAvatar(
                   radius: 22.r,
                   backgroundColor: AppColors.lightGray,
-                  child: Center(child: Text('M')),
+                  child: Center(
+                    child: Text(
+                      _getInitials(order.orderer.fullName),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
                 8.w.pw,
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Methew M.',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelLarge?.copyWith(color: AppColors.black),
+                      order.orderer.fullName,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-
                     Row(
                       children: [
                         Text(
-                          '4.8',
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(color: AppColors.black),
+                          order.orderer.rating.toString(),
+                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            color: AppColors.black,
+                          ),
                         ),
-
                         Icon(
                           Icons.star,
                           color: AppColors.starColor,
@@ -69,7 +90,6 @@ class OrdererHomeCard extends StatelessWidget {
               ],
             ),
           ),
-
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 17.h),
             child: Container(
@@ -78,18 +98,18 @@ class OrdererHomeCard extends StatelessWidget {
               decoration: BoxDecoration(color: AppColors.yellow1),
               child: Center(
                 child: Text(
-                  'From London - Madrid \n 25 Nov',
+                  'From ${order.originCity} - ${order.destinationCity}\n'
+                  '${_formatDate(order.earliestDeliveryDate)}',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
               ),
             ),
           ),
-
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: Text(
-              'Available space: 10kg    Fee: \$10/kg',
+              'Items: ${order.itemsCount}    Reward: ${order.rewardAmount} ${order.currency}',
               style: Theme.of(context).textTheme.labelMedium,
             ),
           ),
@@ -99,11 +119,27 @@ class OrdererHomeCard extends StatelessWidget {
             color: AppColors.yellow3,
             textColor: AppColors.black,
             onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.deliveryFlowScreen);
+              Navigator.pushNamed(
+                context,
+                AppRoutes.deliveryFlowScreen,
+                arguments: order, // Pass order data to details screen
+              );
             },
           ),
         ],
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day} ${_getMonth(date.month)} ${date.year}';
+  }
+
+  String _getMonth(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[month - 1];
   }
 }

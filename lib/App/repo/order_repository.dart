@@ -131,4 +131,59 @@ class OrderRepository {
     final response = await _apiServices.deleteApi(url, token, null);
     return response;
   }
+
+  /// PUT /api/orders/{orderId}/confirm-delivery (Orderer side)
+  Future<Map<String, dynamic>> confirmDeliveryOrderer({
+    required String token,
+    required String orderId,
+  }) async {
+    final url = AppUrls.confirmDeliveryUrl(orderId);
+    final response = await _apiServices.putApi({}, url, token);
+    return response;
+  }
+
+  /// PUT /api/orders/{orderId}/report-issue (Orderer side)
+  Future<Map<String, dynamic>> reportIssue({
+    required String token,
+    required String orderId,
+    required String reason,
+  }) async {
+    final url = AppUrls.reportIssueUrl(orderId);
+    final response = await _apiServices.putApi({
+      'reason': reason,
+    }, url, token);
+    return response;
+  }
+
+  /// POST /api/reviews  { order_id, rating, comment, reviewee_id }
+  Future<Map<String, dynamic>> submitReview({
+    required String token,
+    required String orderId,
+    required int rating,
+    required String comment,
+    required String revieweeId,
+  }) async {
+    final data = <String, dynamic>{
+      'order_id': orderId,
+      'rating': rating,
+      'comment': comment,
+      'reviewee_id': revieweeId,
+    };
+    final response = await _apiServices.postApi(data, AppUrls.reviewsUrl, token);
+    return response;
+  }
+
+  /// POST /api/tips  { order_id, amount }
+  Future<Map<String, dynamic>> submitTip({
+    required String token,
+    required String orderId,
+    required double amount,
+  }) async {
+    final data = <String, dynamic>{
+      'order_id': orderId,
+      'amount': amount,
+    };
+    final response = await _apiServices.postApi(data, AppUrls.tipsUrl, token);
+    return response;
+  }
 }

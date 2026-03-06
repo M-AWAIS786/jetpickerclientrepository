@@ -198,6 +198,111 @@ class OrderDetailViewModel extends Notifier<OrderDetailState> {
     }
   }
 
+  Future<void> confirmDeliveryOrderer() async {
+    if (state.order == null) return;
+    state = state.copyWith(isActionLoading: true, clearError: true, clearSuccess: true);
+
+    try {
+      final token = await UserPreferences.getToken();
+      if (token == null) throw Exception('Not authenticated');
+
+      await _orderRepository.confirmDeliveryOrderer(
+        token: token,
+        orderId: state.order!.id,
+      );
+
+      state = state.copyWith(
+        isActionLoading: false,
+        successMessage: 'Delivery confirmed successfully!',
+      );
+
+      await fetchOrderDetail(state.order!.id);
+    } catch (e) {
+      state = state.copyWith(isActionLoading: false, errorMessage: e.toString());
+    }
+  }
+
+  Future<void> reportIssueOrderer(String reason) async {
+    if (state.order == null) return;
+    state = state.copyWith(isActionLoading: true, clearError: true, clearSuccess: true);
+
+    try {
+      final token = await UserPreferences.getToken();
+      if (token == null) throw Exception('Not authenticated');
+
+      await _orderRepository.reportIssue(
+        token: token,
+        orderId: state.order!.id,
+        reason: reason,
+      );
+
+      state = state.copyWith(
+        isActionLoading: false,
+        successMessage: 'Issue reported successfully!',
+      );
+
+      await fetchOrderDetail(state.order!.id);
+    } catch (e) {
+      state = state.copyWith(isActionLoading: false, errorMessage: e.toString());
+    }
+  }
+
+  Future<void> submitReviewOrderer({
+    required int rating,
+    required String comment,
+    required String revieweeId,
+  }) async {
+    if (state.order == null) return;
+    state = state.copyWith(isActionLoading: true, clearError: true, clearSuccess: true);
+
+    try {
+      final token = await UserPreferences.getToken();
+      if (token == null) throw Exception('Not authenticated');
+
+      await _orderRepository.submitReview(
+        token: token,
+        orderId: state.order!.id,
+        rating: rating,
+        comment: comment,
+        revieweeId: revieweeId,
+      );
+
+      state = state.copyWith(
+        isActionLoading: false,
+        successMessage: 'Review submitted successfully!',
+      );
+
+      await fetchOrderDetail(state.order!.id);
+    } catch (e) {
+      state = state.copyWith(isActionLoading: false, errorMessage: e.toString());
+    }
+  }
+
+  Future<void> submitTipOrderer(double amount) async {
+    if (state.order == null) return;
+    state = state.copyWith(isActionLoading: true, clearError: true, clearSuccess: true);
+
+    try {
+      final token = await UserPreferences.getToken();
+      if (token == null) throw Exception('Not authenticated');
+
+      await _orderRepository.submitTip(
+        token: token,
+        orderId: state.order!.id,
+        amount: amount,
+      );
+
+      state = state.copyWith(
+        isActionLoading: false,
+        successMessage: 'Tip submitted successfully!',
+      );
+
+      await fetchOrderDetail(state.order!.id);
+    } catch (e) {
+      state = state.copyWith(isActionLoading: false, errorMessage: e.toString());
+    }
+  }
+
   void clearMessages() {
     state = state.copyWith(clearError: true, clearSuccess: true);
   }

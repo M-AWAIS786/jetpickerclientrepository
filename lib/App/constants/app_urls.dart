@@ -21,11 +21,21 @@ class AppUrls {
   static String markDeliveredUrl(String orderId) => '$baseUrl/orders/$orderId/mark-delivered';
   static String deliveryStatusUrl(String orderId) => '$baseUrl/orders/$orderId/delivery-status';
 
+  // Orderer specific actions
+  static String confirmDeliveryUrl(String orderId) => '$baseUrl/orders/$orderId/confirm-delivery';
+  static String reportIssueUrl(String orderId) => '$baseUrl/orders/$orderId/report-issue';
+  static const String reviewsUrl = '$baseUrl/reviews';
+  static const String tipsUrl = '$baseUrl/tips';
+
   // Offers
   static String offerHistoryUrl(String orderId) => '$baseUrl/orders/$orderId/offers';
   static const String createOfferUrl = '$baseUrl/offers';
   static String acceptOfferUrl(String offerId) => '$baseUrl/offers/$offerId/accept';
   static String rejectOfferUrl(String offerId) => '$baseUrl/offers/$offerId/reject';
+
+
+  // Orderer Dashboard
+  static const String ordererDashboardUrl = '$baseUrl/orders/available';
 
   /// Converts a relative path e.g. /storage/avatars/x.jpg → full URL
   static String resolveUrl(String? path) {
