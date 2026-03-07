@@ -7,6 +7,7 @@ import 'package:jet_picks_app/App/routes/app_routes.dart';
 
 void main() {
   runApp(ProviderScope(child: const MyApp()));
+  //
 }
 
 class MyApp extends StatelessWidget {
