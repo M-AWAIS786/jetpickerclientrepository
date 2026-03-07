@@ -45,6 +45,13 @@ class AppUrls {
   // Active draft
   static const String activeDraftOrderUrl = '$baseUrl/orders?status=DRAFT&page=1&limit=1';
 
+  // ── Chat ──
+  static const String chatRoomsUrl = '$baseUrl/chat-rooms';
+  static const String getOrCreateChatRoomUrl = '$baseUrl/chat-rooms/get-or-create';
+  static String chatRoomDetailUrl(String roomId) => '$baseUrl/chat-rooms/$roomId';
+  static String chatRoomMessagesUrl(String roomId) => '$baseUrl/chat-rooms/$roomId/messages';
+  static String markMessageReadUrl(String messageId) => '$baseUrl/chat-messages/$messageId/read';
+
   /// Converts a relative path e.g. /storage/avatars/x.jpg → full URL
   static String resolveUrl(String? path) {
     if (path == null || path.isEmpty) return '';

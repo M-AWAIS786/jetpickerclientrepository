@@ -1305,8 +1305,10 @@ class _ActionButtons extends StatelessWidget {
               CustomButton(
                 text: AppStrings.startChat,
                 onPressed: () {
-                  // Navigate to chat conversation
-                  context.push(AppRoutes.conversationScreen);
+                  // Navigate to chat conversation with chatRoomId
+                  context.push(
+                    '${AppRoutes.conversationScreen}?chatRoomId=${order.chatRoomId}',
+                  );
                 },
                 color: AppColors.white,
                 textColor: AppColors.red3,

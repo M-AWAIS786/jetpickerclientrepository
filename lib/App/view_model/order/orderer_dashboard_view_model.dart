@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jet_picks_app/App/data/user_preferences.dart';
+import 'package:jet_picks_app/App/models/order/orderer_order_model.dart';
 import 'package:jet_picks_app/App/repo/order_repository.dart';
 
 class AvailablePicker {
@@ -58,6 +59,34 @@ class AvailablePicker {
     if (parts.length > 1) return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     return pickerName[0].toUpperCase();
   }
+
+  /// Hours left until departure (returns 0 if already past)
+  int get hoursUntilDeparture {
+    if (departureDate.isEmpty) return 0;
+    try {
+      final dep = DateTime.parse(departureDate);
+      final diff = dep.difference(DateTime.now()).inHours;
+      return diff > 0 ? diff : 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  /// Capacity used percentage (simulate based on luggage weight — lower weight = more used)
+  double get capacityUsedPercent {
+    // Max capacity assumed 30kg; the remaining is luggageWeightCapacity
+    const maxCapacity = 30.0;
+    if (luggageWeightCapacity >= maxCapacity) return 0.0;
+    return ((maxCapacity - luggageWeightCapacity) / maxCapacity).clamp(0.0, 1.0);
+  }
+
+  /// Short first name + last initial
+  String get shortName {
+    if (pickerName.isEmpty) return 'Unknown';
+    final parts = pickerName.split(' ');
+    if (parts.length > 1) return '${parts[0]} ${parts[1][0]}.';
+    return parts[0];
+  }
 }
 
 double _toDouble(dynamic value) {
@@ -72,23 +101,31 @@ class OrdererDashboardState {
   final bool isLoading;
   final String? errorMessage;
   final List<AvailablePicker> pickers;
+  final List<OrdererOrderModel> activeOrders;
+  final String userName;
 
   const OrdererDashboardState({
     this.isLoading = false,
     this.errorMessage,
     this.pickers = const [],
+    this.activeOrders = const [],
+    this.userName = '',
   });
 
   OrdererDashboardState copyWith({
     bool? isLoading,
     String? errorMessage,
     List<AvailablePicker>? pickers,
+    List<OrdererOrderModel>? activeOrders,
+    String? userName,
     bool clearError = false,
   }) {
     return OrdererDashboardState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
       pickers: pickers ?? this.pickers,
+      activeOrders: activeOrders ?? this.activeOrders,
+      userName: userName ?? this.userName,
     );
   }
 }
@@ -108,6 +145,9 @@ class OrdererDashboardViewModel extends Notifier<OrdererDashboardState> {
       final token = await UserPreferences.getToken();
       if (token == null) throw Exception('Not authenticated');
 
+      // Fetch user name
+      final fullName = await UserPreferences.getFullName() ?? '';
+
       final response = await _repo.getOrdererDashboard(token: token);
       final data = response['data'] ?? response;
       final pickersRaw =
@@ -117,7 +157,31 @@ class OrdererDashboardViewModel extends Notifier<OrdererDashboardState> {
           .map((e) => AvailablePicker.fromJson(e as Map<String, dynamic>))
           .toList();
 
-      state = state.copyWith(isLoading: false, pickers: pickers);
+      // Fetch active orders (non-draft, non-cancelled, non-delivered)
+      List<OrdererOrderModel> activeOrders = [];
+      try {
+        final ordersResponse = await _repo.getOrdererOrders(
+          token: token,
+          page: 1,
+          limit: 5,
+        );
+        activeOrders = ordersResponse.orders
+            .where((o) =>
+                !o.isDraft &&
+                o.statusLower != 'cancelled' &&
+                o.statusLower != 'delivered')
+            .take(3)
+            .toList();
+      } catch (_) {
+        // Silently fail — active orders are optional
+      }
+
+      state = state.copyWith(
+        isLoading: false,
+        pickers: pickers,
+        activeOrders: activeOrders,
+        userName: fullName,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }

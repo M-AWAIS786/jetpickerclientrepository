@@ -11,6 +11,7 @@ import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/order/orderer_orders_view_model.dart';
+import 'package:jet_picks_app/App/view_model/chat/chat_view_model.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 
 class OrdererOrderScreen extends ConsumerStatefulWidget {
@@ -111,7 +112,7 @@ class _OrdererOrderScreenState extends ConsumerState<OrdererOrderScreen> {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppColors.yellow3.withValues(alpha:0.35),
+                          color: AppColors.yellow3.withOpacity(0.35),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -445,7 +446,7 @@ class _OrdererOrderScreenState extends ConsumerState<OrdererOrderScreen> {
 // ─────────────────────────────────────────────────────────────
 // Orderer Order Card Widget
 // ─────────────────────────────────────────────────────────────
-class _OrdererOrderCard extends StatelessWidget {
+class _OrdererOrderCard extends ConsumerWidget {
   final OrdererOrderModel order;
   final bool isCancelling;
   final VoidCallback onCancel;
@@ -457,7 +458,9 @@ class _OrdererOrderCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final startChatState = ref.watch(startChatProvider);
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -579,13 +582,42 @@ class _OrdererOrderCard extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: CustomButton(
-                text: AppStrings.startChat,
+                text: startChatState.isStarting
+                    ? 'Starting Chat...'
+                    : AppStrings.startChat,
                 color: AppColors.yellow3,
                 textColor: AppColors.black,
-                onPressed: () {
-                  // Navigate to orderer chat
-                  context.push(AppRoutes.ordererConversationScreen);
-                },
+                isLoading: startChatState.isStarting,
+                onPressed: startChatState.isStarting
+                    ? null
+                    : () async {
+                        if (order.pickerId == null ||
+                            order.pickerId!.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Picker information not available')),
+                          );
+                          return;
+                        }
+                        final chatRoomId = await ref
+                            .read(startChatProvider.notifier)
+                            .startChat(
+                              orderId: order.id,
+                              pickerId: order.pickerId!,
+                            );
+                        if (chatRoomId != null && context.mounted) {
+                          context.push(
+                            '${AppRoutes.ordererConversationScreen}?chatRoomId=$chatRoomId',
+                          );
+                        } else if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Failed to start chat. Please try again.')),
+                          );
+                        }
+                      },
                 btnHeight: 42.h,
                 radius: 10.r,
               ),

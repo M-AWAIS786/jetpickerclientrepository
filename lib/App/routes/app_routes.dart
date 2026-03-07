@@ -152,7 +152,10 @@ final GoRouter goRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.conversationScreen,
-      builder: (context, state) => ConversationScreen(),
+      builder: (context, state) {
+        final chatRoomId = state.uri.queryParameters['chatRoomId'] ?? '';
+        return ConversationScreen(chatRoomId: chatRoomId);
+      },
     ),
     GoRoute(
       path: AppRoutes.acceptOrderDetailScreen,
@@ -196,7 +199,10 @@ final GoRouter goRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.ordererConversationScreen,
-      builder: (context, state) => OrdererConversationScreen(),
+      builder: (context, state) {
+        final chatRoomId = state.uri.queryParameters['chatRoomId'] ?? '';
+        return OrdererConversationScreen(chatRoomId: chatRoomId);
+      },
     ),
     GoRoute(
       path: AppRoutes.orderHistoryDetailScreen,

@@ -11,6 +11,7 @@ import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/order/picker_orders_view_model.dart';
+import 'package:jet_picks_app/App/view_model/chat/chat_view_model.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 
 class OrderScreen extends ConsumerStatefulWidget {
@@ -238,12 +239,14 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
 // ─────────────────────────────────────────────────────────────
 // Picker Order Card Widget
 // ─────────────────────────────────────────────────────────────
-class _PickerOrderCard extends StatelessWidget {
+class _PickerOrderCard extends ConsumerWidget {
   final PickerOrderModel order;
   const _PickerOrderCard({required this.order});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final startChatState = ref.watch(startChatProvider);
+
     return GestureDetector(
       onTap: () => context.push(
         '${AppRoutes.pickerOrderDetailScreen}?orderId=${order.id}',
@@ -341,9 +344,9 @@ class _PickerOrderCard extends StatelessWidget {
 
             14.h.ph,
 
-            // ── Action button ──
+            // ── View Order Details button ──
             Padding(
-              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 14.h),
+              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 0),
               child: CustomButton(
                 text: AppStrings.viewOrderDetails,
                 onPressed: () => context.push(
@@ -353,6 +356,54 @@ class _PickerOrderCard extends StatelessWidget {
                 radius: 10.r,
               ),
             ),
+
+            // ── Start Chat Button (Accepted orders only) ──
+            if (order.status.toUpperCase() == 'ACCEPTED') ...[
+              8.h.ph,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: CustomButton(
+                  text: startChatState.isStarting
+                      ? 'Starting Chat...'
+                      : AppStrings.startChat,
+                  isLoading: startChatState.isStarting,
+                  onPressed: startChatState.isStarting
+                      ? null
+                      : () async {
+                          final ordererId = order.ordererId ?? order.orderer?.id;
+                          if (ordererId == null || ordererId.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Orderer information not available')),
+                            );
+                            return;
+                          }
+                          final chatRoomId = await ref
+                              .read(startChatProvider.notifier)
+                              .startChat(
+                                orderId: order.id,
+                                pickerId: ordererId,
+                              );
+                          if (chatRoomId != null && context.mounted) {
+                            context.push(
+                              '${AppRoutes.conversationScreen}?chatRoomId=$chatRoomId',
+                            );
+                          } else if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Failed to start chat. Please try again.')),
+                            );
+                          }
+                        },
+                  btnHeight: 42.h,
+                  radius: 10.r,
+                ),
+              ),
+            ],
+
+            14.h.ph,
           ],
         ),
       ),
