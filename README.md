@@ -27,4 +27,4 @@ awais786s
 
 
 
-in the orderer home dashbaord i want to implement in this same functionality that we do in the php code frontend like create an order and their screens and also fill in their forms as well. and in the orderer side we do view details and thier internal screen same as we do in php code and their functionalities as well that we do in php code i already provide you jetpicks-frontend-main file code so you can do that. and we need to implement this all in our flutter code.  
+now in the orderer side bottom nav 2 Orders screen we show the order history but in the view order details internal funcitonality is incomplete i want to implement this same as we do in the web code orderer side order screen. implement same functionalty with beatiful ui with in our app that we do already in the web code. 
