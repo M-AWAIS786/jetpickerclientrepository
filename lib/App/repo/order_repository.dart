@@ -186,4 +186,172 @@ class OrderRepository {
     final response = await _apiServices.postApi(data, AppUrls.tipsUrl, token);
     return response;
   }
+
+  /// POST /api/orders  — create a new order (DRAFT or with picker)
+  Future<Map<String, dynamic>> createOrder({
+    required String token,
+    required String originCountry,
+    required String originCity,
+    required String destinationCountry,
+    required String destinationCity,
+    String? pickerId,
+    String? status,
+  }) async {
+    final data = <String, dynamic>{
+      'origin_country': originCountry,
+      'origin_city': originCity,
+      'destination_country': destinationCountry,
+      'destination_city': destinationCity,
+    };
+    if (pickerId != null) {
+      data['picker_id'] = pickerId;
+    }
+    if (status != null) {
+      data['status'] = status;
+    }
+    final response = await _apiServices.postApi(
+      data,
+      AppUrls.createOrderUrl,
+      token,
+    );
+    return response;
+  }
+
+  /// PUT /api/orders/{orderId}  — update order fields (e.g. waiting_days)
+  Future<Map<String, dynamic>> updateOrder({
+    required String token,
+    required String orderId,
+    required Map<String, dynamic> data,
+  }) async {
+    final url = AppUrls.updateOrderUrl(orderId);
+    final response = await _apiServices.putApi(data, url, token);
+    return response;
+  }
+
+  /// DELETE /api/orders/{orderId}/items  — delete all items for an order
+  Future<Map<String, dynamic>> deleteOrderItems({
+    required String token,
+    required String orderId,
+  }) async {
+    final url = AppUrls.deleteOrderItemsUrl(orderId);
+    final response = await _apiServices.deleteApi(url, token, null);
+    return response;
+  }
+
+  /// POST /api/orders/{orderId}/items  — add an item (multipart with images)
+  Future<Map<String, dynamic>> addOrderItem({
+    required String token,
+    required String orderId,
+    required String itemName,
+    required int quantity,
+    required String price,
+    required String currency,
+    String? weight,
+    String? specialNotes,
+    String? storeLink,
+    List<File>? productImages,
+  }) async {
+    final url = AppUrls.orderItemsUrl(orderId);
+    final data = <String, dynamic>{
+      'item_name': itemName,
+      'quantity': quantity.toString(),
+      'price': price,
+      'currency': currency,
+    };
+    if (weight != null && weight.isNotEmpty) {
+      data['weight'] = weight;
+    }
+    if (specialNotes != null && specialNotes.isNotEmpty) {
+      data['special_notes'] = specialNotes;
+    }
+    if (storeLink != null && storeLink.isNotEmpty) {
+      data['store_link'] = storeLink;
+    }
+
+    if (productImages != null && productImages.isNotEmpty) {
+      final fileFields = List.generate(
+        productImages.length,
+        (_) => 'product_images[]',
+      );
+      final response = await _apiServices.postApi(
+        data,
+        url,
+        token,
+        isJson: false,
+        files: productImages,
+        fileFields: fileFields,
+      );
+      return response;
+    } else {
+      final response = await _apiServices.postApi(data, url, token);
+      return response;
+    }
+  }
+
+  /// PUT /api/orders/{orderId}/reward  — set reward amount
+  Future<Map<String, dynamic>> setReward({
+    required String token,
+    required String orderId,
+    required int rewardAmount,
+  }) async {
+    final url = AppUrls.setRewardUrl(orderId);
+    final response = await _apiServices.putApi(
+      {'reward_amount': rewardAmount},
+      url,
+      token,
+    );
+    return response;
+  }
+
+  /// PUT /api/orders/{orderId}/finalize  — change DRAFT → PENDING
+  Future<Map<String, dynamic>> finalizeOrder({
+    required String token,
+    required String orderId,
+  }) async {
+    final url = AppUrls.finalizeOrderUrl(orderId);
+    final response = await _apiServices.putApi({}, url, token);
+    return response;
+  }
+
+  /// GET /api/dashboard/orderer?page=&limit=  — available pickers for orderer dashboard
+  Future<Map<String, dynamic>> getOrdererDashboard({
+    required String token,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final url = '${AppUrls.ordererDashboardPickersUrl}?page=$page&limit=$limit';
+    final response = await _apiServices.getApi(url, token);
+    return response;
+  }
+
+  /// GET /api/orders?status=DRAFT  — get active draft order
+  Future<Map<String, dynamic>> getActiveDraftOrder({
+    required String token,
+  }) async {
+    final response = await _apiServices.getApi(
+      AppUrls.activeDraftOrderUrl,
+      token,
+    );
+    return response;
+  }
+
+  /// PUT /api/offers/{offerId}/accept
+  Future<Map<String, dynamic>> acceptOffer({
+    required String token,
+    required String offerId,
+  }) async {
+    final url = AppUrls.acceptOfferUrl(offerId);
+    final response = await _apiServices.putApi({}, url, token);
+    return response;
+  }
+
+  /// PUT /api/offers/{offerId}/reject
+  Future<Map<String, dynamic>> rejectOffer({
+    required String token,
+    required String offerId,
+  }) async {
+    final url = AppUrls.rejectOfferUrl(offerId);
+    final response = await _apiServices.putApi({}, url, token);
+    return response;
+  }
 }

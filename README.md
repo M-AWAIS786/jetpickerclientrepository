@@ -15,7 +15,16 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-pokyo complete localization
-setup jetpicker flutter environ,
-make php API json file
-login,signup api integration
+Email
+awais
+Awaishouse2025
+
+Username
+asim786s
+
+awais786s
+@Awais
+
+
+
+in the orderer home dashbaord i want to implement in this same functionality that we do in the php code frontend like create an order and their screens and also fill in their forms as well. and in the orderer side we do view details and thier internal screen same as we do in php code and their functionalities as well that we do in php code i already provide you jetpicks-frontend-main file code so you can do that. and we need to implement this all in our flutter code.  

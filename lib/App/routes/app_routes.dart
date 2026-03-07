@@ -34,6 +34,7 @@ import '../views/orderer_side/orderer_profile/extra_card_screen.dart';
 import '../views/picker_view/p_profile_setup/profile_setup_screen.dart';
 import '../views/splash_screen.dart/splash_screen.dart';
 import 'package:jet_picks_app/App/views/picker_view/p_order_screen/picker_order_detail_screen.dart';
+import 'package:jet_picks_app/App/views/orderer_side/orderer_home/jetpicker_details_screen.dart';
 
 class AppRoutes {
   static const String splashScreen = "/";
@@ -70,6 +71,7 @@ class AppRoutes {
   static const String offerReceivedScreen = "/offer_received_screen";
   static const String profileScreen = "/profile_screen";
   static const String pickerOrderDetailScreen = "/picker_order_detail_screen";
+  static const String jetPickerDetailsScreen = "/jetpicker_details_screen";
 }
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -224,6 +226,15 @@ final GoRouter goRouter = GoRouter(
       builder: (context, state) {
         final orderId = state.uri.queryParameters['orderId'] ?? '';
         return PickerOrderDetailScreen(orderId: orderId);
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.jetPickerDetailsScreen,
+      builder: (context, state) {
+        final pickerIndex = int.tryParse(
+                state.uri.queryParameters['pickerIndex'] ?? '0') ??
+            0;
+        return JetPickerDetailsScreen(pickerIndex: pickerIndex);
       },
     ),
   ],

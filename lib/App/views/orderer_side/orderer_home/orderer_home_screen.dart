@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/constants/app_fontweight.dart';
 import 'package:jet_picks_app/App/constants/app_images.dart';
-import 'package:jet_picks_app/App/constants/app_strings.dart';
-import 'package:jet_picks_app/App/view_model/order_discovery/order_discovery_view_model.dart';
-import 'package:jet_picks_app/App/widgets/custom_button.dart';
-import 'package:jet_picks_app/App/widgets/custom_searchbar.dart';
-import 'package:jet_picks_app/App/widgets/orderer_home_card.dart';
+import 'package:jet_picks_app/App/constants/app_urls.dart';
+import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/profile_appbar.dart';
-import 'package:jet_picks_app/App/utils/share_pictures.dart';
+import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
+import 'package:jet_picks_app/App/view_model/order/orderer_dashboard_view_model.dart';
+import 'package:jet_picks_app/App/view_model/order/create_order_view_model.dart';
+import 'package:jet_picks_app/App/widgets/custom_button.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class OrdererHomeScreen extends ConsumerStatefulWidget {
   const OrdererHomeScreen({super.key});
@@ -20,171 +23,334 @@ class OrdererHomeScreen extends ConsumerStatefulWidget {
 }
 
 class _OrdererHomeScreenState extends ConsumerState<OrdererHomeScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-
   @override
   void initState() {
     super.initState();
-    // Fetch data when screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(ordererDiscoveryViewModelProvider.notifier).fetchOrdererDiscovery();
+      ref.read(ordererDashboardProvider.notifier).fetchDashboard();
     });
-
-    // Add scroll listener for pagination
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >= 
-        _scrollController.position.maxScrollExtent - 200) {
-      // Load more when near bottom
-      ref.read(ordererDiscoveryViewModelProvider.notifier).loadMoreOrderers();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(ordererDiscoveryViewModelProvider);
-    final viewModel = ref.read(ordererDiscoveryViewModelProvider.notifier);
+    final state = ref.watch(ordererDashboardProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.white,
+      appBar: ProfileAppBar(
+        statusBarIconBrightness: Brightness.dark,
+        title: 'Dashboard',
+        fontSize: 16.sp,
+        fontWeight: TextWeight.semiBold,
+        titleColor: AppColors.black,
+        appBarColor: AppColors.white,
+        bellColor: AppColors.black,
+      ),
       body: RefreshIndicator(
-        onRefresh: () => viewModel.refreshOrderers(),
-        child: Column(
-          children: [
-            ProfileAppBar(
-              statusBarIconBrightness: Brightness.dark,
-              title: AppStrings.fromLondonToMadrid,
-              fontSize: 14.sp,
-              fontWeight: TextWeight.medium,
-              titleColor: AppColors.black,
-              appBarColor: AppColors.yellow3,
-              bellColor: AppColors.black,
-              imagePath: AppImages.profileIcon,
-              bottomHeight: 30.h,
-            ),
-            Transform.translate(
-              offset: Offset(0.0, -20.0),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: CustomSearchBar(
-                  controller: _searchController,
-                  prefixColor: AppColors.labelGray,
-                  sufixColor: AppColors.labelGray,
-                  onChanged: viewModel.setSearchQuery,
-                ),
+        color: AppColors.yellow3,
+        onRefresh: () =>
+            ref.read(ordererDashboardProvider.notifier).refresh(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              12.h.ph,
+              // ── Hero Banner with "Create An Order" ──
+              _buildHeroBanner(),
+              20.h.ph,
+              // ── Available Pickers Section ──
+              Text(
+                'Available JetPickers',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.black,
+                      fontWeight: TextWeight.bold,
+                    ),
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: _buildBody(state, viewModel),
-              ),
-            ),
-          ],
+              12.h.ph,
+              _buildPickersSection(state),
+              20.h.ph,
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildBody(OrdererDiscoveryState state, OrdererDiscoveryViewModel viewModel) {
-    if (state.isLoading && state.orderers == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
+  // ── Hero Banner ──
+  Widget _buildHeroBanner() {
+    return GestureDetector(
+      onTap: _navigateToCreateOrder,
+      child: Container(
+        height: 170.h,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20.r),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              SvgPicture.asset(
+                AppImages.jetPickerImage,
+                fit: BoxFit.cover,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.5),
+                    ],
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 20.h),
+                    child: SizedBox(
+                      width: 180.w,
+                      height: 42.h,
+                      child: CustomButton(
+                        text: 'Create An Order',
+                        color: AppColors.yellow3,
+                        textColor: AppColors.black,
+                        radius: 25.r,
+                        fontSize: 14.sp,
+                        onPressed: _navigateToCreateOrder,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-    if (state.hasError) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Error: ${state.errorMessage}',
-              style: const TextStyle(color: Colors.red),
-              textAlign: TextAlign.center,
-            ),
-            20.0.verticalSpace,
-            CustomButton(
-              text: 'Retry',
-              onPressed: () => viewModel.fetchOrdererDiscovery(refresh: true),
-            ),
-          ],
+  void _navigateToCreateOrder() {
+    ref.read(createOrderProvider.notifier).reset();
+    context.push(AppRoutes.deliveryFlowScreen);
+  }
+
+  // ── Pickers Section ──
+  Widget _buildPickersSection(OrdererDashboardState state) {
+    if (state.isLoading) {
+      return SizedBox(
+        height: 200.h,
+        child: const Center(
+          child: CircularProgressIndicator(color: AppColors.yellow3),
         ),
       );
     }
 
-    if (state.isEmpty) {
-      return const Center(
-        child: Text('No orderers found'),
+    if (state.errorMessage != null) {
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF3CD),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: const Color(0xFFFFE69C)),
+        ),
+        child: Text(
+          'No available pickers at the moment.\nTry creating an order to find matching pickers.',
+          style: TextStyle(color: const Color(0xFF856404), fontSize: 13.sp),
+        ),
       );
     }
 
-    return SingleChildScrollView(
-      controller: _scrollController,
-      child: Column(
-        children: [
-          Transform.scale(
-            scale: 1.1,
-            child: SharePictures(imagePath: AppImages.jetPickerImage),
+    if (state.pickers.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF3CD),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: const Color(0xFFFFE69C)),
+        ),
+        child: Text(
+          'No available pickers at the moment.\nTry creating an order to find matching pickers.',
+          style: TextStyle(color: const Color(0xFF856404), fontSize: 13.sp),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: state.pickers.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: 12.h),
+          child: _PickerCard(
+            picker: state.pickers[index],
+            onViewDetails: () => context.push(
+              '${AppRoutes.jetPickerDetailsScreen}?pickerIndex=$index',
+            ),
           ),
+        );
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Picker Card Widget
+// ─────────────────────────────────────────────────────────────
+class _PickerCard extends StatelessWidget {
+  final AvailablePicker picker;
+  final VoidCallback onViewDetails;
+
+  const _PickerCard({required this.picker, required this.onViewDetails});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: const Color(0xFFF0F0F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Avatar + Name + Rating ──
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                AppStrings.availableJetPickersNearYou,
-                style: Theme.of(context).textTheme.titleSmall,
+              CircleAvatar(
+                radius: 20.r,
+                backgroundColor: AppColors.lightGray,
+                backgroundImage: picker.pickerAvatarUrl != null
+                    ? NetworkImage(
+                        AppUrls.resolveUrl(picker.pickerAvatarUrl))
+                    : null,
+                child: picker.pickerAvatarUrl == null
+                    ? Text(
+                        picker.initials,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.labelGray,
+                          fontSize: 14.sp,
+                        ),
+                      )
+                    : null,
               ),
-              SizedBox(
-                width: 70.w,
-                height: 35.h,
-                child: CustomButton(
-                  text: AppStrings.seeAll,
-                  textColor: AppColors.black,
-                  color: AppColors.yellow3,
-                  radius: 20.r,
-                  fontSize: 14.sp,
-                  onPressed: () {
-                    // Navigate to all orderers screen
-                  },
-                ),
+              10.w.pw,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    picker.pickerName,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: TextWeight.bold,
+                          color: AppColors.black,
+                        ),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        picker.pickerRating.toStringAsFixed(1),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.black,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                      2.w.pw,
+                      Icon(Icons.star,
+                          color: AppColors.starColor, size: 14.sp),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
-          10.0.verticalSpace,
-          SizedBox(
-            height: 450.h,
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              itemCount: state.itemCount + (state.hasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == state.itemCount) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-                
-                final orderer = state.orderers![index];
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 25.h),
-                  child: OrdererHomeCard(
-                    order: orderer,
-                  ),
-                );
-              },
+          10.h.ph,
+
+          // ── Route Banner ──
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF8D6),
+              borderRadius: BorderRadius.circular(8.r),
             ),
+            child: Column(
+              children: [
+                Text(
+                  '${picker.departureCountry} → ${picker.arrivalCountry}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.black,
+                    fontSize: 13.sp,
+                  ),
+                ),
+                4.h.ph,
+                Text(
+                  _formatDate(picker.departureDate),
+                  style: TextStyle(
+                    color: AppColors.labelGray,
+                    fontSize: 12.sp,
+                    fontWeight: TextWeight.medium,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          10.h.ph,
+
+          // ── Available space ──
+          Text(
+            'Available space: ${picker.luggageWeightCapacity.toStringAsFixed(0)}kg',
+            style: TextStyle(
+              fontWeight: TextWeight.semiBold,
+              color: AppColors.black,
+              fontSize: 12.sp,
+            ),
+          ),
+          10.h.ph,
+
+          // ── View Details Button ──
+          CustomButton(
+            text: 'View Details',
+            color: AppColors.yellow3,
+            textColor: AppColors.black,
+            btnHeight: 40.h,
+            radius: 8.r,
+            fontSize: 14.sp,
+            onPressed: onViewDetails,
           ),
         ],
       ),
     );
+  }
+
+  String _formatDate(String dateStr) {
+    if (dateStr.isEmpty) return '';
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('d MMM').format(date);
+    } catch (_) {
+      return dateStr;
+    }
   }
 }

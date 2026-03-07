@@ -33,6 +33,18 @@ class AppUrls {
   // Orderer Dashboard
   static const String ordererDashboardUrl = '$baseUrl/orders/available';
 
+  // ── Create Order Flow ──
+  static const String createOrderUrl = '$baseUrl/orders';
+  static String updateOrderUrl(String orderId) => '$baseUrl/orders/$orderId';
+  static String orderItemsUrl(String orderId) => '$baseUrl/orders/$orderId/items';
+  static String deleteOrderItemsUrl(String orderId) => '$baseUrl/orders/$orderId/items';
+  static String setRewardUrl(String orderId) => '$baseUrl/orders/$orderId/reward';
+  static String finalizeOrderUrl(String orderId) => '$baseUrl/orders/$orderId/finalize';
+  // Orderer Dashboard (available pickers)
+  static const String ordererDashboardPickersUrl = '$baseUrl/dashboard/orderer';
+  // Active draft
+  static const String activeDraftOrderUrl = '$baseUrl/orders?status=DRAFT&page=1&limit=1';
+
   /// Converts a relative path e.g. /storage/avatars/x.jpg → full URL
   static String resolveUrl(String? path) {
     if (path == null || path.isEmpty) return '';
