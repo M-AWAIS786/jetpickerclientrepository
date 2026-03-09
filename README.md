@@ -15,16 +15,3 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-Email
-awais
-Awaishouse2025
-
-Username
-asim786s
-
-awais786s
-@Awais
-
-
-
-now in the orderer side bottom nav 2 Orders screen we show the order history but in the view order details internal funcitonality is incomplete i want to implement this same as we do in the web code orderer side order screen. implement same functionalty with beatiful ui with in our app that we do already in the web code. 
