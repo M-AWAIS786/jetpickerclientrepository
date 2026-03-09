@@ -14,6 +14,7 @@ import 'package:jet_picks_app/App/models/order/picker_dashboard_model.dart';
 import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/order/picker_dashboard_view_model.dart';
+import 'package:jet_picks_app/App/view_model/notification/global_notification_view_model.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -143,6 +144,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Widget _buildSliverHeader(PickerDashboardState state) {
     final firstName = _userName.split(' ').first;
     final greeting = _getGreeting();
+    final notifState = ref.watch(globalNotificationProvider);
 
     return SliverToBoxAdapter(
       child: Container(
@@ -212,8 +214,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             // Notification Bell
             _buildIconButton(
               AppImages.bellIcon,
-              onTap: () {},
-              badgeCount: 0,
+              onTap: () => context.push(AppRoutes.notificationsScreen),
+              badgeCount: notifState.unreadCount,
             ),
           ],
         ),

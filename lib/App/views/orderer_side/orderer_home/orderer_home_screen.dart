@@ -13,6 +13,7 @@ import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/order/orderer_dashboard_view_model.dart';
 import 'package:jet_picks_app/App/view_model/order/create_order_view_model.dart';
+import 'package:jet_picks_app/App/view_model/notification/global_notification_view_model.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -143,6 +144,7 @@ class _OrdererHomeScreenState extends ConsumerState<OrdererHomeScreen>
   Widget _buildSliverHeader(OrdererDashboardState state) {
     final firstName = state.userName.split(' ').first;
     final greeting = _getGreeting();
+    final notifState = ref.watch(globalNotificationProvider);
 
     return SliverToBoxAdapter(
       child: Container(
@@ -214,8 +216,8 @@ class _OrdererHomeScreenState extends ConsumerState<OrdererHomeScreen>
             // Notification Bell
             _buildIconButton(
               AppImages.bellIcon,
-              onTap: () {},
-              badgeCount: 0,
+              onTap: () => context.push(AppRoutes.notificationsScreen),
+              badgeCount: notifState.unreadCount,
             ),
           ],
         ),

@@ -52,6 +52,14 @@ class AppUrls {
   static String chatRoomMessagesUrl(String roomId) => '$baseUrl/chat-rooms/$roomId/messages';
   static String markMessageReadUrl(String messageId) => '$baseUrl/chat-messages/$messageId/read';
 
+  // ── Notifications ──
+  static const String notificationsUrl = '$baseUrl/notifications';
+  static const String unreadCountUrl = '$baseUrl/notifications/unread-count';
+  static String markNotificationReadUrl(String id) =>
+      '$baseUrl/notifications/$id/read';
+  static String deleteNotificationUrl(String id) =>
+      '$baseUrl/notifications/$id';
+
   /// Converts a relative path e.g. /storage/avatars/x.jpg → full URL
   static String resolveUrl(String? path) {
     if (path == null || path.isEmpty) return '';

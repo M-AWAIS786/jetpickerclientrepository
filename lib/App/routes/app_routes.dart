@@ -35,6 +35,7 @@ import '../views/picker_view/p_profile_setup/profile_setup_screen.dart';
 import '../views/splash_screen.dart/splash_screen.dart';
 import 'package:jet_picks_app/App/views/picker_view/p_order_screen/picker_order_detail_screen.dart';
 import 'package:jet_picks_app/App/views/orderer_side/orderer_home/jetpicker_details_screen.dart';
+import 'package:jet_picks_app/App/views/notifications/notifications_screen.dart';
 
 class AppRoutes {
   static const String splashScreen = "/";
@@ -72,6 +73,7 @@ class AppRoutes {
   static const String profileScreen = "/profile_screen";
   static const String pickerOrderDetailScreen = "/picker_order_detail_screen";
   static const String jetPickerDetailsScreen = "/jetpicker_details_screen";
+  static const String notificationsScreen = "/notifications_screen";
 }
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -242,6 +244,10 @@ final GoRouter goRouter = GoRouter(
             0;
         return JetPickerDetailsScreen(pickerIndex: pickerIndex);
       },
+    ),
+    GoRoute(
+      path: AppRoutes.notificationsScreen,
+      builder: (context, state) => const NotificationsScreen(),
     ),
   ],
 );
