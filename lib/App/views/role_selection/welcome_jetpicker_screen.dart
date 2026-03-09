@@ -40,14 +40,17 @@ class WelcomeJetpickerScreen extends StatelessWidget {
               text: AppStrings.createAccount,
               color: AppColors.red1,
               onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.signUpScreen);
+                goRouter.push(AppRoutes.signUpScreen);
               },
             ),
             18.h.ph,
             CustomButton(
               text: AppStrings.switchToJetOrderer,
               borderColor: AppColors.white,
-              onPressed: () {},
+              onPressed: () {
+                goRouter.go(AppRoutes.welcomeJetordererScreen);
+
+              },
             ),
           ],
         ),

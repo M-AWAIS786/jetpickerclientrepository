@@ -38,7 +38,7 @@ class WelcomeJetordererScreen extends StatelessWidget {
               color: AppColors.white,
               textColor: AppColors.black,
               onPressed: () {
-                 Navigator.pushNamed(context, AppRoutes.ordererSignupScreen);
+                goRouter.push(AppRoutes.ordererSignupScreen);
               },
             ),
             18.h.ph,
@@ -47,7 +47,10 @@ class WelcomeJetordererScreen extends StatelessWidget {
               color: AppColors.yellow3,
               borderColor: AppColors.black,
               textColor: AppColors.black,
-              onPressed: () {},
+              onPressed: () {
+                goRouter.go(AppRoutes.welcomeJetpickerScreen);
+
+              },
             ),
           ],
         ),

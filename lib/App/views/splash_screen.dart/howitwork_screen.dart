@@ -6,7 +6,6 @@ import 'package:jet_picks_app/App/constants/app_strings.dart';
 import 'package:jet_picks_app/App/utils/share_pictures.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
-
 import '../../routes/app_routes.dart';
 
 class HowitworkScreen extends StatelessWidget {
@@ -24,6 +23,20 @@ class HowitworkScreen extends StatelessWidget {
           width: 84.w,
           height: 54.h,
           fit: BoxFit.cover,
+        ),
+      ),
+      bottomNavigationBar:      SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.sp),
+          child: CustomButton(
+                    text: AppStrings.continueText,
+                    color: AppColors.yellow3,
+                    textColor: AppColors.black,
+                    onPressed: () {
+                      goRouter.go(AppRoutes.roleSelectionScreen);
+                      // Navigator.pushNamed(context, AppRoutes.roleSelectionScreen);
+                    },
+                  ),
         ),
       ),
 
@@ -53,14 +66,7 @@ class HowitworkScreen extends StatelessWidget {
               questionAnswer(context, AppStrings.question5, AppStrings.answer5),
               questionAnswer(context, AppStrings.question6, AppStrings.answer6),
               20.h.ph,
-              CustomButton(
-                text: AppStrings.continueText,
-                color: AppColors.yellow3,
-                textColor: AppColors.black,
-                onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.roleSelectionScreen);
-                },
-              ),
+         
             ],
           ),
         ),

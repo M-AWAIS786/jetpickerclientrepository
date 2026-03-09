@@ -119,10 +119,7 @@ class RoleSelectionScreen extends StatelessWidget {
                         textColor: AppColors.black,
                         fontSize: 14.sp,
                         onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.welcomeJetpickerScreen,
-                          );
+                          goRouter.go(AppRoutes.welcomeJetpickerScreen);
                         },
                       ),
                     ),
@@ -138,14 +135,13 @@ class RoleSelectionScreen extends StatelessWidget {
                         textColor: AppColors.black,
                         fontSize: 14.sp,
                         onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.welcomeJetordererScreen,
-                          );
+                          goRouter.go(AppRoutes.welcomeJetordererScreen);
                         },
                       ),
                     ),
                   ),
+                  12.h.verticalSpace,
+
                 ],
               ),
             ),

@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Timer(Duration(seconds: 2), () {
-      Navigator.pushReplacementNamed(context, AppRoutes.howItWorkScreen);
+      goRouter.go(AppRoutes.howItWorkScreen);
     });
     super.initState();
   }
