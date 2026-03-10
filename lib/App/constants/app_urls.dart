@@ -3,6 +3,7 @@ class AppUrls {
   static const String storageUrl = 'https://api.jetpicks.com'; 
   static const String loginUrl = '$baseUrl/auth/login';
   static const String signupUrl = '$baseUrl/auth/register';
+  static const String googleLoginUrl = '$baseUrl/auth/google-login';
   static const String countriesUrl = '$baseUrl/locations/countries';
   static const String citiesUrl = '$baseUrl/locations/cities';
   static const String travelJourneysUrl = '$baseUrl/travel-journeys';

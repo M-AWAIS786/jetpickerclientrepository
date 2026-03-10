@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
+import 'package:jet_picks_app/App/widgets/google_sign_in_button.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../constants/app_strings.dart';
@@ -126,7 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     });
                   },
                 ),
-                280.h.ph,
+                24.h.ph,
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: RichText(
@@ -164,6 +165,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     isLoading: loginState.isLoading,
                   ),
                 ),
+                // ── OR divider ──
+                const OrDivider(),
+                16.h.ph,
+                // ── Google Sign-In ──
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: GoogleSignInButton(role: 'PICKER'),
+                ),
+                24.h.ph,
               ],
             ),
           ),

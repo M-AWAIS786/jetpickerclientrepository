@@ -9,6 +9,7 @@ import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/auth/signup_view_model.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 import 'package:jet_picks_app/App/widgets/custom_text.dart';
+import 'package:jet_picks_app/App/widgets/google_sign_in_button.dart';
 import '../../../constants/app_images.dart';
 import '../../../constants/validation.dart';
 import '../../../widgets/custom_textfield.dart';
@@ -195,8 +196,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     isLoading: signupState.isLoading,
                   ),
                 ),
+                // ── OR divider ──
+                const OrDivider(),
+                16.h.ph,
+                // ── Google Sign-In ──
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: GoogleSignInButton(role: 'PICKER'),
+                ),
+                16.h.ph,
                 InkWell(
-                  onTap: ()=> goRouter.go(AppRoutes.loginScreen),
+                  onTap: () => goRouter.go(AppRoutes.loginScreen),
                   child: customText(
                     text: "Have an account? Login",
                     fontWeight: FontWeight.w500,
@@ -204,6 +214,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     color: AppColors.black,
                   ),
                 ),
+                24.h.ph,
               ],
             ),
           ),

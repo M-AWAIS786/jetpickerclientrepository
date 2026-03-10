@@ -23,4 +23,37 @@ class AuthRepository {
     );
     return LoginResponseModel.fromJson(response);
   }
+
+  Future<GoogleLoginResponseModel> googleLogin({required String accessToken}) async {
+    final response = await _apiServices.postApi(
+      {'idToken': accessToken},
+      AppUrls.googleLoginUrl,
+      null,
+    );
+    return GoogleLoginResponseModel.fromJson(response);
+  }
+}
+
+// ─── Google Login Response ───────────────────────────────────
+class GoogleLoginResponseModel {
+  final String message;
+  final SignupUserModel user;
+  final String token;
+  final bool isNewUser;
+
+  GoogleLoginResponseModel({
+    required this.message,
+    required this.user,
+    required this.token,
+    required this.isNewUser,
+  });
+
+  factory GoogleLoginResponseModel.fromJson(Map<String, dynamic> json) {
+    return GoogleLoginResponseModel(
+      message: json['message'] ?? '',
+      user: SignupUserModel.fromJson(json['data']['user']),
+      token: json['data']['token'] ?? '',
+      isNewUser: json['data']['isNewUser'] ?? false,
+    );
+  }
 }
