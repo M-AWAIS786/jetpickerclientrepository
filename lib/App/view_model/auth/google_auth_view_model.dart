@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jet_picks_app/App/data/user_preferences.dart';
@@ -12,7 +11,7 @@ import 'package:jet_picks_app/App/repo/auth_repository.dart';
 // that your backend can verify.
 // ─────────────────────────────────────────────────────────────
 const _kServerClientId =
-    '209213820784-vvsek728hrcf02ai021ahc35en53lkth.apps.googleusercontent.com';
+    '209213820784-4ig0cj17teovdl4e859domr9i70b9clc.apps.googleusercontent.com';
 
 // ─────────────────────────────────────────────────────────────
 // State
