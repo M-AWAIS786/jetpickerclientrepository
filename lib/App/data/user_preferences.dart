@@ -10,6 +10,10 @@ class UserPreferences {
   static const String _countryKey = 'country';
   static const String _activeRoleKey = 'active_role';
   static const String _userRolesKey = 'user_roles';
+  // Translation settings keys
+  static const String _translationLanguageKey = 'translation_language';
+  static const String _autoTranslateMessagesKey = 'auto_translate_messages';
+  static const String _showOriginalAndTranslatedKey = 'show_original_and_translated';
 
   static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -81,6 +85,37 @@ class UserPreferences {
   static Future<bool> canSwitchRole() async {
     final roles = await getUserRoles();
     return roles.length > 1;
+  }
+
+  // ── Translation Settings ──
+  static Future<void> saveTranslationLanguage(String language) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_translationLanguageKey, language);
+  }
+
+  static Future<String?> getTranslationLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_translationLanguageKey);
+  }
+
+  static Future<void> saveAutoTranslateMessages(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_autoTranslateMessagesKey, value);
+  }
+
+  static Future<bool?> getAutoTranslateMessages() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_autoTranslateMessagesKey);
+  }
+
+  static Future<void> saveShowOriginalAndTranslated(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showOriginalAndTranslatedKey, value);
+  }
+
+  static Future<bool?> getShowOriginalAndTranslated() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_showOriginalAndTranslatedKey);
   }
 
   static Future<void> clearAll() async {

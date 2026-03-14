@@ -9,6 +9,7 @@ import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/auth/signup_view_model.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 import 'package:jet_picks_app/App/widgets/custom_text.dart';
+import 'package:jet_picks_app/App/widgets/facebook_sign_in_button.dart';
 import 'package:jet_picks_app/App/widgets/google_sign_in_button.dart';
 import '../../../constants/app_images.dart';
 import '../../../constants/validation.dart';
@@ -203,6 +204,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: GoogleSignInButton(role: 'PICKER'),
+                ),
+                12.h.ph,
+                // ── Facebook Sign-In ──
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: FacebookSignInButton(role: 'PICKER'),
                 ),
                 16.h.ph,
                 InkWell(

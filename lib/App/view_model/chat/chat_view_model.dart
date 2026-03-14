@@ -6,6 +6,33 @@ import 'package:jet_picks_app/App/models/chat/chat_models.dart';
 import 'package:jet_picks_app/App/repo/chat_repository.dart';
 
 // ─────────────────────────────────────────────────────────────
+// Translation Settings Model (matches web's userSettings)
+// ─────────────────────────────────────────────────────────────
+class TranslationSettings {
+  final String translationLanguage;
+  final bool autoTranslateMessages;
+  final bool showOriginalAndTranslated;
+
+  const TranslationSettings({
+    this.translationLanguage = 'English',
+    this.autoTranslateMessages = false,
+    this.showOriginalAndTranslated = true,
+  });
+
+  TranslationSettings copyWith({
+    String? translationLanguage,
+    bool? autoTranslateMessages,
+    bool? showOriginalAndTranslated,
+  }) {
+    return TranslationSettings(
+      translationLanguage: translationLanguage ?? this.translationLanguage,
+      autoTranslateMessages: autoTranslateMessages ?? this.autoTranslateMessages,
+      showOriginalAndTranslated: showOriginalAndTranslated ?? this.showOriginalAndTranslated,
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 // Chat List State & ViewModel (for chat list screens)
 // ─────────────────────────────────────────────────────────────
 class ChatListState {
@@ -64,32 +91,44 @@ final chatListProvider =
 class ConversationState {
   final bool isLoading;
   final bool isSending;
+  final bool isTranslating;
   final String? errorMessage;
   final ChatRoomModel? room;
   final List<ChatMessageModel> messages;
+  final TranslationSettings translationSettings;
+  final Set<String> manuallyTranslatedIds; // Track which messages user toggled
 
   const ConversationState({
     this.isLoading = false,
     this.isSending = false,
+    this.isTranslating = false,
     this.errorMessage,
     this.room,
     this.messages = const [],
+    this.translationSettings = const TranslationSettings(),
+    this.manuallyTranslatedIds = const {},
   });
 
   ConversationState copyWith({
     bool? isLoading,
     bool? isSending,
+    bool? isTranslating,
     String? errorMessage,
     ChatRoomModel? room,
     List<ChatMessageModel>? messages,
+    TranslationSettings? translationSettings,
+    Set<String>? manuallyTranslatedIds,
     bool clearError = false,
   }) {
     return ConversationState(
       isLoading: isLoading ?? this.isLoading,
       isSending: isSending ?? this.isSending,
+      isTranslating: isTranslating ?? this.isTranslating,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
       room: room ?? this.room,
       messages: messages ?? this.messages,
+      translationSettings: translationSettings ?? this.translationSettings,
+      manuallyTranslatedIds: manuallyTranslatedIds ?? this.manuallyTranslatedIds,
     );
   }
 }
@@ -108,19 +147,41 @@ class ConversationViewModel extends Notifier<ConversationState> {
     return const ConversationState();
   }
 
+  /// Load translation settings from user preferences
+  Future<void> loadTranslationSettings() async {
+    final language = await UserPreferences.getTranslationLanguage() ?? 'English';
+    final autoTranslate = await UserPreferences.getAutoTranslateMessages() ?? false;
+    final showBoth = await UserPreferences.getShowOriginalAndTranslated() ?? true;
+    
+    state = state.copyWith(
+      translationSettings: TranslationSettings(
+        translationLanguage: language,
+        autoTranslateMessages: autoTranslate,
+        showOriginalAndTranslated: showBoth,
+      ),
+    );
+  }
+
+  /// Update translation settings
+  void updateTranslationSettings(TranslationSettings settings) {
+    state = state.copyWith(translationSettings: settings);
+  }
+
   /// Load room details + messages, then start polling
   Future<void> openRoom(String roomId) async {
     stopPolling();
     _currentRoomId = roomId;
-    state = state.copyWith(isLoading: true, clearError: true, messages: []);
+    state = state.copyWith(isLoading: true, clearError: true, messages: [], manuallyTranslatedIds: {});
 
     try {
       final token = await UserPreferences.getToken();
       if (token == null) throw Exception('Not authenticated');
 
+      // Load translation settings
+      await loadTranslationSettings();
+
       final room = await _repo.getChatRoomDetail(token: token, roomId: roomId);
-      final messages =
-          await _repo.getMessages(token: token, roomId: roomId);
+      final messages = await _repo.getMessages(token: token, roomId: roomId);
 
       state = state.copyWith(
         isLoading: false,
@@ -212,6 +273,60 @@ class ConversationViewModel extends Notifier<ConversationState> {
     } catch (e) {
       state = state.copyWith(isSending: false, errorMessage: e.toString());
     }
+  }
+
+  /// Translate a specific message - matches web's translateMessage
+  Future<void> translateMessage(String messageId) async {
+    try {
+      final token = await UserPreferences.getToken();
+      if (token == null) throw Exception('Not authenticated');
+
+      // Reload settings to get latest language preference
+      await loadTranslationSettings();
+
+      state = state.copyWith(isTranslating: true);
+
+      final translatedMessage = await _repo.translateMessage(
+        token: token,
+        messageId: messageId,
+        targetLanguageCode: state.translationSettings.translationLanguage,
+      );
+
+      // Update the message in the list with translated content
+      final updatedMessages = state.messages.map((m) {
+        if (m.id == messageId) {
+          return translatedMessage;
+        }
+        return m;
+      }).toList();
+
+      state = state.copyWith(
+        isTranslating: false,
+        messages: updatedMessages,
+      );
+    } catch (e) {
+      log('Translation error: $e');
+      state = state.copyWith(
+        isTranslating: false,
+        errorMessage: 'Failed to translate message',
+      );
+    }
+  }
+
+  /// Toggle manual translation view for a message
+  void toggleManualTranslation(String messageId) {
+    final currentIds = Set<String>.from(state.manuallyTranslatedIds);
+    if (currentIds.contains(messageId)) {
+      currentIds.remove(messageId);
+    } else {
+      currentIds.add(messageId);
+    }
+    state = state.copyWith(manuallyTranslatedIds: currentIds);
+  }
+
+  /// Check if message should show translated content
+  bool shouldShowTranslated(String messageId) {
+    return state.manuallyTranslatedIds.contains(messageId);
   }
 
   void closeRoom() {

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
+import 'package:jet_picks_app/App/widgets/facebook_sign_in_button.dart';
 import 'package:jet_picks_app/App/widgets/google_sign_in_button.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
@@ -178,6 +179,12 @@ class _OrdererLoginScreenState extends ConsumerState<OrdererLoginScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: GoogleSignInButton(role: 'ORDERER'),
+                ),
+                12.h.ph,
+                // ── Facebook Sign-In ──
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: FacebookSignInButton(role: 'ORDERER'),
                 ),
                 24.h.ph,
               ],

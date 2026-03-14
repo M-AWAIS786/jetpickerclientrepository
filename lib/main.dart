@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jet_picks_app/App/constants/app_textstyle.dart';
+import 'package:jet_picks_app/App/constants/stripe_config.dart';
 import 'package:jet_picks_app/App/routes/app_routes.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Stripe
+  Stripe.publishableKey = StripeConfig.publishableKey;
+  await Stripe.instance.applySettings();
+  
   runApp(ProviderScope(child: const MyApp()));
 }
 

@@ -25,6 +25,7 @@ class OrderDetailModel {
   final double? acceptedCounterOfferAmount;
   final int? waitingDays;
   final String status;
+  final String paymentStatus; // PENDING | PAID | FAILED | REFUNDED
   final int itemsCount;
   final double itemsCost;
   final String? currency;
@@ -48,6 +49,7 @@ class OrderDetailModel {
     this.acceptedCounterOfferAmount,
     this.waitingDays,
     required this.status,
+    required this.paymentStatus,
     required this.itemsCount,
     required this.itemsCost,
     this.currency,
@@ -76,6 +78,7 @@ class OrderDetailModel {
               : null,
       waitingDays: json['waiting_days'],
       status: json['status'] ?? 'PENDING',
+      paymentStatus: json['payment_status'] ?? 'PENDING',
       itemsCount: json['items_count'] ?? 0,
       itemsCost: _toDouble(json['items_cost']),
       currency: json['currency'],
@@ -117,6 +120,21 @@ class OrderDetailModel {
 
   double get effectiveReward =>
       acceptedCounterOfferAmount ?? rewardAmount;
+
+  /// Whether payment has been completed
+  bool get isPaid => paymentStatus == 'PAID';
+
+  /// Calculate subtotal (items + effective reward)
+  double get subtotal => itemsCost + effectiveReward;
+
+  /// JetPicker fee (6.5%)
+  double get jetPickerFee => subtotal * 0.065;
+
+  /// Payment processing fee (4%)
+  double get paymentProcessingFee => subtotal * 0.04;
+
+  /// Total payable amount including all fees
+  double get totalPayable => subtotal + jetPickerFee + paymentProcessingFee;
 }
 
 class OrderItemDetail {

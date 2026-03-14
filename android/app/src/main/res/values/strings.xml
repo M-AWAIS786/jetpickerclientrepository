@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">JetPicks</string>
+    <!-- Facebook Login Configuration -->
+    <!-- Replace these with your actual Facebook App credentials -->
+    <string name="facebook_app_id">2350212092120889</string>
+    <string name="fb_login_protocol_scheme">fbYOUR_FACEBOOK_APP_ID</string>
+    <string name="facebook_client_token">c8de4469d157e3755059796aafcfbf24</string>
+</resources>

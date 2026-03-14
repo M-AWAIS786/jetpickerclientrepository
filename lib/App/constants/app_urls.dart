@@ -4,6 +4,7 @@ class AppUrls {
   static const String loginUrl = '$baseUrl/auth/login';
   static const String signupUrl = '$baseUrl/auth/register';
   static const String googleLoginUrl = '$baseUrl/auth/google-login';
+  static const String facebookLoginUrl = '$baseUrl/auth/facebook-login';
   static const String countriesUrl = '$baseUrl/locations/countries';
   static const String citiesUrl = '$baseUrl/locations/cities';
   static const String travelJourneysUrl = '$baseUrl/travel-journeys';
@@ -52,6 +53,7 @@ class AppUrls {
   static String chatRoomDetailUrl(String roomId) => '$baseUrl/chat-rooms/$roomId';
   static String chatRoomMessagesUrl(String roomId) => '$baseUrl/chat-rooms/$roomId/messages';
   static String markMessageReadUrl(String messageId) => '$baseUrl/chat-messages/$messageId/read';
+  static String translateMessageUrl(String messageId) => '$baseUrl/chat-messages/$messageId/translate';
 
   // ── Notifications ──
   static const String notificationsUrl = '$baseUrl/notifications';
@@ -60,6 +62,11 @@ class AppUrls {
       '$baseUrl/notifications/$id/read';
   static String deleteNotificationUrl(String id) =>
       '$baseUrl/notifications/$id';
+
+  // ── Stripe Payments ──
+  static const String stripeCreatePaymentIntentUrl = '$baseUrl/stripe/create-payment-intent';
+  static const String stripeConfirmPaymentUrl = '$baseUrl/stripe/confirm-payment';
+  static const String stripeCheckOrderPaymentUrl = '$baseUrl/stripe/check-order-payment';
 
   /// Converts a relative path e.g. /storage/avatars/x.jpg → full URL
   static String resolveUrl(String? path) {

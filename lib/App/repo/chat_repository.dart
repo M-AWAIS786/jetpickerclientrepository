@@ -106,6 +106,23 @@ class ChatRepository {
     await _apiServices.putApi({}, url, token);
   }
 
+  /// POST /api/chat-messages/{messageId}/translate
+  /// Translates a message to the target language
+  Future<ChatMessageModel> translateMessage({
+    required String token,
+    required String messageId,
+    required String targetLanguageCode,
+  }) async {
+    final url = AppUrls.translateMessageUrl(messageId);
+    final response = await _apiServices.postApi(
+      {'target_language_code': targetLanguageCode},
+      url,
+      token,
+    );
+    final Map<String, dynamic> data = _extractMap(response);
+    return ChatMessageModel.fromJson(data);
+  }
+
   // ── Helpers to safely navigate unknown response shapes ──
 
   /// Drills into a response to find the inner-most List.
