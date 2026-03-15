@@ -8,6 +8,7 @@ import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/constants/app_fontweight.dart';
 import 'package:jet_picks_app/App/constants/app_images.dart';
 import 'package:jet_picks_app/App/constants/app_strings.dart';
+import 'package:jet_picks_app/App/data/user_preferences.dart';
 import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/view_model/user_profile/user_profile_view_model.dart';
@@ -313,8 +314,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 arrowColor: AppColors.red57,
                                 iconBgColor: AppColors.red57.withValues(alpha: 0.1),
                                 showDivider: false,
-                                onTap: () {
-                                  goRouter.go(AppRoutes.loginScreen);
+                                onTap: () async {
+                                  await UserPreferences.clearAll();
+                                  if (context.mounted) {
+                                    goRouter.go(AppRoutes.loginScreen);
+                                  }
                                 },
                               ),
                             ],
