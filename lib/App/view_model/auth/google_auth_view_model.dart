@@ -89,8 +89,10 @@ class GoogleAuthViewModel extends Notifier<GoogleAuthState> {
         _authSub = _gsi.authenticationEvents.listen(_onAuthEvent)
           ..onError(_onAuthError);
 
-        // Silently restore a previous session (no UI shown)
-        _gsi.attemptLightweightAuthentication();
+        // Removed attemptLightweightAuthentication() to prevent
+        // automatic sign-in when navigating to signup/login screens.
+        // Silent authentication should only happen on app startup
+        // if you want to restore a session, not on every screen.
       }).catchError((e) {
         // Initialization failed — surface the error gracefully
         state = state.copyWith(
