@@ -317,7 +317,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 onTap: () async {
                                   await UserPreferences.clearAll();
                                   if (context.mounted) {
-                                    goRouter.go(AppRoutes.loginScreen);
+                                    goRouter.go(AppRoutes.roleSelectionScreen);
                                   }
                                 },
                               ),

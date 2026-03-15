@@ -312,7 +312,7 @@ class _OrdererProfileScreenState extends ConsumerState<OrdererProfileScreen> {
                                 onTap: () async {
                                   await UserPreferences.clearAll();
                                   if (context.mounted) {
-                                    goRouter.go(AppRoutes.ordererLoginScreen);
+                                   goRouter.go(AppRoutes.roleSelectionScreen);
                                   }
                                 },
                               ),
