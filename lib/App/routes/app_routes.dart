@@ -161,7 +161,10 @@ final GoRouter goRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.acceptOrderDetailScreen,
-      builder: (context, state) => AcceptOrderdetailScreen(),
+      builder: (context, state) {
+        final orderId = state.uri.queryParameters['orderId'] ?? '';
+        return AcceptOrderdetailScreen(orderId: orderId);
+      },
     ),
     GoRoute(
       path: AppRoutes.personalDetailScreen,

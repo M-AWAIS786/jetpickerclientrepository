@@ -5,6 +5,7 @@ import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/constants/app_fontweight.dart';
 import 'package:jet_picks_app/App/constants/app_images.dart';
 import 'package:jet_picks_app/App/constants/app_strings.dart';
+import 'package:jet_picks_app/App/constants/app_urls.dart';
 import 'package:jet_picks_app/App/models/stripe/stripe_models.dart';
 import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
@@ -12,7 +13,6 @@ import 'package:jet_picks_app/App/widgets/checkout_sheet.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 import 'package:jet_picks_app/App/widgets/radio_text.dart';
 import 'package:jet_picks_app/App/view_model/order/order_detail_view_model.dart';
-import '../../../utils/share_pictures.dart';
 import 'package:jet_picks_app/App/models/order/order_detail_model.dart';
 
 class OrderHistorydetailScreen extends ConsumerStatefulWidget {
@@ -200,10 +200,10 @@ class _OrderHistorydetailScreenState
     if (order == null) return const SizedBox.shrink();
 
     final firstItem = order.items.isNotEmpty ? order.items.first : null;
-    final productImage =
+    final productImagePath =
         firstItem?.productImages != null && firstItem!.productImages!.isNotEmpty
         ? firstItem.productImages!.first
-        : AppImages.cameraIcon;
+      : null;
 
     final bool showPayButton = !order.isPaid && 
         order.status.toUpperCase() != 'CANCELLED' &&
@@ -493,7 +493,9 @@ class _OrderHistorydetailScreenState
                   ),
                 ],
               ),
-              child: Center(child: SharePictures(imagePath: productImage)),
+              child: Center(
+                child: _OrderProductImage(imagePath: productImagePath),
+              ),
             ),
             20.h.ph,
             Text(
@@ -621,18 +623,7 @@ class _OrderHistorydetailScreenState
                 ),
               ),
             ],
-            18.h.ph,
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-              decoration: BoxDecoration(
-                color: AppColors.yellow1,
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: Text(
-                '${AppStrings.remainingTime} 47h : 12m',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
+           
             13.h.ph,
             Text(
               AppStrings.confirmOrder,
@@ -863,6 +854,32 @@ class _OrderHistorydetailScreenState
       style: Theme.of(
         context,
       ).textTheme.labelLarge?.copyWith(color: textColor ?? AppColors.labelGray),
+    );
+  }
+}
+
+class _OrderProductImage extends StatelessWidget {
+  const _OrderProductImage({required this.imagePath});
+
+  final String? imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    if (imagePath == null || imagePath!.isEmpty) {
+      return Image.asset(AppImages.cameraIcon, fit: BoxFit.contain);
+    }
+
+    final resolvedUrl = AppUrls.resolveUrl(imagePath);
+    if (resolvedUrl.isEmpty) {
+      return Image.asset(AppImages.cameraIcon, fit: BoxFit.contain);
+    }
+
+    return Image.network(
+      resolvedUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) {
+        return Image.asset(AppImages.cameraIcon, fit: BoxFit.contain);
+      },
     );
   }
 }

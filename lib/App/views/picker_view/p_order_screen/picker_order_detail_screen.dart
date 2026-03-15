@@ -313,6 +313,7 @@ class _PickerOrderDetailScreenState
           _ActionButtons(
             order: order,
             isLoading: state.isActionLoading,
+            isDelivered: state.isDelivered,
             showUploadSection: state.showUploadSection,
             uploadedFileName: state.uploadedFileName,
             uploadedFileSizeMB: state.uploadedFileSizeMB,
@@ -402,8 +403,10 @@ class _StatusHeader extends StatelessWidget {
       case 'PENDING':
         return [const Color(0xFFFF9800), const Color(0xFFF57C00)];
       case 'ACCEPTED':
+      case 'IN_TRANSIT':
         return [const Color(0xFF1976D2), const Color(0xFF1565C0)];
       case 'DELIVERED':
+      case 'COMPLETED':
         return [const Color(0xFF388E3C), const Color(0xFF2E7D32)];
       case 'CANCELLED':
         return [const Color(0xFFD32F2F), const Color(0xFFC62828)];
@@ -418,7 +421,10 @@ class _StatusHeader extends StatelessWidget {
         return Icons.hourglass_top_rounded;
       case 'ACCEPTED':
         return Icons.handshake_rounded;
+      case 'IN_TRANSIT':
+        return Icons.local_shipping_rounded;
       case 'DELIVERED':
+      case 'COMPLETED':
         return Icons.check_circle_rounded;
       case 'CANCELLED':
         return Icons.cancel_rounded;
@@ -433,7 +439,10 @@ class _StatusHeader extends StatelessWidget {
         return 'Pending Order';
       case 'ACCEPTED':
         return 'Order Accepted';
+      case 'IN_TRANSIT':
+        return 'In Transit';
       case 'DELIVERED':
+      case 'COMPLETED':
         return 'Order Delivered';
       case 'CANCELLED':
         return 'Order Cancelled';
@@ -1047,6 +1056,7 @@ class _OffersCard extends StatelessWidget {
 class _ActionButtons extends StatelessWidget {
   final OrderDetailModel order;
   final bool isLoading;
+  final bool isDelivered;
   final bool showUploadSection;
   final String? uploadedFileName;
   final double? uploadedFileSizeMB;
@@ -1065,6 +1075,7 @@ class _ActionButtons extends StatelessWidget {
   const _ActionButtons({
     required this.order,
     required this.isLoading,
+    required this.isDelivered,
     required this.showUploadSection,
     required this.uploadedFileName,
     required this.uploadedFileSizeMB,
@@ -1080,6 +1091,17 @@ class _ActionButtons extends StatelessWidget {
     required this.onPickFile,
     required this.onConfirmDelivery,
   });
+
+  /// Orders in ACCEPTED or IN_TRANSIT can be marked as delivered by picker
+  static bool _canMarkAsDelivered(String status) {
+    final s = status.toUpperCase();
+    return s == 'ACCEPTED' || s == 'IN_TRANSIT';
+  }
+
+  static bool _isClosedDeliveryState(String status) {
+    final s = status.toUpperCase();
+    return s == 'CANCELLED' || s == 'DELIVERED' || s == 'COMPLETED';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1135,7 +1157,10 @@ class _ActionButtons extends StatelessWidget {
               radius: 12.r,
             ),
           ],
-          if (order.status.toUpperCase() == 'ACCEPTED') ...[
+          // Show Mark as delivered for ACCEPTED and IN_TRANSIT (paid orders ready to deliver)
+            if (!isDelivered &&
+              !_isClosedDeliveryState(order.status) &&
+              _canMarkAsDelivered(order.status)) ...[
             // Mark as delivered toggle button
             GestureDetector(
               onTap: isLoading ? null : onToggleUploadSection,
@@ -1317,7 +1342,9 @@ class _ActionButtons extends StatelessWidget {
                 radius: 12.r,
               ),
           ],
-          if (order.status.toUpperCase() == 'DELIVERED')
+            if (isDelivered ||
+              order.status.toUpperCase() == 'DELIVERED' ||
+              order.status.toUpperCase() == 'COMPLETED')
             Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),

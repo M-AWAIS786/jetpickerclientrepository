@@ -10,6 +10,7 @@ class OrderDetailState {
   final String? errorMessage;
   final String? successMessage;
   final OrderDetailModel? order;
+  final bool isDelivered;
   final bool showUploadSection;
   final File? uploadedProofFile;
   final String? uploadedFileName;
@@ -24,6 +25,7 @@ class OrderDetailState {
     this.errorMessage,
     this.successMessage,
     this.order,
+    this.isDelivered = false,
     this.showUploadSection = false,
     this.uploadedProofFile,
     this.uploadedFileName,
@@ -41,6 +43,7 @@ class OrderDetailState {
     String? errorMessage,
     String? successMessage,
     OrderDetailModel? order,
+    bool? isDelivered,
     bool clearError = false,
     bool clearSuccess = false,
     bool? showUploadSection,
@@ -58,6 +61,7 @@ class OrderDetailState {
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
       successMessage: clearSuccess ? null : successMessage ?? this.successMessage,
       order: order ?? this.order,
+      isDelivered: isDelivered ?? this.isDelivered,
       showUploadSection: showUploadSection ?? this.showUploadSection,
       uploadedProofFile: clearProofFile ? null : uploadedProofFile ?? this.uploadedProofFile,
       uploadedFileName: clearProofFile ? null : uploadedFileName ?? this.uploadedFileName,
@@ -110,6 +114,7 @@ class OrderDetailViewModel extends Notifier<OrderDetailState> {
       state = state.copyWith(
         isLoading: false,
         order: order,
+        isDelivered: _isDeliveredStatus(order.status),
         hasCounterOffer: counterOfferExists,
       );
     } catch (e) {
@@ -187,6 +192,7 @@ class OrderDetailViewModel extends Notifier<OrderDetailState> {
       state = state.copyWith(
         isActionLoading: false,
         successMessage: 'Order marked as delivered!',
+        isDelivered: true,
         showUploadSection: false,
         clearProofFile: true,
       );
@@ -320,6 +326,11 @@ class OrderDetailViewModel extends Notifier<OrderDetailState> {
     } catch (_) {
       return false;
     }
+  }
+
+  bool _isDeliveredStatus(String status) {
+    final normalized = status.toUpperCase();
+    return normalized == 'DELIVERED' || normalized == 'COMPLETED';
   }
 }
 

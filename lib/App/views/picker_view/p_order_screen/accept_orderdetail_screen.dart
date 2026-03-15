@@ -1,207 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
-import 'package:jet_picks_app/App/constants/app_images.dart';
-import 'package:jet_picks_app/App/constants/app_strings.dart';
+import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
+import 'package:jet_picks_app/App/views/picker_view/p_order_screen/picker_order_detail_screen.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
-import 'package:jet_picks_app/App/widgets/radio_text.dart';
 
-import '../../../utils/share_pictures.dart';
+/// Accept Order Detail screen - when orderId is provided, shows the full
+/// PickerOrderDetailScreen with Mark as Delivered functionality.
+/// When no orderId, shows a fallback directing user to the Orders tab.
+class AcceptOrderdetailScreen extends StatelessWidget {
+  final String orderId;
 
-class AcceptOrderdetailScreen extends StatefulWidget {
-  const AcceptOrderdetailScreen({super.key});
+  const AcceptOrderdetailScreen({super.key, this.orderId = ''});
 
-  @override
-  State<AcceptOrderdetailScreen> createState() =>
-      _AcceptOrderdetailScreenState();
-}
-
-class _AcceptOrderdetailScreenState extends State<AcceptOrderdetailScreen> {
   @override
   Widget build(BuildContext context) {
+    if (orderId.isNotEmpty) {
+      return PickerOrderDetailScreen(orderId: orderId);
+    }
+
     return Scaffold(
       appBar: ProfileAppBar(leadingIcon: true, appBarColor: AppColors.white),
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+      body: Center(
         child: Padding(
-          padding: EdgeInsets.all(20.w),
+          padding: EdgeInsets.symmetric(horizontal: 32.w),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'London - Madrid',
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(color: AppColors.red3),
-              ),
-              20.h.ph,
-              SizedBox(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8,
-                      children: [
-                        _detailText(
-                          AppStrings.route,
-                          textColor: AppColors.black,
-                        ),
-                        _detailText(
-                          AppStrings.itemList,
-                          textColor: AppColors.black,
-                        ),
-                        _detailText(
-                          AppStrings.store,
-                          textColor: AppColors.black,
-                        ),
-                        _detailText(
-                          AppStrings.weight,
-                          textColor: AppColors.black,
-                        ),
-                        _detailText(
-                          AppStrings.price,
-                          textColor: AppColors.black,
-                        ),
-                        _detailText(
-                          AppStrings.reward,
-                          textColor: AppColors.black,
-                        ),
-                      ],
-                    ),
-                    26.w.pw,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8,
-                      children: [
-                        _detailText(AppStrings.fromLondonToMadrid),
-                        _detailText(AppStrings.watch),
-                        _detailText(AppStrings.egAmazone),
-                        _detailText('1/4 kg'),
-                        _detailText('\$50'),
-                        _detailText('\$10'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              35.h.ph,
-              Container(
-                width: 150.w,
-                height: 150.h,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      offset: Offset(0, 0),
-                      blurRadius: 14,
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: SharePictures(imagePath: AppImages.cameraIcon),
-                ),
-              ),
-              20.h.ph,
-              Text(
-                '${AppStrings.totalCost}: \$70',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
+              Icon(Icons.inventory_2_outlined,
+                  size: 72.sp, color: AppColors.lightGray),
               24.h.ph,
               Text(
-                'JetOrderer',
-                style: Theme.of(context).textTheme.titleMedium,
+                'View Order Details',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: AppColors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
               ),
-              11.h.ph,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 22.r,
-                    backgroundColor: AppColors.lightGray,
-                    child: Center(child: Text('A')),
-                  ),
-                  8.w.pw,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Sarah M.',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: AppColors.black,
-                        ),
-                      ),
-
-                      Row(
-                        children: [
-                          Text(
-                            '4.8',
-                            style: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(color: AppColors.black),
-                          ),
-
-                          Icon(
-                            Icons.star,
-                            color: AppColors.starColor,
-                            size: 15.sp,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+              12.h.ph,
+              Text(
+                'Select an order from your Orders tab to view details and mark as delivered.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.labelGray,
+                    ),
+                textAlign: TextAlign.center,
               ),
-              60.h.ph,
-              Align(
-                alignment: Alignment.centerLeft,
-                child: RadioText(
-                  text: AppStrings.markAsDelivered,
-                  isSelected: true,
-                  onChanged: () {},
-                ),
+              32.h.ph,
+              CustomButton(
+                text: 'Go to Orders',
+                color: AppColors.red3,
+                textColor: Colors.white,
+                onPressed: () => context.go(AppRoutes.pickerBottomBarScreen),
+                btnHeight: 48.h,
+                radius: 12.r,
               ),
-              18.h.ph,
-
-              Container(
-                width: double.infinity,
-                height: 150.h,
-                decoration: BoxDecoration(
-                  border: Border.all(width: 1.w, color: AppColors.labelGray),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SharePictures(imagePath: AppImages.uploadIcon),
-                    4.h.ph,
-                    _detailText(AppStrings.uploadProofOfDelivery),
-                  ],
-                ),
-              ),
-              30.h.ph,
-              SizedBox(
-                width: 150.w,
-                child: CustomButton(text: AppStrings.upload, onPressed: () {}),
-              ),
-              30.h.ph,
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _detailText(String title, {Color? textColor}) {
-    return Text(
-      title,
-      style: Theme.of(
-        context,
-      ).textTheme.labelLarge?.copyWith(color: textColor ?? AppColors.labelGray),
     );
   }
 }
