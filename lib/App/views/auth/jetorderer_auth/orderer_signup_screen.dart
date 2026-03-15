@@ -55,6 +55,7 @@ class _OrdererSignupScreenState extends ConsumerState<OrdererSignupScreen> {
           password: _passwordController.text,
           confirmPassword: _confirmPassController.text,
           roles: ['ORDERER', 'PICKER'],
+          preferredRole: 'ORDERER',
         );
   }
 
@@ -70,7 +71,7 @@ class _OrdererSignupScreenState extends ConsumerState<OrdererSignupScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        goRouter.go(AppRoutes.ordererLoginScreen);
+        goRouter.go(AppRoutes.ordererProfileSetupScreen);
         ref.read(signupViewModelProvider.notifier).resetState();
       } else if (next.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(

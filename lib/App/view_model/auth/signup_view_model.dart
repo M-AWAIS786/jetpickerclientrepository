@@ -47,6 +47,7 @@ class SignupViewModel extends Notifier<SignupState> {
     required String password,
     required String confirmPassword,
     required List<String> roles,
+    required String preferredRole,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true, clearResponse: true);
 
@@ -62,11 +63,21 @@ class SignupViewModel extends Notifier<SignupState> {
 
       final response = await _authRepository.signup(request);
 
-      // Persist user roles & set default active role
+      await UserPreferences.saveToken(response.token);
+      await UserPreferences.saveUser(
+        id: response.user.id,
+        fullName: response.user.fullName,
+        email: response.user.email,
+        phoneNumber: response.user.phoneNumber,
+        avatarUrl: response.user.avatarUrl,
+        country: response.user.country,
+      );
+
       await UserPreferences.saveUserRoles(response.user.roles);
-      if (response.user.roles.isNotEmpty) {
-        await UserPreferences.saveActiveRole(response.user.roles.first);
-      }
+      final nextRole = response.user.roles.contains(preferredRole)
+          ? preferredRole
+          : (response.user.roles.isNotEmpty ? response.user.roles.first : 'PICKER');
+      await UserPreferences.saveActiveRole(nextRole);
 
       state = state.copyWith(isLoading: false, response: response);
     } catch (e) {

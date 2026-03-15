@@ -42,6 +42,7 @@ class _OrdererLoginScreenState extends ConsumerState<OrdererLoginScreen> {
     ref.read(loginViewModelProvider.notifier).login(
           username: _emailController.text.trim(),
           password: _passwordController.text,
+          preferredRole: 'ORDERER',
         );
   }
 

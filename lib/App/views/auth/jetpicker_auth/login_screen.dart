@@ -48,6 +48,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.read(loginViewModelProvider.notifier).login(
           username: _emailController.text.trim(),
           password: _passwordController.text,
+          preferredRole: 'PICKER',
         );
   }
 

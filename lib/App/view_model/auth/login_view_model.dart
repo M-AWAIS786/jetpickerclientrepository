@@ -38,7 +38,11 @@ class LoginViewModel extends Notifier<LoginState> {
     return const LoginState();
   }
 
-  Future<void> login({required String username, required String password}) async {
+  Future<void> login({
+    required String username,
+    required String password,
+    required String preferredRole,
+  }) async {
     state = state.copyWith(isLoading: true, clearError: true, clearResponse: true);
     try {
       final request = LoginRequestModel(username: username, password: password);
@@ -57,12 +61,10 @@ class LoginViewModel extends Notifier<LoginState> {
 
       // Persist user roles & set default active role
       await UserPreferences.saveUserRoles(response.user.roles);
-      final currentRole = await UserPreferences.getActiveRole();
-      if (currentRole == null || !response.user.roles.contains(currentRole)) {
-        await UserPreferences.saveActiveRole(
-          response.user.roles.isNotEmpty ? response.user.roles.first : 'PICKER',
-        );
-      }
+      final nextRole = response.user.roles.contains(preferredRole)
+          ? preferredRole
+          : (response.user.roles.isNotEmpty ? response.user.roles.first : 'PICKER');
+      await UserPreferences.saveActiveRole(nextRole);
 
       state = state.copyWith(isLoading: false, response: response);
     } catch (e) {
