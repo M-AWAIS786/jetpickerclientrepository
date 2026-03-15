@@ -42,8 +42,11 @@ class GoogleSignInButton extends ConsumerWidget {
       if (previous?.isNewUser == null && next.isNewUser != null) {
         ref.read(googleAuthProvider.notifier).resetState();
         if (next.isNewUser == true) {
-          // New user → profile setup (matches web: navigate('/profile-setup'))
-          context.go(AppRoutes.ordererProfileSetupScreen);
+          if (role == 'PICKER') {
+            context.go(AppRoutes.profileSetupScreen);
+          } else {
+            context.go(AppRoutes.ordererProfileSetupScreen);
+          }
         } else {
           // Existing user → correct dashboard
           if (role == 'PICKER') {
