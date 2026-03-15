@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jet_picks_app/App/constants/app_colors.dart';
 import 'package:jet_picks_app/App/constants/app_fontweight.dart';
 import 'package:jet_picks_app/App/constants/app_images.dart';
+import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/share_pictures.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 
@@ -73,7 +74,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               if (leadingIcon)
                 InkWell(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => goRouter.pop(),
                   child: Container(
                     width: 45.w,
                     height: 45.h,

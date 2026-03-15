@@ -242,7 +242,7 @@ class _OrdererSignupScreenState extends ConsumerState<OrdererSignupScreen> {
                 ),
                 16.h.ph,
                 InkWell(
-                  onTap: () => goRouter.go(AppRoutes.ordererLoginScreen),
+                  onTap: () => goRouter.push(AppRoutes.ordererLoginScreen),
                   child: customText(
                     text: "Have an account? Login",
                     fontWeight: FontWeight.w500,

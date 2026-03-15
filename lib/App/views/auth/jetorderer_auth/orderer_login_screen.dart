@@ -81,6 +81,7 @@ class _OrdererLoginScreenState extends ConsumerState<OrdererLoginScreen> {
         titleColor: AppColors.black,
         title: AppStrings.welcomeBack,
         alignment: Alignment.bottomCenter,
+        
       ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),

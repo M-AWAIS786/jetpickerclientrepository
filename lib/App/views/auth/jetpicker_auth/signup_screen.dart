@@ -213,7 +213,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 ),
                 16.h.ph,
                 InkWell(
-                  onTap: () => goRouter.go(AppRoutes.loginScreen),
+                  onTap: () => goRouter.push(AppRoutes.loginScreen),
                   child: customText(
                     text: "Have an account? Login",
                     fontWeight: FontWeight.w500,
