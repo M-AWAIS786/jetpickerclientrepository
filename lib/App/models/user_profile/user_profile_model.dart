@@ -122,3 +122,111 @@ class UpdateAvatarResponseModel {
     );
   }
 }
+
+class UserSettingsModel {
+  final bool pushNotificationsEnabled;
+  final bool inAppNotificationsEnabled;
+  final bool messageNotificationsEnabled;
+  final bool locationServicesEnabled;
+  final String translationLanguage;
+  final bool autoTranslateMessages;
+  final bool showOriginalAndTranslated;
+
+  const UserSettingsModel({
+    this.pushNotificationsEnabled = false,
+    this.inAppNotificationsEnabled = true,
+    this.messageNotificationsEnabled = true,
+    this.locationServicesEnabled = true,
+    this.translationLanguage = 'English',
+    this.autoTranslateMessages = false,
+    this.showOriginalAndTranslated = true,
+  });
+
+  factory UserSettingsModel.fromJson(Map<String, dynamic> json) {
+    return UserSettingsModel(
+      pushNotificationsEnabled:
+          _toBool(json['push_notifications_enabled'], false),
+      inAppNotificationsEnabled:
+          _toBool(json['in_app_notifications_enabled'], true),
+      messageNotificationsEnabled:
+          _toBool(json['message_notifications_enabled'], true),
+      locationServicesEnabled:
+          _toBool(json['location_services_enabled'], true),
+      translationLanguage:
+          json['translation_language']?.toString().trim().isNotEmpty == true
+              ? json['translation_language'].toString().trim()
+              : 'English',
+      autoTranslateMessages: _toBool(json['auto_translate_messages'], false),
+      showOriginalAndTranslated:
+          _toBool(json['show_original_and_translated'], true),
+    );
+  }
+
+  UserSettingsModel copyWith({
+    bool? pushNotificationsEnabled,
+    bool? inAppNotificationsEnabled,
+    bool? messageNotificationsEnabled,
+    bool? locationServicesEnabled,
+    String? translationLanguage,
+    bool? autoTranslateMessages,
+    bool? showOriginalAndTranslated,
+  }) {
+    return UserSettingsModel(
+      pushNotificationsEnabled:
+          pushNotificationsEnabled ?? this.pushNotificationsEnabled,
+      inAppNotificationsEnabled:
+          inAppNotificationsEnabled ?? this.inAppNotificationsEnabled,
+      messageNotificationsEnabled:
+          messageNotificationsEnabled ?? this.messageNotificationsEnabled,
+      locationServicesEnabled:
+          locationServicesEnabled ?? this.locationServicesEnabled,
+      translationLanguage: translationLanguage ?? this.translationLanguage,
+      autoTranslateMessages:
+          autoTranslateMessages ?? this.autoTranslateMessages,
+      showOriginalAndTranslated:
+          showOriginalAndTranslated ?? this.showOriginalAndTranslated,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'push_notifications_enabled': pushNotificationsEnabled,
+      'in_app_notifications_enabled': inAppNotificationsEnabled,
+      'message_notifications_enabled': messageNotificationsEnabled,
+      'location_services_enabled': locationServicesEnabled,
+      'translation_language': translationLanguage,
+      'auto_translate_messages': autoTranslateMessages,
+      'show_original_and_translated': showOriginalAndTranslated,
+    };
+  }
+}
+
+class UserSettingsResponseModel {
+  final String message;
+  final UserSettingsModel settings;
+
+  UserSettingsResponseModel({required this.message, required this.settings});
+
+  factory UserSettingsResponseModel.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] is Map<String, dynamic>
+        ? json['data'] as Map<String, dynamic>
+        : json;
+
+    return UserSettingsResponseModel(
+      message: json['message']?.toString() ?? '',
+      settings: UserSettingsModel.fromJson(data),
+    );
+  }
+}
+
+bool _toBool(dynamic value, bool fallback) {
+  if (value == null) return fallback;
+  if (value is bool) return value;
+  if (value is int) return value != 0;
+  if (value is String) {
+    final normalized = value.toLowerCase();
+    if (normalized == 'true' || normalized == '1') return true;
+    if (normalized == 'false' || normalized == '0') return false;
+  }
+  return fallback;
+}

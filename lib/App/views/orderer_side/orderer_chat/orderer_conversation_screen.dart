@@ -21,7 +21,8 @@ class OrdererConversationScreen extends ConsumerStatefulWidget {
 }
 
 class _OrdererConversationScreenState
-    extends ConsumerState<OrdererConversationScreen> {
+  extends ConsumerState<OrdererConversationScreen>
+  with WidgetsBindingObserver {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String? _currentUserId;
@@ -29,9 +30,13 @@ class _OrdererConversationScreenState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadUserId();
     Future.microtask(() {
-      ref.read(conversationProvider.notifier).openRoom(widget.chatRoomId);
+      ref.read(conversationProvider.notifier).openRoom(
+        widget.chatRoomId,
+        isOrderer: true,
+      );
     });
   }
 
@@ -41,7 +46,17 @@ class _OrdererConversationScreenState
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.read(conversationProvider.notifier).refreshTranslationSettings(
+            isOrderer: true,
+          );
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _messageController.dispose();
     _scrollController.dispose();
     ref.read(conversationProvider.notifier).stopPolling();
@@ -67,12 +82,23 @@ class _OrdererConversationScreenState
     ref.read(conversationProvider.notifier).sendMessage(text);
   }
 
+  void _onTranslateTap(String messageId) async {
+    final viewModel = ref.read(conversationProvider.notifier);
+    final state = ref.read(conversationProvider);
+    final message = state.messages.firstWhere((m) => m.id == messageId);
+
+    if (message.contentTranslated == null || message.contentTranslated!.isEmpty) {
+      await viewModel.translateMessage(messageId);
+    }
+
+    viewModel.toggleManualTranslation(messageId);
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(conversationProvider);
     final otherUserName = state.room?.otherUser?.fullName ?? 'Chat';
 
-    // Auto-scroll when new messages arrive
     ref.listen<ConversationState>(conversationProvider, (prev, next) {
       if ((prev?.messages.length ?? 0) < next.messages.length) {
         _scrollToBottom();
@@ -110,19 +136,34 @@ class _OrdererConversationScreenState
                 )
               : Column(
                   children: [
-                    // Route info header
-                    if (state.room != null)
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.h),
-                        child: Text(
-                          'Order Chat',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge
-                              ?.copyWith(color: AppColors.black),
-                        ),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                      color: const Color(0xFFFFF8F0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 6.w,
+                            height: 6.h,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFCC6600),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          8.w.pw,
+                          Expanded(
+                            child: Text(
+                              'For transparency and protection, keep communication within the app.',
+                              style: TextStyle(
+                                color: const Color(0xFF994D00),
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    // Messages list
+                    ),
                     Expanded(
                       child: state.messages.isEmpty
                           ? Center(
@@ -145,6 +186,11 @@ class _OrdererConversationScreenState
                                 return _OrdererMessageBubble(
                                   message: msg,
                                   isSender: isSender,
+                                  translationSettings: state.translationSettings,
+                                  isManuallyTranslated:
+                                      state.manuallyTranslatedIds.contains(msg.id),
+                                  isTranslating: state.isTranslating,
+                                  onTranslateTap: () => _onTranslateTap(msg.id),
                                 );
                               },
                             ),
@@ -167,11 +213,119 @@ class _OrdererConversationScreenState
 class _OrdererMessageBubble extends StatelessWidget {
   final ChatMessageModel message;
   final bool isSender;
+  final TranslationSettings translationSettings;
+  final bool isManuallyTranslated;
+  final bool isTranslating;
+  final VoidCallback? onTranslateTap;
 
   const _OrdererMessageBubble({
     required this.message,
     required this.isSender,
+    required this.translationSettings,
+    this.isManuallyTranslated = false,
+    this.isTranslating = false,
+    this.onTranslateTap,
   });
+
+  Widget _buildMessageContent(BuildContext context) {
+    final hasTranslation =
+        message.contentTranslated != null && message.contentTranslated!.isNotEmpty;
+    final isAutoTranslate = translationSettings.autoTranslateMessages;
+    final isShowBoth = translationSettings.showOriginalAndTranslated;
+
+    if (isSender) {
+      return Text(
+        message.contentOriginal,
+        style: Theme.of(context)
+            .textTheme
+            .labelLarge
+            ?.copyWith(fontSize: 12.sp, color: AppColors.black),
+      );
+    }
+
+    if (hasTranslation) {
+      if (isShowBoth) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              message.contentOriginal,
+              style: TextStyle(
+                fontSize: 11.sp,
+                color: Colors.grey[600],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            Divider(height: 8.h, color: Colors.grey[300]),
+            Text(
+              'Translation',
+              style: TextStyle(
+                fontSize: 9.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[500],
+                letterSpacing: 0.5,
+              ),
+            ),
+            2.h.ph,
+            Text(
+              message.contentTranslated!,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge
+                  ?.copyWith(fontSize: 12.sp, color: AppColors.black),
+            ),
+          ],
+        );
+      }
+
+      if (isAutoTranslate || isManuallyTranslated) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (isManuallyTranslated && !isAutoTranslate)
+              Padding(
+                padding: EdgeInsets.only(bottom: 2.h),
+                child: Text(
+                  'Translation',
+                  style: TextStyle(
+                    fontSize: 9.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[500],
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            Text(
+              message.contentTranslated!,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge
+                  ?.copyWith(fontSize: 12.sp, color: AppColors.black),
+            ),
+          ],
+        );
+      }
+    }
+
+    return Text(
+      message.contentOriginal,
+      style: Theme.of(context)
+          .textTheme
+          .labelLarge
+          ?.copyWith(fontSize: 12.sp, color: AppColors.black),
+    );
+  }
+
+  bool _shouldShowTranslateButton() {
+    if (isSender) return false;
+
+    final hasTranslation =
+        message.contentTranslated != null && message.contentTranslated!.isNotEmpty;
+
+    return !hasTranslation ||
+        (!translationSettings.autoTranslateMessages &&
+            !translationSettings.showOriginalAndTranslated);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -210,23 +364,6 @@ class _OrdererMessageBubble extends StatelessWidget {
                 ),
               ),
 
-            // Translation badge
-            if (message.translationEnabled &&
-                message.contentTranslated != null)
-              Container(
-                margin: EdgeInsets.only(bottom: 4.h),
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: AppColors.yellow3,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Text(
-                  'Translate',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-
-            // Bubble
             Container(
               constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.7,
@@ -239,23 +376,41 @@ class _OrdererMessageBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message.contentOriginal,
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge
-                        ?.copyWith(fontSize: 12.sp),
-                  ),
-                  if (message.translationEnabled &&
-                      message.contentTranslated != null)
+                  _buildMessageContent(context),
+                  if (_shouldShowTranslateButton())
                     Padding(
-                      padding: EdgeInsets.only(top: 4.h),
-                      child: Text(
-                        message.contentTranslated!,
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic,
-                          fontSize: 13.sp,
+                      padding: EdgeInsets.only(top: 8.h),
+                      child: GestureDetector(
+                        onTap: isTranslating ? null : onTranslateTap,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(4.r),
+                            border: Border.all(
+                              color: Colors.black.withOpacity(0.15),
+                              width: 0.5,
+                            ),
+                          ),
+                          child: isTranslating
+                              ? SizedBox(
+                                  width: 12.w,
+                                  height: 12.h,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 1.5,
+                                    color: AppColors.black,
+                                  ),
+                                )
+                              : Text(
+                                  isManuallyTranslated
+                                      ? 'View Original'
+                                      : 'Translate',
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
@@ -263,23 +418,28 @@ class _OrdererMessageBubble extends StatelessWidget {
               ),
             ),
 
-            // Time + read tick
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _formatTime(message.createdAt),
-                  style:
-                      TextStyle(color: AppColors.labelGray, fontSize: 11.sp),
-                ),
-                if (isSender)
-                  Icon(
-                    message.isRead ? Icons.done_all : Icons.check,
-                    size: 14.sp,
-                    color:
-                        message.isRead ? AppColors.yellow3 : AppColors.labelGray,
+            Padding(
+              padding: EdgeInsets.only(top: 4.h),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _formatTime(message.createdAt),
+                    style:
+                        TextStyle(color: AppColors.labelGray, fontSize: 11.sp),
                   ),
-              ],
+                  if (isSender) ...[
+                    4.w.pw,
+                    Icon(
+                      message.isRead ? Icons.done_all : Icons.check,
+                      size: 14.sp,
+                      color: message.isRead
+                          ? AppColors.yellow3
+                          : AppColors.labelGray,
+                    ),
+                  ],
+                ],
+              ),
             ),
           ],
         ),

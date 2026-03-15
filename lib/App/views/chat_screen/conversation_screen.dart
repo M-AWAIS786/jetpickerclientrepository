@@ -32,7 +32,10 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen>
     WidgetsBinding.instance.addObserver(this);
     _loadUserId();
     Future.microtask(() {
-      ref.read(conversationProvider.notifier).openRoom(widget.chatRoomId);
+      ref.read(conversationProvider.notifier).openRoom(
+        widget.chatRoomId,
+        isOrderer: false,
+      );
     });
   }
 
@@ -44,7 +47,9 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      ref.read(conversationProvider.notifier).loadTranslationSettings();
+      ref.read(conversationProvider.notifier).refreshTranslationSettings(
+            isOrderer: false,
+          );
     }
   }
 

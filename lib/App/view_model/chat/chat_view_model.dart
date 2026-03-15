@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jet_picks_app/App/data/user_preferences.dart';
 import 'package:jet_picks_app/App/models/chat/chat_models.dart';
 import 'package:jet_picks_app/App/repo/chat_repository.dart';
+import 'package:jet_picks_app/App/repo/user_profile_repository.dart';
 
 // ─────────────────────────────────────────────────────────────
 // Translation Settings Model (matches web's userSettings)
@@ -135,12 +136,14 @@ class ConversationState {
 
 class ConversationViewModel extends Notifier<ConversationState> {
   late final ChatRepository _repo;
+  late final UserProfileRepository _userProfileRepository;
   Timer? _pollingTimer;
   String? _currentRoomId;
 
   @override
   ConversationState build() {
     _repo = ChatRepository();
+    _userProfileRepository = UserProfileRepository();
     ref.onDispose(() {
       stopPolling();
     });
@@ -162,13 +165,43 @@ class ConversationViewModel extends Notifier<ConversationState> {
     );
   }
 
+  Future<void> refreshTranslationSettings({required bool isOrderer}) async {
+    try {
+      final token = await UserPreferences.getToken();
+      if (token == null) throw Exception('Not authenticated');
+
+      final response = isOrderer
+          ? await _userProfileRepository.getOrdererSettings(token)
+          : await _userProfileRepository.getPickerSettings(token);
+
+      await UserPreferences.saveTranslationLanguage(
+        response.settings.translationLanguage,
+      );
+      await UserPreferences.saveAutoTranslateMessages(
+        response.settings.autoTranslateMessages,
+      );
+      await UserPreferences.saveShowOriginalAndTranslated(
+        response.settings.showOriginalAndTranslated,
+      );
+
+      state = state.copyWith(translationSettings: TranslationSettings(
+        translationLanguage: response.settings.translationLanguage,
+        autoTranslateMessages: response.settings.autoTranslateMessages,
+        showOriginalAndTranslated:
+            response.settings.showOriginalAndTranslated,
+      ));
+    } catch (_) {
+      await loadTranslationSettings();
+    }
+  }
+
   /// Update translation settings
   void updateTranslationSettings(TranslationSettings settings) {
     state = state.copyWith(translationSettings: settings);
   }
 
   /// Load room details + messages, then start polling
-  Future<void> openRoom(String roomId) async {
+  Future<void> openRoom(String roomId, {required bool isOrderer}) async {
     stopPolling();
     _currentRoomId = roomId;
     state = state.copyWith(isLoading: true, clearError: true, messages: [], manuallyTranslatedIds: {});
@@ -177,8 +210,7 @@ class ConversationViewModel extends Notifier<ConversationState> {
       final token = await UserPreferences.getToken();
       if (token == null) throw Exception('Not authenticated');
 
-      // Load translation settings
-      await loadTranslationSettings();
+      await refreshTranslationSettings(isOrderer: isOrderer);
 
       final room = await _repo.getChatRoomDetail(token: token, roomId: roomId);
       final messages = await _repo.getMessages(token: token, roomId: roomId);
@@ -281,7 +313,6 @@ class ConversationViewModel extends Notifier<ConversationState> {
       final token = await UserPreferences.getToken();
       if (token == null) throw Exception('Not authenticated');
 
-      // Reload settings to get latest language preference
       await loadTranslationSettings();
 
       state = state.copyWith(isTranslating: true);

@@ -11,6 +11,8 @@ class AppUrls {
   // User Profile
   static const String userProfileUrl = '$baseUrl/user/profile';
   static const String userAvatarUrl = '$baseUrl/user/avatar';
+  static const String pickerSettingsUrl = '$baseUrl/picker/settings';
+  static const String ordererSettingsUrl = '$baseUrl/orderer/settings';
   // Picker Orders
   static const String pickerOrdersUrl = '$baseUrl/orders/picker/history';
   // Picker Dashboard

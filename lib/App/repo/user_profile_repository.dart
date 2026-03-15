@@ -41,4 +41,38 @@ class UserProfileRepository {
     );
     return UpdateAvatarResponseModel.fromJson(response);
   }
+
+  Future<UserSettingsResponseModel> getPickerSettings(String token) async {
+    final response = await _apiServices.getApi(AppUrls.pickerSettingsUrl, token);
+    return UserSettingsResponseModel.fromJson(response);
+  }
+
+  Future<UserSettingsResponseModel> updatePickerSettings(
+    Map<String, dynamic> data,
+    String token,
+  ) async {
+    final response = await _apiServices.putApi(
+      data,
+      AppUrls.pickerSettingsUrl,
+      token,
+    );
+    return UserSettingsResponseModel.fromJson(response);
+  }
+
+  Future<UserSettingsResponseModel> getOrdererSettings(String token) async {
+    final response = await _apiServices.getApi(AppUrls.ordererSettingsUrl, token);
+    return UserSettingsResponseModel.fromJson(response);
+  }
+
+  Future<UserSettingsResponseModel> updateOrdererSettings(
+    Map<String, dynamic> data,
+    String token,
+  ) async {
+    final response = await _apiServices.putApi(
+      data,
+      AppUrls.ordererSettingsUrl,
+      token,
+    );
+    return UserSettingsResponseModel.fromJson(response);
+  }
 }
