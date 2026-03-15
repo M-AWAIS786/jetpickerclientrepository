@@ -6,7 +6,6 @@ import 'package:jet_picks_app/App/constants/app_fontweight.dart';
 import 'package:jet_picks_app/App/constants/app_images.dart';
 import 'package:jet_picks_app/App/constants/app_strings.dart';
 import 'package:jet_picks_app/App/models/stripe/stripe_models.dart';
-import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/profile_appbar.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
 import 'package:jet_picks_app/App/widgets/checkout_sheet.dart';
@@ -28,13 +27,31 @@ class _OrderHistorydetailScreenState
     extends ConsumerState<OrderHistorydetailScreen> {
   bool _showPaymentNotice = true;
   bool _paymentSuccess = false;
+  // Delivery status: 'completed' | 'issue' | null
+  String? _deliveryStatus;
+  bool _deliveryStatusSent = false;
+  // Review state
+  int _selectedRating = 0;
+  final TextEditingController _commentController = TextEditingController();
+  String _tipOption = '5'; // '5' | '10' | 'custom'
+  final TextEditingController _customTipController = TextEditingController();
+  bool _reviewSubmitted = false;
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    Future.microtask(() async {
       ref.read(orderDetailProvider.notifier).fetchOrderDetail(widget.orderId);
+      final hasReview = await ref.read(orderDetailProvider.notifier).hasOrderReview(widget.orderId);
+      if (mounted) setState(() => _reviewSubmitted = hasReview);
     });
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    _customTipController.dispose();
+    super.dispose();
   }
 
   void _handlePayNow(OrderDetailModel order) {
@@ -66,6 +83,91 @@ class _OrderHistorydetailScreenState
         // Refresh order to get updated payment status
         ref.read(orderDetailProvider.notifier).fetchOrderDetail(widget.orderId);
       },
+    );
+  }
+
+  Future<void> _handleDeliveryStatus(OrderDetailModel order) async {
+    if (_deliveryStatus == 'issue') {
+      final reason = await _showReportIssueDialog();
+      if (reason == null || reason.isEmpty) return;
+      await ref.read(orderDetailProvider.notifier).reportIssueOrderer(reason);
+    } else {
+      await ref.read(orderDetailProvider.notifier).confirmDeliveryOrderer();
+    }
+    if (!mounted) return;
+    final err = ref.read(orderDetailProvider).errorMessage;
+    if (err != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err), backgroundColor: Colors.red));
+      return;
+    }
+    setState(() => _deliveryStatusSent = true);
+    ref.read(orderDetailProvider.notifier).fetchOrderDetail(widget.orderId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(ref.read(orderDetailProvider).successMessage ?? 'Done'), backgroundColor: Colors.green),
+    );
+  }
+
+  Future<String?> _showReportIssueDialog() async {
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Report Issue'),
+        content: TextField(
+          controller: controller,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            hintText: 'Describe the issue with your delivery...',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Submit'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleSubmitReview(OrderDetailModel order) async {
+    final revieweeId = order.picker?.id ?? order.assignedPickerId;
+    if (revieweeId == null || revieweeId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Picker information not available'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+    await ref.read(orderDetailProvider.notifier).submitReviewOrderer(
+      rating: _selectedRating,
+      comment: _commentController.text.trim().isEmpty ? 'No comment' : _commentController.text.trim(),
+      revieweeId: revieweeId,
+    );
+    if (!mounted) return;
+    final err = ref.read(orderDetailProvider).errorMessage;
+    if (err != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err), backgroundColor: Colors.red));
+      return;
+    }
+    // Submit tip if selected
+    double? tipAmount;
+    if (_tipOption == '5') {
+      tipAmount = 5.0;
+    } else if (_tipOption == '10') {
+      tipAmount = 10.0;
+    } else if (_tipOption == 'custom') {
+      final custom = double.tryParse(_customTipController.text.trim());
+      if (custom != null && custom > 0) tipAmount = custom;
+    }
+    if (tipAmount != null && tipAmount > 0) {
+      await ref.read(orderDetailProvider.notifier).submitTipOrderer(tipAmount);
+    }
+    setState(() => _reviewSubmitted = true);
+    ref.read(orderDetailProvider.notifier).fetchOrderDetail(widget.orderId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(ref.read(orderDetailProvider).successMessage ?? 'Review submitted!'), backgroundColor: Colors.green),
     );
   }
 
@@ -438,54 +540,87 @@ class _OrderHistorydetailScreenState
             43.h.ph,
             
             // Delivery Status Section (disabled until payment)
-            Opacity(
-              opacity: order.isPaid ? 1.0 : 0.5,
-              child: IgnorePointer(
-                ignoring: !order.isPaid,
-                child: Column(
-                  children: [
-                    Text(
-                      AppStrings.orderMarkedasDelivered.toUpperCase(),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    if (!order.isPaid) ...[
-                      8.h.ph,
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                        decoration: BoxDecoration(
-                          color: Colors.red[50],
-                          borderRadius: BorderRadius.circular(8.r),
-                          border: Border.all(color: Colors.red[200]!),
+            if (!_deliveryStatusSent) ...[
+              Opacity(
+                opacity: order.isPaid ? 1.0 : 0.5,
+                child: IgnorePointer(
+                  ignoring: !order.isPaid,
+                  child: Column(
+                    children: [
+                      Text(
+                        AppStrings.orderMarkedasDelivered.toUpperCase(),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      if (!order.isPaid) ...[
+                        8.h.ph,
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                          decoration: BoxDecoration(
+                            color: Colors.red[50],
+                            borderRadius: BorderRadius.circular(8.r),
+                            border: Border.all(color: Colors.red[200]!),
+                          ),
+                          child: Text(
+                            'Complete payment first to mark delivery status',
+                            style: TextStyle(fontSize: 11.sp, color: Colors.red[700], fontWeight: FontWeight.w600),
+                          ),
                         ),
-                        child: Text(
-                          'Complete payment first to mark delivery status',
-                          style: TextStyle(fontSize: 11.sp, color: Colors.red[700], fontWeight: FontWeight.w600),
+                      ],
+                      13.h.ph,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: RadioText(
+                          text: AppStrings.deliveryCompleted,
+                          isSelected: _deliveryStatus == 'completed',
+                          onChanged: () => setState(() => _deliveryStatus = 'completed'),
                         ),
                       ),
+                      10.h.ph,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: RadioText(
+                          text: AppStrings.issueWithDelivery,
+                          selectedColor: AppColors.red57,
+                          isSelected: _deliveryStatus == 'issue',
+                          onChanged: () => setState(() => _deliveryStatus = 'issue'),
+                        ),
+                      ),
+                      if (_deliveryStatus != null) ...[
+                        16.h.ph,
+                        CustomButton(
+                          text: _deliveryStatus == 'issue' ? 'Report Issue' : 'Confirm Delivery',
+                          color: _deliveryStatus == 'issue' ? AppColors.red57 : AppColors.green1E,
+                          textColor: Colors.white,
+                          onPressed: state.isActionLoading ? null : () => _handleDeliveryStatus(order),
+                          isLoading: state.isActionLoading,
+                        ),
+                      ],
                     ],
-                    13.h.ph,
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: RadioText(
-                        text: AppStrings.deliveryCompleted,
-                        isSelected: true,
-                        onChanged: () {},
-                      ),
-                    ),
-                    10.h.ph,
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: RadioText(
-                        text: AppStrings.issueWithDelivery,
-                        selectedColor: AppColors.red57,
-                        isSelected: false,
-                        onChanged: () {},
+                  ),
+                ),
+              ),
+            ] else ...[
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: Colors.green[200]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green[600], size: 24.sp),
+                    12.w.pw,
+                    Expanded(
+                      child: Text(
+                        'Delivery status confirmed',
+                        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Colors.green[700]),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
             18.h.ph,
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
@@ -505,87 +640,165 @@ class _OrderHistorydetailScreenState
             ),
             37.h.ph,
             
-            // Rate & Review Section (disabled until payment)
-            Opacity(
-              opacity: order.isPaid ? 1.0 : 0.5,
-              child: IgnorePointer(
-                ignoring: !order.isPaid,
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.yellow1,
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppStrings.rateYourExperience,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: TextWeight.bold,
+            // Rate & Review Section (disabled until payment, hidden if already submitted)
+            if (!_reviewSubmitted) ...[
+              Opacity(
+                opacity: order.isPaid ? 1.0 : 0.5,
+                child: IgnorePointer(
+                  ignoring: !order.isPaid,
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.yellow1,
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          AppStrings.rateYourExperience,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: TextWeight.bold,
+                          ),
                         ),
-                      ),
-                      20.h.ph,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(5, (index) => 
-                          Icon(Icons.star, size: 32, color: AppColors.starsColor),
+                        20.h.ph,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(5, (index) {
+                            final starIndex = index + 1;
+                            return GestureDetector(
+                              onTap: () => setState(() => _selectedRating = starIndex),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 4.w),
+                                child: Icon(
+                                  Icons.star,
+                                  size: 32.sp,
+                                  color: _selectedRating >= starIndex ? AppColors.starsColor : AppColors.lightGray,
+                                ),
+                              ),
+                            );
+                          }),
                         ),
-                      ),
-                      20.h.ph,
-                      Container(
-                        width: double.infinity,
-                        height: 92.h,
-                        padding: EdgeInsets.all(10.w),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Text('Write your comment'),
-                      ),
-                      12.h.ph,
-                      Container(
-                        width: double.infinity,
-                        height: 92.h,
-                        padding: EdgeInsets.all(10.w),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppStrings.tipOption,
-                              style: Theme.of(context).textTheme.titleSmall,
+                        20.h.ph,
+                        Container(
+                          width: double.infinity,
+                          constraints: BoxConstraints(minHeight: 92.h),
+                          padding: EdgeInsets.all(10.w),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: TextField(
+                            controller: _commentController,
+                            maxLines: 3,
+                            decoration: InputDecoration(
+                              hintText: AppStrings.writeYourComment,
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
                             ),
-                            17.h.ph,
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                RadioText(text: '\$5', fontSize: 12.sp, isSelected: true, onChanged: () {}),
-                                RadioText(text: '\$10', fontSize: 12.sp, isSelected: false, onChanged: () {}),
-                                RadioText(text: 'Custom amount', fontSize: 12.sp, isSelected: false, onChanged: () {}),
+                          ),
+                        ),
+                        12.h.ph,
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppStrings.tipOption,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              12.h.ph,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: RadioText(
+                                      text: '${order.currencySymbol}5',
+                                      fontSize: 12.sp,
+                                      isSelected: _tipOption == '5',
+                                      onChanged: () => setState(() => _tipOption = '5'),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: RadioText(
+                                      text: '${order.currencySymbol}10',
+                                      fontSize: 12.sp,
+                                      isSelected: _tipOption == '10',
+                                      onChanged: () => setState(() => _tipOption = '10'),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: RadioText(
+                                      text: AppStrings.customAmount,
+                                      fontSize: 12.sp,
+                                      isSelected: _tipOption == 'custom',
+                                      onChanged: () => setState(() => _tipOption = 'custom'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (_tipOption == 'custom') ...[
+                                8.h.ph,
+                                SizedBox(
+                                  height: 44.h,
+                                  child: TextField(
+                                    controller: _customTipController,
+                                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                    decoration: InputDecoration(
+                                      hintText: '${AppStrings.customAmount} (${order.currencySymbol})',
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                                    ),
+                                  ),
+                                ),
                               ],
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      20.h.ph,
-                      CustomButton(
-                        text: AppStrings.submit,
-                        color: AppColors.yellow3,
-                        textColor: AppColors.black,
-                        onPressed: order.isPaid ? () {
-                          Navigator.pushNamed(context, AppRoutes.orderAcceptedScreen);
-                        } : null,
-                      ),
-                    ],
+                        20.h.ph,
+                        CustomButton(
+                          text: AppStrings.submit,
+                          color: AppColors.yellow3,
+                          textColor: AppColors.black,
+                          onPressed: order.isPaid && _selectedRating > 0
+                              ? () => _handleSubmitReview(order)
+                              : null,
+                          isLoading: state.isActionLoading,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
+            ] else ...[
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: Colors.green[200]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.rate_review, color: Colors.green[600], size: 24.sp),
+                    12.w.pw,
+                    Expanded(
+                      child: Text(
+                        'Thank you! Your review has been submitted.',
+                        style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Colors.green[700]),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             30.h.ph,
           ],
         ),

@@ -26,6 +26,7 @@ class AppUrls {
   static String confirmDeliveryUrl(String orderId) => '$baseUrl/orders/$orderId/confirm-delivery';
   static String reportIssueUrl(String orderId) => '$baseUrl/orders/$orderId/report-issue';
   static const String reviewsUrl = '$baseUrl/reviews';
+  static String orderReviewUrl(String orderId) => '$baseUrl/orders/$orderId/review';
   static const String tipsUrl = '$baseUrl/tips';
   // Offers
   static String offerHistoryUrl(String orderId) => '$baseUrl/orders/$orderId/offers';

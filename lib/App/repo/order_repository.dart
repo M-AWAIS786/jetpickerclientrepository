@@ -155,6 +155,20 @@ class OrderRepository {
     return response;
   }
 
+  /// GET /api/orders/{orderId}/review - Check if order has review
+  Future<Map<String, dynamic>?> getOrderReview({
+    required String token,
+    required String orderId,
+  }) async {
+    try {
+      final url = AppUrls.orderReviewUrl(orderId);
+      final response = await _apiServices.getApi(url, token);
+      return response is Map<String, dynamic> ? response : (response is Map ? Map<String, dynamic>.from(response) : null);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// POST /api/reviews  { order_id, rating, comment, reviewee_id }
   Future<Map<String, dynamic>> submitReview({
     required String token,

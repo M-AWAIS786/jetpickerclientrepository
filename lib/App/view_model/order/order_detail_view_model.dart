@@ -306,6 +306,21 @@ class OrderDetailViewModel extends Notifier<OrderDetailState> {
   void clearMessages() {
     state = state.copyWith(clearError: true, clearSuccess: true);
   }
+
+  /// Check if order has existing review
+  Future<bool> hasOrderReview(String orderId) async {
+    try {
+      final token = await UserPreferences.getToken();
+      if (token == null) return false;
+      final res = await _orderRepository.getOrderReview(
+        token: token,
+        orderId: orderId,
+      );
+      return res != null && (res['data'] != null || res['id'] != null);
+    } catch (_) {
+      return false;
+    }
+  }
 }
 
 final orderDetailProvider =
