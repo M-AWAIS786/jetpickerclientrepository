@@ -8,6 +8,7 @@ import 'package:jet_picks_app/App/constants/app_images.dart';
 import 'package:jet_picks_app/App/routes/app_routes.dart';
 import 'package:jet_picks_app/App/utils/share_pictures.dart';
 import 'package:jet_picks_app/App/utils/sizedbox_extension.dart';
+import 'package:jet_picks_app/App/view_model/location/location_view_model.dart';
 import 'package:jet_picks_app/App/view_model/user_profile/user_profile_view_model.dart';
 import 'package:jet_picks_app/App/widgets/custom_button.dart';
 import 'package:jet_picks_app/App/widgets/custom_divider.dart';
@@ -50,6 +51,152 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     setState(() {
       _selectedImage = File(picked.path);
     });
+  }
+
+  void _openCountrySheet(List<String> countries) {
+    final searchController = TextEditingController();
+    var filtered = List<String>.from(countries);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            return Container(
+              height: 0.75.sh,
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+              ),
+              child: Column(
+                children: [
+                  12.h.ph,
+                  Container(
+                    width: 40.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.lightGray,
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
+                  ),
+                  16.h.ph,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: Row(
+                      children: [
+                        SharePictures(
+                          imagePath: AppImages.flagIcon,
+                          width: 18.w,
+                          height: 18.h,
+                          colorFilter: ColorFilter.mode(
+                            AppColors.red3,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        10.w.pw,
+                        Text(
+                          'Select country',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: AppColors.red3,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  12.h.ph,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.redLight,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: TextField(
+                        controller: searchController,
+                        cursorColor: AppColors.red3,
+                        decoration: InputDecoration(
+                          hintText: 'Search country...',
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: AppColors.labelGray),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: AppColors.red3,
+                            size: 20.sp,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 12.h,
+                            horizontal: 12.w,
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setSheetState(() {
+                            filtered = countries
+                                .where((country) => country
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase()))
+                                .toList();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  12.h.ph,
+                  Expanded(
+                    child: ListView.separated(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      itemCount: filtered.length,
+                      separatorBuilder: (_, __) => Divider(
+                        height: 1,
+                        color: AppColors.lightGray.withOpacity(0.5),
+                      ),
+                      itemBuilder: (_, index) {
+                        final country = filtered[index];
+                        final isSelected = selectedCountry == country;
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            country,
+                            style:
+                                Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: isSelected
+                                          ? AppColors.red3
+                                          : AppColors.black,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w400,
+                                    ),
+                          ),
+                          trailing: isSelected
+                              ? Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.red3,
+                                  size: 18.sp,
+                                )
+                              : null,
+                          onTap: () {
+                            setState(() {
+                              selectedCountry = country;
+                            });
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    ).whenComplete(searchController.dispose);
   }
 
   void _openLanguageSheet() {
@@ -221,6 +368,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(userProfileViewModelProvider);
+    final locationState = ref.watch(locationViewModelProvider);
+    final countryItems = locationState.countries.map((c) => c.name).toList();
     _prefillProfile(profileState);
 
     ref.listen<UserProfileState>(userProfileViewModelProvider, (prev, next) {
@@ -262,17 +411,24 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
               ),
               48.h.ph,
 
-              CustomDropDown(
-                selectedValue: selectedCountry,
-                hintText: AppStrings.country,
-                labelText: AppStrings.yourNationality,
-                prefixIcon: AppImages.flagIcon,
-                items: countryList,
-                onChanged: (value) {
-                  setState(() {
-                    selectedCountry = value;
-                  });
-                },
+              GestureDetector(
+                onTap: locationState.loadingCountries || countryItems.isEmpty
+                    ? null
+                    : () => _openCountrySheet(countryItems),
+                child: AbsorbPointer(
+                  child: CustomDropDown(
+                    selectedValue: null,
+                    hintText: locationState.loadingCountries
+                        ? 'Loading countries...'
+                        : (selectedCountry?.isNotEmpty == true
+                            ? selectedCountry!
+                            : AppStrings.country),
+                    labelText: AppStrings.yourNationality,
+                    prefixIcon: AppImages.flagIcon,
+                    items: countryItems,
+                    onChanged: (_) {},
+                  ),
+                ),
               ),
               CustomDivider(dividerThickness: 1),
               7.h.ph,
@@ -288,16 +444,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                 onTap: _openLanguageSheet,
                 child: AbsorbPointer(
                   child: CustomDropDown(
-                    selectedValue:
-                        _selectedLanguages.isEmpty ? null : _selectedLanguages.first,
+                    selectedValue: null,
                     hintText: _selectedLanguages.isEmpty
                         ? AppStrings.languages
-                        : _selectedLanguages.join(', '),
+                        : '${_selectedLanguages.length} selected',
                     labelText: AppStrings.languages,
                     prefixIcon: AppImages.languageIcon,
-                    items: _selectedLanguages.isEmpty
-                        ? languagesList
-                        : _selectedLanguages,
+                    items: languagesList,
                     onChanged: (_) {},
                   ),
                 ),
