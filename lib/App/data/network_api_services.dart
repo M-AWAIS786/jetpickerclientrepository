@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:jet_picks_app/App/data/app_exception.dart';
 import 'package:jet_picks_app/App/data/base_api_services.dart';
+import 'package:jet_picks_app/App/data/user_preferences.dart';
+import 'package:jet_picks_app/App/routes/app_routes.dart';
 
 class NetworkApiServices extends BaseApiServices {
   final http.Client _client;
@@ -412,7 +414,11 @@ class NetworkApiServices extends BaseApiServices {
       case 400:
         throw BadRequestException(responseJson['message'] ?? 'Bad request');
       case 401:
-        throw BadRequestException(responseJson['message'] ?? 'Unauthorized');
+        // Clear session and redirect to welcome screen automatically
+        UserPreferences.clearAll().then((_) {
+          goRouter.go(AppRoutes.roleSelectionScreen);
+        });
+        throw UnAuthorizedException(responseJson['message'] ?? 'Unauthorized');
       case 403:
         throw UnAuthorizedException(responseJson['message'] ?? 'Forbidden');
       case 404:
