@@ -918,20 +918,20 @@ class _SpecialNotesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.note_alt_outlined,
-                  size: 20.sp, color: AppColors.red3),
-              8.w.pw,
-              Text(
-                AppStrings.specialNotes,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: AppColors.black,
-                      fontWeight: TextWeight.bold,
-                    ),
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Icon(Icons.note_alt_outlined,
+          //         size: 20.sp, color: AppColors.red3),
+          //     8.w.pw,
+          //     Text(
+          //       AppStrings.specialNotes,
+          //       style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          //             color: AppColors.black,
+          //             fontWeight: TextWeight.bold,
+          //           ),
+          //     ),
+          //   ],
+          // ),
           12.h.ph,
           Container(
             width: double.infinity,

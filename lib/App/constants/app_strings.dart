@@ -98,7 +98,7 @@ class AppStrings {
   static const String chooseReceivingCountryAndCity =
       'Choose receiving country and city';
   static const String useMyLocation = 'Use my location';
-  static const String specialNotes = 'Special notes (optional)';
+  // static const String specialNotes = 'Special notes (optional)';
   static const String writeHere = 'Write here';
 
   // Travel details setup screen strings

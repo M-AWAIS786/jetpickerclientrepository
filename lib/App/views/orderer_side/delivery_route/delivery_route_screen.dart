@@ -9,7 +9,6 @@ import '../../../constants/app_colors.dart';
 import '../../../constants/app_images.dart';
 import '../../../constants/app_strings.dart';
 import '../../../widgets/custom_dropdown.dart';
-import '../../../widgets/custom_text_formfeild.dart';
 
 class DeliveryRouteScreen extends ConsumerStatefulWidget {
   const DeliveryRouteScreen({super.key});
@@ -20,20 +19,12 @@ class DeliveryRouteScreen extends ConsumerStatefulWidget {
 }
 
 class _DeliveryRouteScreenState extends ConsumerState<DeliveryRouteScreen> {
-  final TextEditingController _notesController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(locationViewModelProvider.notifier).fetchCountries();
     });
-  }
-
-  @override
-  void dispose() {
-    _notesController.dispose();
-    super.dispose();
   }
 
   @override
@@ -104,7 +95,7 @@ class _DeliveryRouteScreenState extends ConsumerState<DeliveryRouteScreen> {
               // ── Origin City ──
               CustomDropDown(
                 selectedValue: orderState.originCity.isNotEmpty &&
-                        locationState.departureCities
+                        ['Any City', ...locationState.departureCities]
                             .contains(orderState.originCity)
                     ? orderState.originCity
                     : null,
@@ -112,7 +103,7 @@ class _DeliveryRouteScreenState extends ConsumerState<DeliveryRouteScreen> {
                 hintTextColor: AppColors.labelGray,
                 dropDownTextColor: AppColors.black,
                 sufixColor: AppColors.black,
-                items: locationState.departureCities,
+                items: ['Any City', ...locationState.departureCities],
                 onChanged: (value) {
                   if (value != null) orderVM.setOriginCity(value);
                 },
@@ -147,7 +138,7 @@ class _DeliveryRouteScreenState extends ConsumerState<DeliveryRouteScreen> {
               // ── Destination City ──
               CustomDropDown(
                 selectedValue: orderState.destinationCity.isNotEmpty &&
-                        locationState.arrivalCities
+                        ['Any City', ...locationState.arrivalCities]
                             .contains(orderState.destinationCity)
                     ? orderState.destinationCity
                     : null,
@@ -155,22 +146,10 @@ class _DeliveryRouteScreenState extends ConsumerState<DeliveryRouteScreen> {
                 hintTextColor: AppColors.labelGray,
                 dropDownTextColor: AppColors.black,
                 sufixColor: AppColors.black,
-                items: locationState.arrivalCities,
+                items: ['Any City', ...locationState.arrivalCities],
                 onChanged: (value) {
                   if (value != null) orderVM.setDestinationCity(value);
                 },
-              ),
-              51.h.ph,
-
-              // ── Special Notes ──
-              Text(
-                AppStrings.specialNotes,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              16.h.ph,
-              CustomTextFormfeild(
-                hintText: 'Write here',
-                controller: _notesController,
               ),
             ],
           ),

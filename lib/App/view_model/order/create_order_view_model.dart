@@ -228,6 +228,15 @@ class CreateOrderViewModel extends Notifier<CreateOrderState> {
     state = state.copyWith(items: items);
   }
 
+  void removeItem(String itemId) {
+    final items = List<CreateOrderItem>.from(state.items);
+    items.removeWhere((i) => i.id == itemId);
+    if (items.isEmpty) {
+      items.add(CreateOrderItem(id: '1', currency: state.currencyCode));
+    }
+    state = state.copyWith(items: items, clearValidation: true);
+  }
+
   void removeItemImage(String itemId, int imageIndex) {
     final items = List<CreateOrderItem>.from(state.items);
     final index = items.indexWhere((i) => i.id == itemId);

@@ -345,7 +345,7 @@ class _OrdererHomeScreenState extends ConsumerState<OrdererHomeScreen>
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Container(
-                        width: 200.w,
+                        // width: 200.w,
                         height: 46.h,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
@@ -367,9 +367,9 @@ class _OrdererHomeScreenState extends ConsumerState<OrdererHomeScreen>
                                 color: AppColors.black, size: 20.sp),
                             8.w.pw,
                             Text(
-                              'Create An Order',
+                              'What do you want in the world?',
                               style: TextStyle(
-                                fontSize: 15.sp,
+                                fontSize: 14.sp,
                                 fontWeight: TextWeight.bold,
                                 color: AppColors.black,
                               ),

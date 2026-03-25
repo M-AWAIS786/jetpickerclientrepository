@@ -146,13 +146,7 @@ class _OrderInformationScreenState
               const Spacer(),
               if (total > 1)
                 GestureDetector(
-                  onTap: () {
-                    final items = List<CreateOrderItem>.from(
-                        ref.read(createOrderProvider).items);
-                    items.removeAt(index);
-                    // Can't directly set items on the notifier, so we use updateItem trick
-                    // Actually let's expose a removeItem method... for now just rebuild
-                  },
+                  onTap: () => vm.removeItem(item.id),
                   child: Icon(Icons.close, color: AppColors.red57, size: 20.sp),
                 ),
             ],
@@ -331,17 +325,6 @@ class _OrderInformationScreenState
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             onChanged: (v) => vm.updateItem(item.id, (i) => i.quantity = v),
-          ),
-          16.h.ph,
-
-          // ── Special Notes ──
-          _buildLabel(context, AppStrings.specialNotes),
-          8.h.ph,
-          _buildTextField(
-            value: item.notes,
-            hint: 'Write here',
-            maxLines: 2,
-            onChanged: (v) => vm.updateItem(item.id, (i) => i.notes = v),
           ),
         ],
       ),
