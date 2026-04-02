@@ -21,12 +21,3 @@ samples, guidance on mobile development, and a full API reference.
 
 
 /////////////////////////////////////////////////////////////////////
-
-
-
-Added "Any City" option to both origin and destination city dropdowns in the delivery route screen.
-Fixed the remove item (cross) button in the order information screen so it properly removes items from the list.
-Explained Flutter errors (TextEditingController disposed, RenderFlex overflow, etc.) and provided guidance on fixes.
-Created a Privacy Policy screen styled with your app’s theme and linked it from the settings screen.
-Created a Terms & Conditions screen styled with your app’s theme and linked it from the settings screen.
-Wired up navigation for both Privacy Policy and Terms & Conditions in the settings screen.
